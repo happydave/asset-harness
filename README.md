@@ -40,6 +40,9 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
   into a track's `findings/` and fill it in: model/workflow/version, prompt/seed/params, the
   **hardware it ran on**, and a `works / partial / fails` verdict. AMD failures are recorded,
   not hidden.
+- **Every generation records its license chain.** Track the license of the base model **and**
+  every LoRA/ControlNet used; the output's effective license is the *most restrictive link*.
+  This gates which assets can go into a "clean" (commercially redistributable) pack later.
 - **Local-first.** Try ComfyUI locally before reaching for hosted APIs; if a hosted service is
   used, note why local fell short.
 - Large generated outputs and model weights are git-ignored (see `.gitignore`); commit

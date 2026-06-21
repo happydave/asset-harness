@@ -10,9 +10,25 @@ What asset class / outcome was this experiment trying to produce, and for which 
 
 ## Tooling
 
-- **Model(s):** <name + version/hash>
+- **Base model:** <name + version/hash>
+- **LoRA(s) / ControlNet / adapters:** <name + version, each>
 - **Workflow / nodes:** <ComfyUI workflow file, custom nodes + versions>
 - **Other software:** <rembg, Blender, DeepBump, hosted API, etc. + versions>
+
+## Licensing (commercial / redistribution)
+
+Track the license of **every** model artifact in the chain — base model, each LoRA, each
+ControlNet/adapter. The effective license of the output is the **most restrictive link**.
+(Separately note: AI-generated images may not be copyrightable in some jurisdictions — that
+governs whether *you* can claim the output, not whether you may *use* the model.)
+
+| Artifact | License | Commercial? | Redistribute? | Source |
+|----------|---------|-------------|---------------|--------|
+| <base>   | <...>   | <yes/no>    | <yes/no>      | <url>  |
+
+- **Effective output license:** <most-restrictive result>
+- **Safe for a clean/commercial asset pack?** <yes / no / prototype-only>
+- **Notes:** <revenue caps, "no monetized inference service" clauses, attribution required, ...>
 
 ## Hardware
 

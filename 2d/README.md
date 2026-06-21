@@ -38,6 +38,9 @@ anchor approach is an explicit goal of this track, not an afterthought.
 
 ## Contents
 
+- [`discover.md`](discover.md) — generation-stack discovery: installed models on `ai2`,
+  **license matrix** (clean engine = Z-Image Turbo; FLUX.2 Klein 9B is non-commercial), and
+  remaining gaps. **Read this first.**
 - `findings/` — one filled-in copy of [`../_template/findings.md`](../_template/findings.md)
   per experiment.
 - `prototypes/` — workflows, scripts, and representative sample outputs.
