@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Model weights / checkpoints (never commit these)
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.gguf
+*.onnx
+
+# Bulk generated output — commit representative samples explicitly with `git add -f`
+**/output/
+**/outputs/
+**/_gen/
+
+# Large media (allow small samples via `git add -f`)
+*.mp4
+*.mov
+*.zip
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.idea/
+.vscode/
