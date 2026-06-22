@@ -12,6 +12,12 @@ blocked *before* the GPU by a Flowty node↔model `state_dict` version mismatch 
 Hunyuan3D weights landed under the wrong loader path (deprioritized — license). So: one working
 clean (MIT) 2.5D path; a clean full-object path still needs TripoSR's env fixed or TRELLIS on NVIDIA.
 
+**Cleanup + real use (2026-06-22, [findings](findings/2026-06-22-blender-cleanup-and-moge-terrain.md)):**
+Blender 4.0.2 on `ai2` (driven over SSH; `blender_decimate.py`) decimates raw meshes to game LODs
+with textures kept (terrain 2.04M→102k faces). **MoGe put to real use on terrain:** a Z-Image
+canyon concept → MoGe relief → decimated heightmesh — a usable terrain-from-one-image path
+(MIT+Apache). Remaining: texture downscale (glb is now texture-bound), and a Sounding-side import.
+
 ## Purpose
 
 Image-to-3D for static, organic/greeble props (Sounding: computers, debris, rocks, trees).
