@@ -1,9 +1,10 @@
 # Track: 3d-static-props
 
-**Status:** 🟡 discovery done; harness ready — **gated on a model install + a ROCm test**.
-Local path = Hunyuan3D 2.0 (native ComfyUI); see [discover.md](discover.md). ⚠️ Hunyuan3D is the
-**Tencent Community License** (not Apache) — 3D breaks the clean lane; TRELLIS/TripoSR (MIT) are
-the permissive alternatives.
+**Status:** 🟡 discovery done; see [discover.md](discover.md). ⚠️ 3D breaks the clean lane —
+Hunyuan3D 2.0 (native ComfyUI, harness ready) is high-quality but **Tencent Community License**.
+**Clean plan, routed by hardware:** TripoSR (MIT) on `ai2` first (low friction, best ROCm odds);
+TRELLIS.2 (MIT, hero quality) on the NVIDIA workstation (CUDA-heavy, AMD-hostile). All **gated on
+installs + a ROCm test**.
 
 ## Purpose
 
