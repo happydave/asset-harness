@@ -1,0 +1,18 @@
+{
+  "style": "top-down orthographic game sprite, industrial used-future space vessel, weathered painted steel hull, gunmetal grey with rust-orange hazard accents, soft even studio lighting, clean readable silhouette, centered, isolated on a plain solid white background, crisp detailed concept art",
+  "strength": 0.85,
+  "ships": [
+    {
+      "name": "hauler",
+      "prompt": "top-down orthographic game sprite, industrial used-future space vessel, weathered painted steel hull, gunmetal grey with rust-orange hazard accents, soft even studio lighting, clean readable silhouette, centered, isolated on a plain solid white background, crisp detailed concept art, a heavy cargo hauler with armored greebled hull, square side cargo pods, and three engine nozzles with a faint glow",
+      "seed": 729703840979498,
+      "rgba": "hauler_rgba_00003_.png"
+    },
+    {
+      "name": "miner",
+      "prompt": "top-down orthographic game sprite, industrial used-future space vessel, weathered painted steel hull, gunmetal grey with rust-orange hazard accents, soft even studio lighting, clean readable silhouette, centered, isolated on a plain solid white background, crisp detailed concept art, a compact mining vessel with a forward rotary drilling rig, two round ore storage tanks, and a small twin-nozzle engine",
+      "seed": 729703840979498,
+      "rgba": "miner_rgba_00001_.png"
+    }
+  ]
+}

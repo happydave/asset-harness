@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""Downstream post-processing: trim -> downscale -> pack into a Phaser texture atlas.
+
+Takes the RGBA sprites produced by the generator and turns them into engine-ready output:
+  1. trim each sprite to its alpha bounding box (drop empty margins),
+  2. downscale so the largest dimension == --max-dim (game resolution),
+  3. shelf-pack the frames into a single atlas PNG,
+  4. emit a Phaser-compatible JSON-Hash atlas descriptor.
+
+Reads a fleet_manifest.json (name -> rgba filename) or an explicit list of files.
+Stdlib + PIL only.
+"""
+import argparse
+import json
+from pathlib import Path
+
+from PIL import Image
+
+PAD = 2
+
+
+def trim_and_fit(path: Path, max_dim: int) -> Image.Image:
+    im = Image.open(path).convert("RGBA")
+    bbox = im.getchannel("A").getbbox()
+    if bbox:
+        im = im.crop(bbox)
+    w, h = im.size
+    scale = max_dim / max(w, h)
+    if scale < 1.0:
+        im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    return im
+
+
+def shelf_pack(sizes, atlas_w):
+    """Return (placements [(x,y)], atlas_w, atlas_h). sizes: list of (w,h)."""
+    x = y = shelf_h = 0
+    placements = []
+    for w, h in sizes:
+        if x + w + PAD > atlas_w and x > 0:      # wrap to next shelf
+            x = 0
+            y += shelf_h + PAD
+            shelf_h = 0
+        placements.append((x, y))
+        x += w + PAD
+        shelf_h = max(shelf_h, h)
+    atlas_h = y + shelf_h
+    return placements, atlas_w, atlas_h
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--manifest", default="outputs/fleet/fleet_manifest.json")
+    ap.add_argument("--indir", default="outputs/fleet")
+    ap.add_argument("--outdir", default="outputs/atlas")
+    ap.add_argument("--max-dim", type=int, default=256)
+    ap.add_argument("--atlas-width", type=int, default=1024)
+    ap.add_argument("--name", default="dwa_ships")
+    args = ap.parse_args()
+
+    indir = Path(args.indir)
+    outdir = Path(args.outdir)
+    (outdir / "sprites").mkdir(parents=True, exist_ok=True)
+
+    man = json.loads(Path(args.manifest).read_text())
+    frames = [(s["name"], indir / s["rgba"]) for s in man["ships"] if s.get("rgba")]
+
+    imgs = []
+    for name, p in frames:
+        im = trim_and_fit(p, args.max_dim)
+        im.save(outdir / "sprites" / f"{name}.png")   # also keep standalone trimmed sprites
+        imgs.append((name, im))
+
+    sizes = [im.size for _, im in imgs]
+    placements, aw, ah = shelf_pack(sizes, args.atlas_width)
+    aw = min(aw, max((x + im.size[0]) for (x, _), (_, im) in zip(placements, imgs)))
+
+    atlas = Image.new("RGBA", (aw, ah), (0, 0, 0, 0))
+    descr = {"frames": {}, "meta": {"app": "asset-harness", "image": f"{args.name}.png",
+                                    "format": "RGBA8888", "size": {"w": aw, "h": ah}, "scale": 1}}
+    for (name, im), (x, y) in zip(imgs, placements):
+        w, h = im.size
+        atlas.paste(im, (x, y))
+        descr["frames"][name] = {
+            "frame": {"x": x, "y": y, "w": w, "h": h},
+            "rotated": False, "trimmed": False,
+            "spriteSourceSize": {"x": 0, "y": 0, "w": w, "h": h},
+            "sourceSize": {"w": w, "h": h},
+        }
+
+    atlas.save(outdir / f"{args.name}.png")
+    (outdir / f"{args.name}.json").write_text(json.dumps(descr, indent=2))
+    print(f"atlas {aw}x{ah} with {len(imgs)} frames -> {outdir/(args.name+'.png')}")
+    for name, im in imgs:
+        print(f"  {name}: {im.size[0]}x{im.size[1]}")
+
+
+if __name__ == "__main__":
+    main()

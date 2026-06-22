@@ -29,13 +29,25 @@ VAE = "ae.safetensors"
 CNET_PATCH = "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2602-8steps.safetensors"
 BG_MODEL = "BiRefNet-HR-matting.safetensors"
 
-DEFAULT_PROMPT = (
-    "top-down orthographic game sprite of an industrial space cargo hauler, "
-    "armored greebled hull, side cargo pods, three engine nozzles with faint glow, "
-    "weathered painted metal, clean readable silhouette, centered, "
-    "isolated on a plain solid white background, soft even studio lighting, "
-    "crisp detail, high quality concept art"
+# Canonical house style — the project's STYLE ANCHOR. Prepended to every subject so a whole
+# fleet stays visually coherent (used in lieu of LoRA/IPAdapter, which we deliberately avoid).
+STYLE = (
+    "top-down orthographic game sprite, industrial used-future space vessel, "
+    "weathered painted steel hull, gunmetal grey with rust-orange hazard accents, "
+    "soft even studio lighting, clean readable silhouette, centered, "
+    "isolated on a plain solid white background, crisp detailed concept art"
 )
+DEFAULT_SUBJECT = (
+    "a heavy cargo hauler with armored greebled hull, side cargo pods, "
+    "and three engine nozzles with a faint glow"
+)
+
+
+def compose(subject: str, style: str = STYLE) -> str:
+    return f"{style}, {subject}"
+
+
+DEFAULT_PROMPT = compose(DEFAULT_SUBJECT)
 
 
 def upload_image(server: str, path: Path) -> str:
@@ -54,7 +66,8 @@ def upload_image(server: str, path: Path) -> str:
     return name
 
 
-def build_graph(control_name: str, prompt: str, seed: int, strength: float) -> dict:
+def build_graph(control_name: str, prompt: str, seed: int, strength: float,
+                prefix: str = "asset_harness/hauler") -> dict:
     return {
         "1": {"class_type": "CLIPLoader",
               "inputs": {"clip_name": CLIP, "type": CLIP_TYPE, "device": "default"}},
@@ -93,9 +106,9 @@ def build_graph(control_name: str, prompt: str, seed: int, strength: float) -> d
         "22": {"class_type": "InvertMask", "inputs": {"mask": ["17", 0]}},
         "18": {"class_type": "JoinImageWithAlpha", "inputs": {"image": ["15", 0], "alpha": ["22", 0]}},
         # outputs: RGBA sprite, opaque render, canny map (for inspection)
-        "19": {"class_type": "SaveImage", "inputs": {"images": ["18", 0], "filename_prefix": "asset_harness/hauler_rgba"}},
-        "20": {"class_type": "SaveImage", "inputs": {"images": ["15", 0], "filename_prefix": "asset_harness/hauler_opaque"}},
-        "21": {"class_type": "SaveImage", "inputs": {"images": ["10", 0], "filename_prefix": "asset_harness/hauler_canny"}},
+        "19": {"class_type": "SaveImage", "inputs": {"images": ["18", 0], "filename_prefix": f"{prefix}_rgba"}},
+        "20": {"class_type": "SaveImage", "inputs": {"images": ["15", 0], "filename_prefix": f"{prefix}_opaque"}},
+        "21": {"class_type": "SaveImage", "inputs": {"images": ["10", 0], "filename_prefix": f"{prefix}_canny"}},
     }
 
 
@@ -134,7 +147,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--server", default="http://ai2:8188")
     ap.add_argument("--control", default="inputs/hauler_primitive.png")
-    ap.add_argument("--prompt", default=DEFAULT_PROMPT)
+    ap.add_argument("--prompt", default=None, help="full prompt override; else style+subject")
+    ap.add_argument("--style", default=STYLE)
+    ap.add_argument("--subject", default=DEFAULT_SUBJECT)
+    ap.add_argument("--name", default="hauler", help="output basename / atlas frame key")
     ap.add_argument("--seed", type=int, default=729703840979498)
     ap.add_argument("--strength", type=float, default=0.85)
     ap.add_argument("--out", default="outputs")
@@ -143,17 +159,18 @@ def main() -> None:
     server = args.server.rstrip("/")
     client_id = uuid.uuid4().hex
     out_dir = Path(args.out)
+    prompt = args.prompt or compose(args.subject, args.style)
 
     print(f"uploading {args.control} ...")
     control_name = upload_image(server, Path(args.control))
-    graph = build_graph(control_name, args.prompt, args.seed, args.strength)
+    graph = build_graph(control_name, prompt, args.seed, args.strength, prefix=f"asset_harness/{args.name}")
 
     # persist the exact graph + provenance next to outputs
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "last_graph.json").write_text(json.dumps(graph, indent=2))
     (out_dir / "last_run.json").write_text(json.dumps({
         "server": server, "control": control_name, "seed": args.seed,
-        "strength": args.strength, "prompt": args.prompt,
+        "strength": args.strength, "prompt": prompt,
         "models": {"unet": UNET, "clip": CLIP, "vae": VAE, "controlnet": CNET_PATCH, "bg": BG_MODEL},
     }, indent=2))
 

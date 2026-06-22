@@ -1,8 +1,10 @@
 # Track: 2d
 
-**Status:** 🟡 in progress — discovery complete; first end-to-end prototype validated
-([findings](findings/2026-06-21-dwa-hauler-zimage-controlnet.md): Z-Image + Fun ControlNet +
-BiRefNet alpha, all Apache/MIT, running on `ai2` gfx1201).
+**Status:** 🟡 in progress — generate→atlas pipeline working end-to-end on the clean stack.
+Discovery complete; [single sprite](findings/2026-06-21-dwa-hauler-zimage-controlnet.md) and a
+[style-coherent fleet + Phaser atlas](findings/2026-06-21-fleet-style-anchor-and-atlas.md)
+validated (Z-Image + Fun ControlNet + BiRefNet, all Apache/MIT, on `ai2` gfx1201). Remaining:
+preserve inter-ship scale, station/base modules, and the (DWA-side) in-game import.
 
 ## Purpose
 
