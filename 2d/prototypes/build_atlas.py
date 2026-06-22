@@ -12,6 +12,7 @@ Stdlib + PIL only.
 """
 import argparse
 import json
+import math
 from pathlib import Path
 
 from PIL import Image
@@ -55,6 +56,9 @@ def main() -> None:
     ap.add_argument("--max-dim", type=int, default=256)
     ap.add_argument("--atlas-width", type=int, default=1024)
     ap.add_argument("--name", default="dwa_ships")
+    ap.add_argument("--cell", type=int, default=0,
+                    help="grid mode: keep full square cell at this px (no trim) so edge ports stay aligned")
+    ap.add_argument("--cols", type=int, default=0, help="grid columns (0 = auto sqrt)")
     args = ap.parse_args()
 
     indir = Path(args.indir)
@@ -64,15 +68,26 @@ def main() -> None:
     man = json.loads(Path(args.manifest).read_text())
     frames = [(s["name"], indir / s["rgba"]) for s in man["ships"] if s.get("rgba")]
 
+    # Grid mode keeps the full square cell (edge ports stay aligned for tiling); default mode
+    # trims to the alpha bbox + downscales to max-dim (best for free-standing sprites).
     imgs = []
     for name, p in frames:
-        im = trim_and_fit(p, args.max_dim)
-        im.save(outdir / "sprites" / f"{name}.png")   # also keep standalone trimmed sprites
+        if args.cell:
+            im = Image.open(p).convert("RGBA").resize((args.cell, args.cell), Image.LANCZOS)
+        else:
+            im = trim_and_fit(p, args.max_dim)
+        im.save(outdir / "sprites" / f"{name}.png")   # also keep standalone sprites
         imgs.append((name, im))
 
-    sizes = [im.size for _, im in imgs]
-    placements, aw, ah = shelf_pack(sizes, args.atlas_width)
-    aw = min(aw, max((x + im.size[0]) for (x, _), (_, im) in zip(placements, imgs)))
+    if args.cell:
+        cell = args.cell
+        cols = args.cols or math.ceil(math.sqrt(len(imgs)))
+        rows = math.ceil(len(imgs) / cols)
+        placements = [((i % cols) * (cell + PAD), (i // cols) * (cell + PAD)) for i in range(len(imgs))]
+        aw, ah = cols * cell + (cols - 1) * PAD, rows * cell + (rows - 1) * PAD
+    else:
+        placements, _, ah = shelf_pack([im.size for _, im in imgs], args.atlas_width)
+        aw = max((x + im.size[0]) for (x, _), (_, im) in zip(placements, imgs))
 
     atlas = Image.new("RGBA", (aw, ah), (0, 0, 0, 0))
     descr = {"frames": {}, "meta": {"app": "asset-harness", "image": f"{args.name}.png",

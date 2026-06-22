@@ -1,10 +1,12 @@
 # Track: 2d
 
-**Status:** 🟡 in progress — generate→atlas pipeline working end-to-end on the clean stack.
-Discovery complete; [single sprite](findings/2026-06-21-dwa-hauler-zimage-controlnet.md) and a
-[style-coherent fleet + Phaser atlas](findings/2026-06-21-fleet-style-anchor-and-atlas.md)
-validated (Z-Image + Fun ControlNet + BiRefNet, all Apache/MIT, on `ai2` gfx1201). Remaining:
-preserve inter-ship scale, station/base modules, and the (DWA-side) in-game import.
+**Status:** 🟢 generate→atlas pipeline working end-to-end on the clean stack (Z-Image + Fun
+ControlNet + BiRefNet, all Apache/MIT, on `ai2` gfx1201). Validated:
+[single sprite](findings/2026-06-21-dwa-hauler-zimage-controlnet.md),
+[style-coherent fleet + atlas](findings/2026-06-21-fleet-style-anchor-and-atlas.md), and a
+[grid/slot station-module kit](findings/2026-06-21-station-modules-grid-kit.md) whose ports
+tile. The hauler now renders **in-game in DWA**. Remaining polish: data-driven port/rotation
+manifest, more module types, and the DWA-side composed-base render.
 
 ## Purpose
 
