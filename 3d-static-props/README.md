@@ -15,8 +15,16 @@ clean (MIT) 2.5D path; a clean full-object path still needs TripoSR's env fixed 
 **Cleanup + real use (2026-06-22, [findings](findings/2026-06-22-blender-cleanup-and-moge-terrain.md)):**
 Blender 4.0.2 on `ai2` (driven over SSH; `blender_decimate.py`) decimates raw meshes to game LODs
 with textures kept (terrain 2.04M→102k faces). **MoGe put to real use on terrain:** a Z-Image
-canyon concept → MoGe relief → decimated heightmesh — a usable terrain-from-one-image path
-(MIT+Apache). Remaining: texture downscale (glb is now texture-bound), and a Sounding-side import.
+canyon concept → MoGe relief → decimated heightmesh. **But** the MoGe terrain mesh is a degenerate
+stretched sliver (deep oblique input → screen-space stretch) — MoGe suits **near/shallow props**
+(the crate), not open terrain.
+
+**Heightmap-displacement terrain (2026-06-22, the clean terrain path,
+[findings](findings/2026-06-22-heightmap-displacement-terrain.md)):** Z-Image top-down albedo →
+`make_heightmap.py` (smooth macro relief) → `blender_displace.py` (grid + DISPLACE + albedo) →
+**clean 40k-tri textured terrain glb**, no stretch. The right tool for terrain; quality lever is the
+heightmap source (luminance now; pluggable for a dedicated heightmap / MoGe-depth). Remaining:
+swap this into the Sounding `-- terrainmesh` import (branch holds the bad MoGe mesh), texture downscale.
 
 ## Purpose
 
