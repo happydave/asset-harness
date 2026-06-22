@@ -1,0 +1,30 @@
+{
+  "seed": 424242,
+  "size": 1024,
+  "materials": [
+    {
+      "name": "hull_panel",
+      "metal": 0.85,
+      "prompt": "seamless tileable PBR base color texture, flat even diffuse lighting, no shadows, no specular highlights, top-down orthographic, photoscan albedo, ultra detailed, weathered spacecraft hull metal panel, scuffed gunmetal-grey paint with rust-orange streaks, rivets and recessed panel seams",
+      "maps": {
+        "albedo": "hull_panel_albedo.png",
+        "normal": "hull_panel_normal.png",
+        "metallic_roughness": "hull_panel_metallic_roughness.png",
+        "occlusion": "hull_panel_occlusion.png",
+        "height": "hull_panel_height.png"
+      }
+    },
+    {
+      "name": "rocky_ground",
+      "metal": 0.0,
+      "prompt": "seamless tileable PBR base color texture, flat even diffuse lighting, no shadows, no specular highlights, top-down orthographic, photoscan albedo, ultra detailed, rocky planetary ground, cracked dry greyish regolith with scattered pebbles and fine dust, natural",
+      "maps": {
+        "albedo": "rocky_ground_albedo.png",
+        "normal": "rocky_ground_normal.png",
+        "metallic_roughness": "rocky_ground_metallic_roughness.png",
+        "occlusion": "rocky_ground_occlusion.png",
+        "height": "rocky_ground_height.png"
+      }
+    }
+  ]
+}

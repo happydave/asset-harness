@@ -1,6 +1,9 @@
 # Track: pbr-materials
 
-**Status:** ⚪ not started
+**Status:** 🟡 pipeline working — Z-Image albedo (`ai2`) + local clean derivation →
+Bevy-ready sets. See [discover.md](discover.md) and the
+[hull + ground findings](findings/2026-06-22-pbr-hull-and-ground.md). In-engine (Sounding)
+verification pending.
 
 ## Purpose
 
