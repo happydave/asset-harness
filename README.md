@@ -27,7 +27,7 @@ API-JSON).
 |-------|---------|--------|
 | [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟢 ships + station kit; in-game |
 | [pbr-materials](pbr-materials/) | Base color → normal / roughness / AO maps | 🟡 hull + ground; Bevy-ready |
-| [3d-static-props](3d-static-props/) | Image-to-3D textured meshes → cleanup → glTF | 🟡 discovery; awaiting model + ROCm test |
+| [3d-static-props](3d-static-props/) | Image-to-3D textured meshes → cleanup → glTF | 🟡 MoGe runs on AMD (MIT, 2.5D); TripoSR env-blocked |
 | [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | ⚪ not started |
 | [vfx](vfx/) | AI base particle textures + engine particle systems | ⚪ not started |
 | [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig (deferred) | ⚪ not started |

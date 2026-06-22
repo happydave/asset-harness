@@ -2,7 +2,9 @@
 
 **Date:** 2026-06-22
 **Track:** 3d-static-props
-**Verdict:** blocked — node packs installed, **model weights absent**; **ROCm still untested**.
+**Verdict:** **MoGe ✅ runs on gfx1201 — first working local 3D on AMD (clean MIT; 2.5D relief).**
+TripoSR blocked on a Flowty node↔model version mismatch (env, *not* ROCm). Hunyuan landed under
+the wrong loader path. (Run 1 below was pre-install; Run 2 is post-install.)
 
 ## Goal
 
@@ -33,16 +35,35 @@ TripoSR weights are not present.
 **Fix:** place `moge_2_vitl_normal_fp16.safetensors` in the MoGe model folder the node scans
 (e.g. `ComfyUI/models/MoGe/`). Restart ComfyUI.
 
-## Status of the three local 3D paths
+## Status of the three local 3D paths (after weights installed)
 
-| Model | Nodes on `ai2` | Weights on `ai2` | ROCm (gfx1201) | License |
+| Model | Nodes | Weights | ROCm (gfx1201) | License |
 |---|---|---|---|---|
-| Hunyuan3D 2.0 | ✅ | ❌ (`hunyuan3d-dit-v2_fp16` → checkpoints/) | untested | Tencent (restricted) |
-| TripoSR | ✅ | ❌ (`model.ckpt` → checkpoints/) | untested | MIT ✅ |
-| MoGe | ✅ | ❌ (`moge_2_vitl_normal_fp16` → MoGe/) | untested | MIT ✅ |
+| **MoGe** | ✅ | ✅ `geometry_estimation/` | **✅ runs** | MIT ✅ |
+| TripoSR | ✅ | ✅ `checkpoints/TripoSR-model.ckpt` | ❌ blocked **before** GPU (version mismatch) | MIT ✅ |
+| Hunyuan3D 2.0 | ✅ | ⚠️ in `diffusion_models/` (wrong loader) | untested | Tencent (restricted) |
 
-All harnesses are written and correct against the node schemas; **each is one model-file away from
-the real ROCm test.**
+## Run 2 — weights installed (2026-06-22)
+
+- **MoGe ✅** — `run_moge.py` succeeded on the crate. Output: a **textured 2.5D relief mesh**
+  (`moge_00001_.glb`, ~25 MB, 1 mesh, **563,686 verts / 1,123,370 tris**, 1 image + 1 material).
+  The normal render (`samples-2026-06-22/moge_crate_normal.png`) clearly reconstructs the crate's
+  visible faces/latches/handle + the white background as a flat ground plane. **This is the first
+  3D generation confirmed running on `ai2`'s gfx1201 (ROCm).** Caveats: it's **single-view** (no
+  back face — a heightfield from the camera; great for terrain/backdrops, partial for a discrete
+  prop) and **very high-poly** → needs aggressive decimation (+ ground-plane crop) before Bevy.
+- **TripoSR ❌** — model file now loads, but `load_state_dict` fails: the ckpt uses HF-ViT keys
+  (`image_tokenizer.model.encoder.layer.N.attention.attention.query…`) while the Flowty node's TSR
+  code expects `image_tokenizer.model.layers.N.attention.q_proj…`. A **node/model/transformers
+  version mismatch in the Flowty stack on `ai2`** — fails *before* any GPU compute, so it's an env
+  fix (align the `ComfyUI-Flowty-TripoSR` revision / `transformers` / model revision), not ROCm.
+- **Hunyuan3D** — the file is `diffusion_models/hunyuan3d-dit-v2-0-fp16.safetensors`, but the
+  image-to-3D template's `ImageOnlyCheckpointLoader` scans `checkpoints/`. Different loader/path;
+  deprioritized given the license. (Would need the right loader or a checkpoints/ copy.)
+
+**Net:** ROCm *can* run 3D geometry nets on gfx1201 (MoGe proves it) — encouraging for TripoSR/
+Hunyuan once their env issues are sorted. We now have **one working clean (MIT) local 3D path**
+(MoGe, 2.5D). A full-object clean path still wants TripoSR's env fixed, or TRELLIS on the NVIDIA box.
 
 ## Next
 

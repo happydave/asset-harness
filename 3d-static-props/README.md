@@ -5,10 +5,12 @@ Hunyuan3D 2.0 (native ComfyUI, harness ready) is high-quality but **Tencent Comm
 **Clean plan, routed by hardware:** TripoSR (MIT) on `ai2` first (low friction, best ROCm odds);
 TRELLIS.2 (MIT, hero quality) on the NVIDIA workstation (CUDA-heavy, AMD-hostile).
 
-TripoSR + MoGe **nodes** are now installed on `ai2`, but their **model weights are missing**
-(see [findings](findings/2026-06-22-triposr-moge-test.md)) — harnesses (`run_triposr.py`,
-`run_moge.py`, `run_hunyuan3d.py`) are ready; each is one model file away from the real ROCm test.
-**ROCm remains untested** for all three.
+**ROCm result (2026-06-22, see [findings](findings/2026-06-22-triposr-moge-test.md)):**
+**MoGe ✅ runs on gfx1201** — first working local 3D on AMD (clean MIT), a textured **2.5D relief**
+(single-view, very high-poly → needs decimation; good for terrain/backdrops). **TripoSR ❌** is
+blocked *before* the GPU by a Flowty node↔model `state_dict` version mismatch (env fix, not ROCm).
+Hunyuan3D weights landed under the wrong loader path (deprioritized — license). So: one working
+clean (MIT) 2.5D path; a clean full-object path still needs TripoSR's env fixed or TRELLIS on NVIDIA.
 
 ## Purpose
 
