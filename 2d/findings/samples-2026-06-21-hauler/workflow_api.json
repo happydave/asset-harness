@@ -1,0 +1,242 @@
+{
+  "1": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "top-down orthographic game sprite of an industrial space cargo hauler, armored greebled hull, side cargo pods, three engine nozzles with faint glow, weathered painted metal, clean readable silhouette, centered, isolated on a plain solid white background, soft even studio lighting, crisp detail, high quality concept art",
+      "clip": [
+        "1",
+        0
+      ]
+    }
+  },
+  "3": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "2",
+        0
+      ]
+    }
+  },
+  "4": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "5": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "shift": 3.0
+    }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "7": {
+    "class_type": "ModelPatchLoader",
+    "inputs": {
+      "name": "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2602-8steps.safetensors"
+    }
+  },
+  "8": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "hauler_primitive.png"
+    }
+  },
+  "9": {
+    "class_type": "ImageScaleToMaxDimension",
+    "inputs": {
+      "image": [
+        "8",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "largest_size": 1024
+    }
+  },
+  "10": {
+    "class_type": "Canny",
+    "inputs": {
+      "image": [
+        "9",
+        0
+      ],
+      "low_threshold": 0.1,
+      "high_threshold": 0.32
+    }
+  },
+  "11": {
+    "class_type": "QwenImageDiffsynthControlnet",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "model_patch": [
+        "7",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ],
+      "image": [
+        "10",
+        0
+      ],
+      "strength": 0.85
+    }
+  },
+  "12": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "9",
+        0
+      ]
+    }
+  },
+  "13": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": [
+        "12",
+        0
+      ],
+      "height": [
+        "12",
+        1
+      ],
+      "batch_size": 1
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "seed": 729703840979498,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "3",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "denoise": 1.0
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "LoadBackgroundRemovalModel",
+    "inputs": {
+      "bg_removal_name": "BiRefNet-HR-matting.safetensors"
+    }
+  },
+  "17": {
+    "class_type": "RemoveBackground",
+    "inputs": {
+      "image": [
+        "15",
+        0
+      ],
+      "bg_removal_model": [
+        "16",
+        0
+      ]
+    }
+  },
+  "22": {
+    "class_type": "InvertMask",
+    "inputs": {
+      "mask": [
+        "17",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {
+      "image": [
+        "15",
+        0
+      ],
+      "alpha": [
+        "22",
+        0
+      ]
+    }
+  },
+  "19": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "18",
+        0
+      ],
+      "filename_prefix": "asset_harness/hauler_rgba"
+    }
+  },
+  "20": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "filename_prefix": "asset_harness/hauler_opaque"
+    }
+  },
+  "21": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "asset_harness/hauler_canny"
+    }
+  }
+}

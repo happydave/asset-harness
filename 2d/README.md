@@ -1,6 +1,8 @@
 # Track: 2d
 
-**Status:** 🟡 discovery
+**Status:** 🟡 in progress — discovery complete; first end-to-end prototype validated
+([findings](findings/2026-06-21-dwa-hauler-zimage-controlnet.md): Z-Image + Fun ControlNet +
+BiRefNet alpha, all Apache/MIT, running on `ai2` gfx1201).
 
 ## Purpose
 

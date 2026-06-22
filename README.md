@@ -25,7 +25,7 @@ API-JSON).
 
 | Track | Purpose | Status |
 |-------|---------|--------|
-| [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟡 discovery |
+| [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟡 prototype validated |
 | [pbr-materials](pbr-materials/) | Base color → normal / roughness / AO maps | ⚪ not started |
 | [3d-static-props](3d-static-props/) | Image-to-3D textured meshes → cleanup → glTF | ⚪ not started |
 | [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | ⚪ not started |

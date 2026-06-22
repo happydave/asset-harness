@@ -109,10 +109,15 @@ jurisdictions (e.g. US) — that affects whether you can *claim* the output, not
   all absent). Likely needs a **ComfyUI restart**, or the pack failed to import (commonly missing
   `onnxruntime`/`mediapipe`). Needed only for Depth/Pose/HED — **not** a blocker for a Canny-based
   first prototype. `Confirmed` gap.
-- **Background removal — node present, NO model installed.** `LoadBackgroundRemovalModel` exists
-  but its model list is empty. Install a **permissively-licensed** matting model — **BiRefNet
-  (MIT)** or **U2Net** — and avoid **BRIA RMBG-1.4/2.0 (non-commercial)** to keep the clean lane.
-  (Matting only masks your own output, but use a permissive model anyway to remove all doubt.)
+- **Background removal — node present, NO model installed.** ComfyUI's **native** nodes are on
+  `ai2` (`LoadBackgroundRemovalModel` + `RemoveBackground`); only a model file is missing. The
+  `Bria*`/`Recraft*` siblings are paid **partner API** nodes — skip. The stale standalone
+  BiRefNet node wrapper is a red herring. **Decision: use a BiRefNet (MIT) model** — actively
+  maintained (`BiRefNet_dynamic` Mar 2025, `BiRefNet_HR-matting` Feb 2025; matting variant gives
+  better soft edges for thin sprite features). Install via either (a) the native loader's model
+  folder, or (b) the actively-maintained **ComfyUI-RMBG** pack (1038lab, v3.0.0 Jan 2026, pack
+  code MIT) selecting BiRefNet. **Avoid the BRIA RMBG-2.0 model (CC BY-NC, non-commercial)**
+  despite the pack name. Do **not** build our own — solved commodity. `Confirmed`.
 - **IPAdapter / style-reference — skip** (as decided): immature for Z-Image; use prompt preamble
   + fixed sampler/seed + img2img reference instead.
 - **Seamless tiling** (textures) — still to confirm; lower priority than sprites.
@@ -157,7 +162,7 @@ asset generation.)
 ## Open Questions
 
 - Why is `comfyui_controlnet_aux` not registering — restart ComfyUI, then check console import errors.
-- Which permissive bg-removal model to standardize on (BiRefNet MIT vs U2Net).
+- *(Resolved:)* bg-removal model = **BiRefNet (MIT)**, via native node or ComfyUI-RMBG; avoid BRIA RMBG-2.0.
 - Does the Z-Image ControlNet run cleanly on `ai2` (gfx1201) — confirm during the first prototype.
 - Candle support status for Z-Image + its ControlNet (foundry relevance).
 - *(Resolved/moot:)* `StylizedTexture_ZIT` / `zimageTurboBadmilk` licenses — not used (Z-Image-only).
