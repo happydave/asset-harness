@@ -1,6 +1,9 @@
 # Track: 3d-static-props
 
-**Status:** ⚪ not started
+**Status:** 🟡 discovery done; harness ready — **gated on a model install + a ROCm test**.
+Local path = Hunyuan3D 2.0 (native ComfyUI); see [discover.md](discover.md). ⚠️ Hunyuan3D is the
+**Tencent Community License** (not Apache) — 3D breaks the clean lane; TRELLIS/TripoSR (MIT) are
+the permissive alternatives.
 
 ## Purpose
 
