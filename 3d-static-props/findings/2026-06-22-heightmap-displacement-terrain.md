@@ -44,6 +44,19 @@ Knobs: `--macro`/`--blur` (relief scale/smoothness), `strength`/`size`/`subdiv` 
   more accurate relief, plug in a **dedicated Z-Image grayscale heightmap** or a **MoGe top-down
   depth** map into the same `blender_displace.py` step (it doesn't care where the heightmap came from).
 
+## Upgrade (validated) — MoGe top-down depth as the heightmap source
+
+Luminance-as-height is "lumpy but clean." The far better, **albedo-aligned** source is **MoGe's
+top-down depth**: run MoGe on the *same* top-down albedo, render `MoGeRender(output="depth")`, then
+`make_heightmap.py --highpass 90` (subtract a blur to drop the camera near/far tilt, keep local
+relief) → displace. MoGe top-down is its **good case** (shallow, bounded depth — none of the deep-
+scene stretch), and we take only the **depth raster**, so the mesh is still a clean regular grid.
+
+Result (`samples-2026-06-22/terrain_moge_*`): realistic eroded ridge-and-valley terrain that
+*matches* the satellite texture — a clear step up from luminance. **This is the recommended terrain
+recipe:** Z-Image top-down albedo → MoGe depth → `--highpass` heightmap → `blender_displace.py`.
+(Best of both: MoGe's real geometry + displacement's clean topology.)
+
 ## Next
 
 - Swap this good terrain glb into the Sounding `-- terrainmesh` import (the branch currently holds
