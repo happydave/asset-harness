@@ -3,8 +3,12 @@
 **Status:** 🟡 discovery done; see [discover.md](discover.md). ⚠️ 3D breaks the clean lane —
 Hunyuan3D 2.0 (native ComfyUI, harness ready) is high-quality but **Tencent Community License**.
 **Clean plan, routed by hardware:** TripoSR (MIT) on `ai2` first (low friction, best ROCm odds);
-TRELLIS.2 (MIT, hero quality) on the NVIDIA workstation (CUDA-heavy, AMD-hostile). All **gated on
-installs + a ROCm test**.
+TRELLIS.2 (MIT, hero quality) on the NVIDIA workstation (CUDA-heavy, AMD-hostile).
+
+TripoSR + MoGe **nodes** are now installed on `ai2`, but their **model weights are missing**
+(see [findings](findings/2026-06-22-triposr-moge-test.md)) — harnesses (`run_triposr.py`,
+`run_moge.py`, `run_hunyuan3d.py`) are ready; each is one model file away from the real ROCm test.
+**ROCm remains untested** for all three.
 
 ## Purpose
 
