@@ -1,0 +1,114 @@
+{
+  "frames": {
+    "iron": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 249,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 249,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 249,
+        "h": 256
+      }
+    },
+    "ice": {
+      "frame": {
+        "x": 251,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "silicates": {
+      "frame": {
+        "x": 509,
+        "y": 0,
+        "w": 256,
+        "h": 243
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 243
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 243
+      }
+    },
+    "rare-metals": {
+      "frame": {
+        "x": 0,
+        "y": 258,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "unknown": {
+      "frame": {
+        "x": 258,
+        "y": 258,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    }
+  },
+  "meta": {
+    "app": "asset-harness",
+    "image": "dwa_asteroids.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 765,
+      "h": 514
+    },
+    "scale": 1
+  }
+}
