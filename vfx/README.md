@@ -1,6 +1,9 @@
 # Track: vfx
 
-**Status:** ⚪ not started
+**Status:** 🟡 thruster flames prototyped — Z-Image emissive sprites on black (additive + RGBA)
+for engine particle systems; see [discover.md](discover.md) and the
+[thruster-flames findings](findings/2026-06-22-thruster-flames.md). VFX motion stays in the engine
+(`bevy_hanabi` / Phaser); the harness makes the textures. All Apache (clean).
 
 ## Purpose
 

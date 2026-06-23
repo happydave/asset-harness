@@ -29,7 +29,7 @@ API-JSON).
 | [pbr-materials](pbr-materials/) | Base color → normal / roughness / AO maps | 🟡 hull + ground; Bevy-ready |
 | [3d-static-props](3d-static-props/) | Image-to-3D meshes + heightmap terrain → cleanup → glTF | 🟡 heightmap-displacement terrain (clean); MoGe=props; TripoSR env-blocked |
 | [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | ⚪ not started |
-| [vfx](vfx/) | AI base particle textures + engine particle systems | ⚪ not started |
+| [vfx](vfx/) | AI base particle textures + engine particle systems | 🟡 thruster flame sprites (plume/puff/spark) |
 | [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig (deferred) | ⚪ not started |
 
 Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
