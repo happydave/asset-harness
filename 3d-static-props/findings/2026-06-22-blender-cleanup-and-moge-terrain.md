@@ -46,10 +46,25 @@ ground/LOD/backdrop use MoGe fits.
   the texture for game use (a follow-up). Ground-plane separation (for discrete props like the
   crate) is still manual.
 
+## Texture downscale / game-ready optimize (`blender_optimize.py`)
+
+A final optimize pass: downscale embedded textures to a max dimension + re-encode the glb's images
+as **JPEG**, with an **optional decimate** in the same pass. On the MoGe-depth terrain:
+
+| Pass | tris | tex | size |
+|---|---|---|---|
+| raw | 131k | 1024 PNG | 5.9 MB |
+| texture only (512/JPEG) | 131k | 512 JPEG | 3.6 MB |
+| **game (decimate 0.3 + 512/JPEG)** | **39k** | 512 JPEG | **0.91 MB** |
+
+~6.5× smaller with no visible quality loss at scene scale (`samples-2026-06-22/terrain_game.glb`,
+`terrain_optimized_oblique.png`). JPEG is fine for **opaque base-color** assets (terrain/props) and
+Bevy-safe; for alpha assets keep PNG/`AUTO`. KTX2/Basis (GPU-compressed runtime textures) is the
+future step.
+
 ## Next
 
-- Texture downscale/compression in the cleanup step (KTX2/lower-res) — the glb size is now texture-
-  bound, not geometry-bound.
+- KTX2/Basis textures for runtime VRAM (toktx/basisu — tooling install needed).
 - Import a MoGe terrain chunk into **Sounding** and view (Sounding-side work item; Bevy loads glb
   natively — note MoGe's +Y-up / scale).
 - Full-object clean props still blocked: TripoSR Flowty node is single nightly build with a
