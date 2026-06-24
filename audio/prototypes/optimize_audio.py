@@ -75,13 +75,14 @@ def process(src: Path, out_dir: Path, *, loop: bool, lufs: float, cross: float, 
         )
         _run(["-i", str(norm), "-filter_complex", fc, "-map", "[out]", *rate, str(tmp)])
     else:
-        # one-shot: strip true silence both ends (-60 dB keeps the decay tail), short fade-out.
-        fstart = max(0.0, d - fade)
+        # one-shot: strip true silence both ends (-60 dB keeps the decay tail). Optional short
+        # fade-out (fade=0 keeps the clip ending hot, e.g. an ignition that blends into a loop).
         af = ("silenceremove=start_periods=1:start_silence=0.05:start_threshold=-60dB:"
               "detection=peak,areverse,"
               "silenceremove=start_periods=1:start_silence=0.05:start_threshold=-60dB:"
-              "detection=peak,areverse,"
-              f"afade=t=out:st={fstart:.4f}:d={fade}")
+              "detection=peak,areverse")
+        if fade > 0:
+            af += f",afade=t=out:st={max(0.0, d - fade):.4f}:d={fade}"
         _run(["-i", str(norm), "-af", af, *rate, str(tmp)])
 
     ogg, wav_out = _encode(tmp, out_dir, name)

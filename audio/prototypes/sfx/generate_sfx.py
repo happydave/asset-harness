@@ -39,6 +39,17 @@ SFX = [
      "prompt": "Spaceship engine thruster burn, steady low-frequency rumble layered with a "
                "continuous hiss of high-pressure plasma, smooth and sustained, no transients, "
                "interior-exterior hybrid perspective."},
+    # Start/stop transients share the loop's engine language (low rumble + plasma hiss) for
+    # cohesion, and layer over the loop bed in-engine. `thruster_start` must end hot (post with
+    # --fade 0) so it blends into the loop; `thruster_stop` keeps its natural decay.
+    {"name": "thruster_start", "seconds": 2.0, "seed": 105, "loop": False, "lufs": -16,
+     "prompt": "Spaceship engine ignition, a pressurized whoosh and deep low-end thump spooling up "
+               "into a steady low-frequency rumble with high-pressure plasma hiss, building to a "
+               "sustained burn, close exterior perspective."},
+    {"name": "thruster_stop", "seconds": 2.0, "seed": 106, "loop": False, "lufs": -16,
+     "prompt": "Spaceship engine shutdown, a steady low-frequency rumble and plasma hiss cutting "
+               "out into a descending hiss and a soft mechanical decay, dying away, close exterior "
+               "perspective."},
     {"name": "impact_metal", "seconds": 2.0, "seed": 103, "loop": False, "lufs": -14,
      "prompt": "Heavy metal-on-metal collision impact, deep bass thud with a sharp metallic clang "
                "and a short ringing decay, dry, close perspective."},
