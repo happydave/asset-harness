@@ -1,0 +1,56 @@
+{
+  "frame": "+Y up, +Z forward, +X lateral(axle); metres; glTF Y-up",
+  "cell_size": 0.5,
+  "reference_cell": 0.5,
+  "parts": {
+    "tire": {
+      "file": "tire.glb",
+      "material": "rubber",
+      "origin": "hub centre",
+      "orientation": "+X axle; disc in YZ (rolls +Z)",
+      "verts": 192
+    },
+    "rim": {
+      "file": "rim.glb",
+      "material": "metal",
+      "origin": "hub centre",
+      "orientation": "+X axle",
+      "verts": 256
+    },
+    "suspension": {
+      "file": "suspension.glb",
+      "material": "metal_dark",
+      "origin": "axle (bottom)",
+      "orientation": "strut along +Y to chassis plate",
+      "verts": 152
+    },
+    "seat": {
+      "file": "seat.glb",
+      "material": "fabric",
+      "origin": "base centre",
+      "orientation": "faces +Z, up +Y",
+      "verts": 48
+    },
+    "antenna": {
+      "file": "antenna.glb",
+      "material": "metal",
+      "origin": "base",
+      "orientation": "mast along +Y",
+      "verts": 610
+    },
+    "solar_panel": {
+      "file": "solar_panel.glb",
+      "material": "solar_glass",
+      "origin": "base centre",
+      "orientation": "panel in XZ, normal +Y",
+      "verts": 80
+    },
+    "bumper": {
+      "file": "bumper.glb",
+      "material": "metal_dark",
+      "origin": "mount centre",
+      "orientation": "long axis +X, front +Z",
+      "verts": 56
+    }
+  }
+}
