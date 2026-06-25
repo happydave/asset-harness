@@ -42,10 +42,20 @@ Clean: Z-Image (Apache) for the albedo; the rest is deterministic local PIL deri
 - Deterministic (fixed Z-Image seeds; PIL derivation). part→material→UV-scale map lives in
   `blender_texture_parts.py`.
 
+## Update 2026-06-25 — cylindrical unwrap for the wheels
+
+The revolved parts now use a **cylindrical** unwrap about their axle (X) instead of smart-project:
+`blender_texture_parts.py:cylindrical_uv` computes per-vertex `u = angle (0..1)`, `v = along-axis`,
+with a seam fix for faces crossing the atan2 wrap; tiling is per-axis via the Mapping node (tire
+`8×1`, rim `5×1`). Result (see [`samples-2026-06-24/wheel_unwrap_compare.png`](samples-2026-06-24/wheel_unwrap_compare.png)):
+the **tire tread now wraps the rolling circumference** and the **rim reads as turned/machined metal**
+— a clear lift over the flat smart-project mapping. The flat caps (sidewall/hub) get a radial mapping
+(reads as turned metal / radial sidewall — acceptable). Manifest records `uv_unwrap` per part.
+
 ## Next
 
-- **UV quality:** smart-project is generic; revolved parts (tire/rim) would read better with a
-  cylindrical unwrap so the tread/brush aligns with the axle.
+- **Flat caps:** a separate planar projection for the tire sidewall / rim face would remove the
+  residual radial smear (multi-projection per part) — diminishing returns for now.
 - **Decals/greebles** (panel lines, warning marks) as a second texture layer for variety.
 - Trim embed size (128 px or shared external textures) if repo weight matters.
 - Rocket-domain catalog reuses both scripts.

@@ -2,12 +2,18 @@
 """Skin the v1 rover parts with AI PBR materials (the "AI surface" half of mechanical-kit). Headless
 on `ai2`:  blender --background --python blender_texture_parts.py -- --in DIR --materials DIR --out DIR
 
-Per part: import the v1 glb (geometry/orientation/origin already correct), smart-UV-unwrap, bind a
+Per part: import the v1 glb (geometry/orientation/origin already correct), UV-unwrap, bind a
 Principled material from the pbr-materials map set (albedo + tangent normal + packed metallic-
 roughness, Bevy convention G=rough/B=metal), tile via a Mapping scale, and re-export a textured glb.
 Embedded textures are downscaled to 256 px (parts are small) to keep glbs lean.
+
+Revolved parts (tire/rim) get a **cylindrical** unwrap about their axle so the tread wraps
+circumferentially and the brushed grain follows the surface; the rest use smart-project. The
+cylindrical unwrap is computed per-vertex (deterministic, view-independent — `uv.cylinder_project`
+is viewport-dependent and unreliable headless): u = angle about the axis (0..1), v = position along
+it; per-axis tiling comes from the Mapping node (sx around, sy along).
 """
-import bpy, sys, math
+import bpy, bmesh, sys, math
 from pathlib import Path
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -17,12 +23,39 @@ MATS = Path(arg("--materials", "/tmp/mk_materials"))
 OUT = Path(arg("--out", "/tmp/mk_parts_tex")); OUT.mkdir(parents=True, exist_ok=True)
 TEX = 256  # embedded texture size
 
-# part -> (material set, UV tiling scale)
+# part -> material set, unwrap method, (and axis for cyl), tiling (sx around, sy along)
 SKIN = {
-    "tire": ("rubber", 4.0), "rim": ("metal_panel", 3.0), "suspension": ("metal_panel", 3.0),
-    "seat": ("seat_fabric", 2.0), "antenna": ("metal_panel", 2.0),
-    "solar_panel": ("solar_cells", 2.0), "bumper": ("metal_panel", 3.0),
+    "tire": dict(mat="rubber", uw="cyl", axis="X", sx=8.0, sy=1.0),
+    "rim": dict(mat="metal_panel", uw="cyl", axis="X", sx=5.0, sy=1.0),
+    "suspension": dict(mat="metal_panel", uw="smart", sx=3.0, sy=3.0),
+    "seat": dict(mat="seat_fabric", uw="smart", sx=2.0, sy=2.0),
+    "antenna": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
+    "solar_panel": dict(mat="solar_cells", uw="smart", sx=2.0, sy=2.0),
+    "bumper": dict(mat="metal_panel", uw="smart", sx=3.0, sy=3.0),
 }
+
+
+def cylindrical_uv(obj, axis):
+    """Per-vertex cylindrical unwrap about `axis` (object-local). u = angle (0..1), v = along-axis."""
+    ai = {"X": 0, "Y": 1, "Z": 2}[axis]
+    p0, p1 = [i for i in (0, 1, 2) if i != ai]   # the two perpendicular axes
+    me = obj.data
+    bm = bmesh.new(); bm.from_mesh(me)
+    uvl = bm.loops.layers.uv.verify()
+    amin = min(v.co[ai] for v in bm.verts)
+    alen = max(max(v.co[ai] for v in bm.verts) - amin, 1e-6)
+    for face in bm.faces:
+        us = []
+        for loop in face.loops:
+            co = loop.vert.co
+            u = math.atan2(co[p1], co[p0]) / (2 * math.pi) + 0.5   # 0..1 around the axle
+            loop[uvl].uv = (u, (co[ai] - amin) / alen)
+            us.append(u)
+        if max(us) - min(us) > 0.5:                # face straddles the atan2 seam — make it continuous
+            for loop in face.loops:
+                if loop[uvl].uv.x < 0.5:
+                    loop[uvl].uv.x += 1.0
+    bm.to_mesh(me); bm.free()
 
 
 def load_img(path, non_color):
@@ -32,12 +65,12 @@ def load_img(path, non_color):
     return img
 
 
-def make_material(mat_name, mat_dir, base, scale):
+def make_material(mat_name, mat_dir, base, sx, sy):
     m = bpy.data.materials.new(mat_name); m.use_nodes = True
     nt = m.node_tree; nodes, links = nt.nodes, nt.links
     bsdf = nodes.get("Principled BSDF")
     tc = nodes.new('ShaderNodeTexCoord')
-    mp = nodes.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (scale, scale, scale)
+    mp = nodes.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (sx, sy, 1.0)
     links.new(tc.outputs['UV'], mp.inputs['Vector'])
 
     alb = nodes.new('ShaderNodeTexImage'); alb.image = load_img(mat_dir / f"{base}_albedo.png", False)
@@ -62,7 +95,8 @@ def main():
         part = glb.stem
         if part not in SKIN:
             continue
-        mat_name, scale = SKIN[part]
+        sk = SKIN[part]
+        mat_name = sk["mat"]
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.ops.import_scene.gltf(filepath=str(glb))
         meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
@@ -75,17 +109,20 @@ def main():
             bpy.ops.object.join()
         obj = bpy.context.active_object
 
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_all(action='SELECT')
-        bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
-        bpy.ops.object.mode_set(mode='OBJECT')
+        if sk["uw"] == "cyl":
+            cylindrical_uv(obj, sk["axis"])
+        else:
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
+            bpy.ops.object.mode_set(mode='OBJECT')
 
-        m = make_material(f"{part}_mat", MATS / mat_name, mat_name, scale)
+        m = make_material(f"{part}_mat", MATS / mat_name, mat_name, sk["sx"], sk["sy"])
         obj.data.materials.clear(); obj.data.materials.append(m)
 
         bpy.ops.export_scene.gltf(filepath=str(OUT / f"{part}.glb"), export_format='GLB',
                                   use_selection=True)
-        print(f"skinned {part} with {mat_name} (uv x{scale})")
+        print(f"skinned {part} with {mat_name} ({sk['uw']} uv {sk['sx']}x{sk['sy']})")
 
 
 if __name__ == "__main__":

@@ -14,7 +14,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "cylindrical (axle X)"
     },
     "rim": {
       "file": "rim.glb",
@@ -27,7 +28,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "cylindrical (axle X)"
     },
     "suspension": {
       "file": "suspension.glb",
@@ -40,7 +42,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "smart"
     },
     "seat": {
       "file": "seat.glb",
@@ -53,7 +56,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "smart"
     },
     "antenna": {
       "file": "antenna.glb",
@@ -66,7 +70,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "smart"
     },
     "solar_panel": {
       "file": "solar_panel.glb",
@@ -79,7 +84,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "smart"
     },
     "bumper": {
       "file": "bumper.glb",
@@ -92,7 +98,8 @@
         "albedo",
         "normal",
         "metallic_roughness"
-      ]
+      ],
+      "uv_unwrap": "smart"
     }
   },
   "textured": true,
