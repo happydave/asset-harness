@@ -28,7 +28,7 @@ API-JSON).
 | [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟢 ships + station kit; in-game |
 | [pbr-materials](pbr-materials/) | Base color → normal / roughness / AO maps | 🟡 hull + ground; Bevy-ready |
 | [3d-static-props](3d-static-props/) | Image-to-3D meshes + heightmap terrain → cleanup → glTF | 🟡 heightmap-displacement terrain (clean); MoGe=props; TripoSR env-blocked |
-| [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | 🟡 rover part catalog v1 (7 glb in `parts/`, mount-at-origin) for Sounding WI 608; AI surfaces next |
+| [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | 🟡 rover part catalog (7 AI-textured glb in `parts/`, mount-at-origin) for Sounding WI 608; rocket parts next |
 | [vfx](vfx/) | AI base particle textures + engine particle systems | 🟡 thruster flame sprites (plume/puff/spark) |
 | [audio](audio/) | Generated SFX + music/ambient → ffmpeg post → engine | 🟢 SFX (Stable Audio 3) + ambient music (ACE-Step) → ffmpeg loop post; thruster set in DWA |
 | [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig (deferred) | ⚪ not started |

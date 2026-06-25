@@ -1,9 +1,10 @@
 # Track: mechanical-kit
 
-**Status:** 🟡 rover part catalog **v1** in [`parts/`](parts/) (7 glb + manifest, mount-at-origin,
-metres, Y-up) for Sounding WI 608 — see [discover.md](discover.md) and the
-[catalog findings](findings/2026-06-24-rover-part-catalog.md). Approach confirmed (parametric Blender
-shape + AI surface). Next: AI-textured surfaces (pbr-materials) + the rocket-domain catalog.
+**Status:** 🟡 rover part catalog in [`parts/`](parts/) (7 **AI-textured** glb + manifest,
+mount-at-origin, metres, Y-up) for Sounding WI 608 — parametric Blender shape + AI PBR surfaces
+(pbr-materials). See [discover.md](discover.md), [catalog](findings/2026-06-24-rover-part-catalog.md)
++ [surfaces](findings/2026-06-24-part-surfaces.md) findings. Next: rocket-domain catalog
+(tank/bell/nose/fins/decoupler).
 
 ## Purpose
 

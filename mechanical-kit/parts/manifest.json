@@ -8,49 +8,94 @@
       "material": "rubber",
       "origin": "hub centre",
       "orientation": "+X axle; disc in YZ (rolls +Z)",
-      "verts": 192
+      "verts": 192,
+      "material_set": "rubber",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "rim": {
       "file": "rim.glb",
       "material": "metal",
       "origin": "hub centre",
       "orientation": "+X axle",
-      "verts": 256
+      "verts": 256,
+      "material_set": "metal_panel",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "suspension": {
       "file": "suspension.glb",
       "material": "metal_dark",
       "origin": "axle (bottom)",
       "orientation": "strut along +Y to chassis plate",
-      "verts": 152
+      "verts": 152,
+      "material_set": "metal_panel",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "seat": {
       "file": "seat.glb",
       "material": "fabric",
       "origin": "base centre",
       "orientation": "faces +Z, up +Y",
-      "verts": 48
+      "verts": 48,
+      "material_set": "seat_fabric",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "antenna": {
       "file": "antenna.glb",
       "material": "metal",
       "origin": "base",
       "orientation": "mast along +Y",
-      "verts": 610
+      "verts": 610,
+      "material_set": "metal_panel",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "solar_panel": {
       "file": "solar_panel.glb",
       "material": "solar_glass",
       "origin": "base centre",
       "orientation": "panel in XZ, normal +Y",
-      "verts": 80
+      "verts": 80,
+      "material_set": "solar_cells",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     },
     "bumper": {
       "file": "bumper.glb",
       "material": "metal_dark",
       "origin": "mount centre",
       "orientation": "long axis +X, front +Z",
-      "verts": 56
+      "verts": 56,
+      "material_set": "metal_panel",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     }
-  }
+  },
+  "textured": true,
+  "texture_size": 256,
+  "surfaces": "AI PBR (pbr-materials: Z-Image albedo -> normal/metallic-roughness), embedded in glb"
 }
