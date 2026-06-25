@@ -100,6 +100,45 @@
         "metallic_roughness"
       ],
       "uv_unwrap": "smart"
+    },
+    "seat_leather": {
+      "file": "seat_leather.glb",
+      "origin": "base centre",
+      "orientation": "faces +Z, up +Y",
+      "material_set": "leather_light",
+      "uv_unwrap": "smart",
+      "verts": 48,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "solar_panel_2x1": {
+      "file": "solar_panel_2x1.glb",
+      "origin": "base centre",
+      "orientation": "panel in XZ, normal +Y",
+      "material_set": "solar_cells_2x1",
+      "uv_unwrap": "smart",
+      "verts": 80,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "steering_wheel": {
+      "file": "steering_wheel.glb",
+      "origin": "hub centre (column mount)",
+      "orientation": "rim in XY, faces +Z (driver); tilt via the column",
+      "material_set": "leather_light",
+      "uv_unwrap": "toroidal (axis Z)",
+      "verts": 664,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     }
   },
   "textured": true,

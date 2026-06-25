@@ -35,11 +35,21 @@ MATERIALS = [
     {"name": "seat_fabric", "seed": 723, "metal": 0.0, "rough_base": 190,
      "prompt": "dark grey technical seat upholstery, woven padded fabric with subtle quilting, "
                "matte, fine textile weave"},
+    {"name": "leather_light", "seed": 724, "metal": 0.0, "rough_base": 150,
+     "prompt": "light tan leather upholstery, soft full-grain natural leather with fine pores and "
+               "subtle stitched seams, warm cream beige"},
+    {"name": "solar_cells_2x1", "seed": 725, "metal": 0.25, "rough_base": 70,
+     "prompt": "photovoltaic solar panel, regular grid of rectangular two-to-one landscape "
+               "monocrystalline cells with thin silver busbar lines, glossy, deep blue"},
 ]
 
 
 def main() -> None:
+    import sys as _sys
+    only = _sys.argv[_sys.argv.index("--only") + 1].split(",") if "--only" in _sys.argv else None
     for m in MATERIALS:
+        if only and m["name"] not in only:
+            continue
         name = m["name"]
         mat_dir = OUT / name
         prompt = f"{m['prompt']}, {STYLE}"

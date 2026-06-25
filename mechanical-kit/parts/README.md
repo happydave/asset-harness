@@ -22,8 +22,10 @@ scp ai2:/tmp/mk_parts/'*' parts/
 ## Parts
 
 `tire`, `rim`, `suspension` (a wheel station = these three, WI 630, sharing the hub-centre mount),
-`seat`, `antenna`, `solar_panel`, `bumper`. Preview:
-[`../findings/samples-2026-06-24/parts_contact_sheet.png`](../findings/samples-2026-06-24/parts_contact_sheet.png).
+`seat`, `antenna`, `solar_panel`, `bumper`, plus variants/additions: `seat_leather` (light leather),
+`solar_panel_2x1` (rectangular 2×1 cells), `steering_wheel` (leather-wrapped, toroidal unwrap).
+Preview: [`../findings/samples-2026-06-24/parts_contact_sheet.png`](../findings/samples-2026-06-24/parts_contact_sheet.png)
++ [`new_parts_2026-06-25.png`](../findings/samples-2026-06-24/new_parts_2026-06-25.png).
 
 ## Surfaces
 

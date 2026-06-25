@@ -52,6 +52,15 @@ the **tire tread now wraps the rolling circumference** and the **rim reads as tu
 — a clear lift over the flat smart-project mapping. The flat caps (sidewall/hub) get a radial mapping
 (reads as turned metal / radial sidewall — acceptable). Manifest records `uv_unwrap` per part.
 
+## Update 2026-06-25 — variants + steering wheel
+
+Added three parts (preview [`samples-2026-06-24/new_parts_2026-06-25.png`](samples-2026-06-24/new_parts_2026-06-25.png)):
+- **`seat_leather`** — seat geometry skinned with a new `leather_light` set (light tan full-grain).
+- **`solar_panel_2x1`** — panel geometry with a new `solar_cells_2x1` set (rectangular 2:1 cells).
+- **`steering_wheel`** — new geometry (torus rim + 3 spokes + hub) with a **toroidal** unwrap
+  (`toroidal_uv`: u = around the wheel, v = around the rim tube) so the leather wraps the rim. The
+  scripts gained `--only` so single parts regenerate without touching the rest. Catalog is now 10.
+
 ## Next
 
 - **Flat caps:** a separate planar projection for the tire sidewall / rim face would remove the

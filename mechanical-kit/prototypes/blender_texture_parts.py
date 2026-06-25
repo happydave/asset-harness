@@ -21,6 +21,8 @@ def arg(flag, default): return argv[argv.index(flag) + 1] if flag in argv else d
 IN = Path(arg("--in", "/tmp/mk_parts"))
 MATS = Path(arg("--materials", "/tmp/mk_materials"))
 OUT = Path(arg("--out", "/tmp/mk_parts_tex")); OUT.mkdir(parents=True, exist_ok=True)
+ONLY = arg("--only", None)
+ONLY = ONLY.split(",") if ONLY else None
 TEX = 256  # embedded texture size
 
 # part -> material set, unwrap method, (and axis for cyl), tiling (sx around, sy along)
@@ -32,6 +34,11 @@ SKIN = {
     "antenna": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
     "solar_panel": dict(mat="solar_cells", uw="smart", sx=2.0, sy=2.0),
     "bumper": dict(mat="metal_panel", uw="smart", sx=3.0, sy=3.0),
+    "seat_leather": dict(mat="leather_light", uw="smart", sx=2.0, sy=2.0),
+    "solar_panel_2x1": dict(mat="solar_cells_2x1", uw="smart", sx=2.0, sy=2.0),
+    # leather wrap follows the rim: toroidal unwrap about the wheel axis Z (major_radius 0.18 at
+    # cell 0.5). u = around the wheel (stitched panels), v = around the rim tube.
+    "steering_wheel": dict(mat="leather_light", uw="toroidal", axis="Z", major=0.18, sx=10.0, sy=1.0),
 }
 
 
@@ -55,6 +62,32 @@ def cylindrical_uv(obj, axis):
             for loop in face.loops:
                 if loop[uvl].uv.x < 0.5:
                     loop[uvl].uv.x += 1.0
+    bm.to_mesh(me); bm.free()
+
+
+def toroidal_uv(obj, axis, major_radius):
+    """Per-vertex toroidal unwrap (for a leather-wrapped rim): u = angle around the wheel axis,
+    v = angle around the rim tube. `major_radius` is the torus major radius in object units."""
+    ai = {"X": 0, "Y": 1, "Z": 2}[axis]
+    p0, p1 = [i for i in (0, 1, 2) if i != ai]
+    me = obj.data
+    bm = bmesh.new(); bm.from_mesh(me)
+    uvl = bm.loops.layers.uv.verify()
+    for face in bm.faces:
+        uvs = []
+        for loop in face.loops:
+            co = loop.vert.co
+            major = math.atan2(co[p1], co[p0]) / (2 * math.pi) + 0.5          # around the wheel
+            radial = math.hypot(co[p0], co[p1]) - major_radius
+            minor = math.atan2(co[ai], radial) / (2 * math.pi) + 0.5          # around the rim tube
+            loop[uvl].uv = (major, minor)
+            uvs.append((major, minor))
+        for comp in (0, 1):                              # seam fix on each wrapped axis
+            vals = [uv[comp] for uv in uvs]
+            if max(vals) - min(vals) > 0.5:
+                for loop in face.loops:
+                    if loop[uvl].uv[comp] < 0.5:
+                        loop[uvl].uv[comp] += 1.0
     bm.to_mesh(me); bm.free()
 
 
@@ -93,7 +126,7 @@ def make_material(mat_name, mat_dir, base, sx, sy):
 def main():
     for glb in sorted(IN.glob("*.glb")):
         part = glb.stem
-        if part not in SKIN:
+        if part not in SKIN or (ONLY and part not in ONLY):
             continue
         sk = SKIN[part]
         mat_name = sk["mat"]
@@ -111,6 +144,8 @@ def main():
 
         if sk["uw"] == "cyl":
             cylindrical_uv(obj, sk["axis"])
+        elif sk["uw"] == "toroidal":
+            toroidal_uv(obj, sk["axis"], sk["major"])
         else:
             bpy.ops.object.mode_set(mode='EDIT')
             bpy.ops.mesh.select_all(action='SELECT')

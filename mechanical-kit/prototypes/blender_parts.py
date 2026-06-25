@@ -19,6 +19,7 @@ from pathlib import Path
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 OUT = Path(argv[argv.index("--out") + 1]) if "--out" in argv else Path("/tmp/mk_parts")
 CELL = float(argv[argv.index("--cell-size") + 1]) if "--cell-size" in argv else 0.5
+ONLY = argv[argv.index("--only") + 1].split(",") if "--only" in argv else None  # subset of part names
 S = CELL / 0.5  # scale factor relative to the 0.5 m reference cell
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -131,6 +132,39 @@ def bumper():
     bevel(o, 0.03, 2)
     assign(o, m_metal_dark()); set_origin(o, (0, 0, 0)); return export(o, "bumper")
 
+# --- variants / additions ---
+def m_leather_light(): return mat("leather_light", (0.62, 0.52, 0.38), 0.0, 0.55)
+
+def seat_leather():
+    pad = box(0.34, 0.07, 0.34, loc=(0, 0.20, 0))
+    back = box(0.34, 0.34, 0.07, loc=(0, 0.37, -0.14))
+    o = join([pad, back]); bevel(o, 0.02, 1)
+    assign(o, m_leather_light()); set_origin(o, (0, 0, 0)); return export(o, "seat_leather")
+
+def solar_panel_2x1():   # same panel geometry; 2x1 cell material applied in the texture pass
+    glass = box(0.70, 0.02, 0.46, loc=(0, 0.05, 0))
+    frame = box(0.74, 0.04, 0.50, loc=(0, 0.035, 0))
+    stem = cyl(0.02, 0.05, loc=(0, 0.015, 0), axis='Y')
+    o = join([glass, frame, stem])
+    assign(o, m_glass()); set_origin(o, (0, 0, 0)); return export(o, "solar_panel_2x1")
+
+def steering_wheel():
+    # Rim torus in the XY plane (faces +Z, the driver) + hub + 3 radial spokes; origin at hub centre
+    # (the column mount). Leather wrap (toroidal unwrap) is applied in the texture pass.
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.18 * S, minor_radius=0.018 * S, location=(0, 0, 0),
+                                     major_segments=48, minor_segments=12)
+    rim = bpy.context.active_object
+    hub = cyl(0.045, 0.05, axis='Z')
+    spokes = []
+    for deg in (90, 210, 330):
+        a = math.radians(deg)
+        sp = box(0.16, 0.022, 0.022, loc=(0.11 * math.cos(a), 0.11 * math.sin(a), 0))
+        sp.rotation_euler[2] = a                       # spin in place to point radially
+        bpy.ops.object.transform_apply(rotation=True)
+        spokes.append(sp)
+    o = join([rim, hub] + spokes)
+    assign(o, m_leather_light()); set_origin(o, (0, 0, 0)); return export(o, "steering_wheel")
+
 PARTS = {
     "tire": ("rubber", "hub centre", "+X axle; disc in YZ (rolls +Z)", tire),
     "rim": ("metal", "hub centre", "+X axle", rim),
@@ -139,20 +173,27 @@ PARTS = {
     "antenna": ("metal", "base", "mast along +Y", antenna),
     "solar_panel": ("solar_glass", "base centre", "panel in XZ, normal +Y", solar_panel),
     "bumper": ("metal_dark", "mount centre", "long axis +X, front +Z", bumper),
+    "seat_leather": ("leather_light", "base centre", "faces +Z, up +Y", seat_leather),
+    "solar_panel_2x1": ("solar_glass", "base centre", "panel in XZ, normal +Y", solar_panel_2x1),
+    "steering_wheel": ("leather_light", "hub centre (column mount)", "rim in XY, faces +Z", steering_wheel),
 }
 
 
 def main():
-    manifest = {"frame": "+Y up, +Z forward, +X lateral(axle); metres; glTF Y-up",
-                "cell_size": CELL, "reference_cell": 0.5, "parts": {}}
+    mpath = OUT / "manifest.json"
+    manifest = json.loads(mpath.read_text()) if mpath.exists() else {
+        "frame": "+Y up, +Z forward, +X lateral(axle); metres; glTF Y-up",
+        "cell_size": CELL, "reference_cell": 0.5, "parts": {}}
     for name, (material, origin, axis, fn) in PARTS.items():
+        if ONLY and name not in ONLY:
+            continue
         reset()
         verts = fn()
         manifest["parts"][name] = {"file": f"{name}.glb", "material": material,
                                    "origin": origin, "orientation": axis, "verts": verts}
         print(f"built {name}: {verts} verts -> {name}.glb")
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2))
-    print("manifest ->", OUT / "manifest.json")
+    mpath.write_text(json.dumps(manifest, indent=2))
+    print("manifest ->", mpath)
 
 
 if __name__ == "__main__":
