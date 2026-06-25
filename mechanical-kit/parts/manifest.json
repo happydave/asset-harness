@@ -139,6 +139,136 @@
         "normal",
         "metallic_roughness"
       ]
+    },
+    "fuel_tank": {
+      "file": "fuel_tank.glb",
+      "origin": "bottom centre",
+      "orientation": "axis +Y; stacks up",
+      "material_set": "white_hull",
+      "uv_unwrap": "cylindrical (axis Y)",
+      "verts": 128,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "nose_cone": {
+      "file": "nose_cone.glb",
+      "origin": "base centre",
+      "orientation": "axis +Y; tip up",
+      "material_set": "white_hull",
+      "uv_unwrap": "cylindrical (axis Y)",
+      "verts": 33,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "engine_bell": {
+      "file": "engine_bell.glb",
+      "origin": "throat (top) centre",
+      "orientation": "axis +Y; exit flares down -Y",
+      "material_set": "heat_metal",
+      "uv_unwrap": "cylindrical (axis Y)",
+      "verts": 64,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "decoupler": {
+      "file": "decoupler.glb",
+      "origin": "bottom centre",
+      "orientation": "axis +Y; inter-stage band",
+      "material_set": "metal_panel",
+      "uv_unwrap": "cylindrical (axis Y)",
+      "verts": 128,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "fin": {
+      "file": "fin.glb",
+      "origin": "inner-bottom root",
+      "orientation": "blade +X, up +Y, thin Z",
+      "material_set": "metal_panel",
+      "uv_unwrap": "smart",
+      "verts": 24,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "hatch_round": {
+      "file": "hatch_round.glb",
+      "origin": "hull-mount centre",
+      "orientation": "disc in XY, faces +Z",
+      "material_set": "metal_panel",
+      "uv_unwrap": "smart",
+      "verts": 328,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "hatch_rect": {
+      "file": "hatch_rect.glb",
+      "origin": "hull-mount centre",
+      "orientation": "panel in XY, faces +Z",
+      "material_set": "metal_panel",
+      "uv_unwrap": "smart",
+      "verts": 72,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "dish_small": {
+      "file": "dish_small.glb",
+      "origin": "back mount centre",
+      "orientation": "opens +Z",
+      "material_set": "white_hull",
+      "uv_unwrap": "smart",
+      "verts": 610,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "dish_large": {
+      "file": "dish_large.glb",
+      "origin": "back mount centre",
+      "orientation": "opens +Z",
+      "material_set": "white_hull",
+      "uv_unwrap": "smart",
+      "verts": 610,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
+    },
+    "tablet": {
+      "file": "tablet.glb",
+      "origin": "back centre",
+      "orientation": "screen faces +Z",
+      "material_set": "screen_ui",
+      "uv_unwrap": "smart",
+      "verts": 56,
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ]
     }
   },
   "textured": true,

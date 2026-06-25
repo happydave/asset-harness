@@ -41,6 +41,15 @@ MATERIALS = [
     {"name": "solar_cells_2x1", "seed": 725, "metal": 0.25, "rough_base": 70,
      "prompt": "photovoltaic solar panel, regular grid of rectangular two-to-one landscape "
                "monocrystalline cells with thin silver busbar lines, glossy, deep blue"},
+    {"name": "white_hull", "seed": 726, "metal": 0.1, "rough_base": 80,
+     "prompt": "white painted aerospace hull panel, glossy clean white with faint panel seams and "
+               "subtle scuffs, smooth"},
+    {"name": "heat_metal", "seed": 727, "metal": 0.9, "rough_base": 130,
+     "prompt": "heat-discoloured inconel rocket nozzle metal, blue and gold heat tint with soot "
+               "streaks and fine machining lines, metallic"},
+    {"name": "screen_ui", "seed": 728, "metal": 0.1, "rough_base": 30,
+     "prompt": "dark glass tablet touchscreen displaying a faint glowing user interface with app "
+               "icons, gauges and widgets, deep black glass, cyan and white accents"},
 ]
 
 

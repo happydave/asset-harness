@@ -21,11 +21,19 @@ scp ai2:/tmp/mk_parts/'*' parts/
 
 ## Parts
 
-`tire`, `rim`, `suspension` (a wheel station = these three, WI 630, sharing the hub-centre mount),
-`seat`, `antenna`, `solar_panel`, `bumper`, plus variants/additions: `seat_leather` (light leather),
-`solar_panel_2x1` (rectangular 2×1 cells), `steering_wheel` (leather-wrapped, toroidal unwrap).
-Preview: [`../findings/samples-2026-06-24/parts_contact_sheet.png`](../findings/samples-2026-06-24/parts_contact_sheet.png)
-+ [`new_parts_2026-06-25.png`](../findings/samples-2026-06-24/new_parts_2026-06-25.png).
+**Rover** — `tire`, `rim`, `suspension` (a wheel station = these three, WI 630, sharing the
+hub-centre mount), `seat`, `antenna`, `solar_panel`, `bumper`; variants `seat_leather`,
+`solar_panel_2x1`, `steering_wheel` (leather-wrapped).
+
+**Rocket-domain** (axial parts stack along +Y, origin at the bottom mount plane) — `fuel_tank`,
+`nose_cone`, `engine_bell` (origin at the throat), `decoupler`, `fin`.
+
+**Fittings** (wall fittings face +Z, origin at the hull-mount centre) — `hatch_round`, `hatch_rect`,
+`dish_small`, `dish_large`, `tablet` (handheld; screen faces +Z).
+
+Previews: [`../findings/samples-2026-06-24/`](../findings/samples-2026-06-24/) —
+`parts_contact_sheet.png`, `new_parts_2026-06-25.png`, `rocket_parts_2026-06-25.png`. See
+[`manifest.json`](manifest.json) for the full per-part contract (20 parts).
 
 ## Surfaces
 

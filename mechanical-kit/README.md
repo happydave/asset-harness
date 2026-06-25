@@ -9,10 +9,11 @@ mount-at-origin, metres, Y-up) for Sounding WI 608 — parametric Blender shape 
 ## Purpose
 
 Modular mechanical part meshes. **Primary consumer: Sounding's `Part` catalog (WI 608)** — the
-voxel-skinning design explicitly defers authored per-part meshes to this track. Rover parts first
-(tire / rim / suspension / seat / antenna / solar panel / bumper), rocket parts (tanks / stages /
-nose / fins / decoupler) next. These are mostly revolved solids with consistent mount points, which
-whole-mesh AI generation is *worst* at. (DWA is 2D — its modules are served by the `2d` track.)
+voxel-skinning design explicitly defers authored per-part meshes to this track. Catalog now spans
+**rover** (tire/rim/suspension/seat/antenna/solar/bumper + variants), **rocket-domain**
+(tank/nose/engine-bell/decoupler/fin), and **fittings** (round+rect hatch, small+large dish, tablet)
+— 20 parts in [`parts/`](parts/). These are mostly revolved solids with consistent mount points,
+which whole-mesh AI generation is *worst* at. (DWA is 2D — its modules are served by the `2d` track.)
 
 ## Approach (validated)
 

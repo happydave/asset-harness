@@ -39,6 +39,18 @@ SKIN = {
     # leather wrap follows the rim: toroidal unwrap about the wheel axis Z (major_radius 0.18 at
     # cell 0.5). u = around the wheel (stitched panels), v = around the rim tube.
     "steering_wheel": dict(mat="leather_light", uw="toroidal", axis="Z", major=0.18, sx=10.0, sy=1.0),
+    # rocket-domain (axial parts: cylindrical about +Y)
+    "fuel_tank": dict(mat="white_hull", uw="cyl", axis="Y", sx=3.0, sy=2.0),
+    "nose_cone": dict(mat="white_hull", uw="cyl", axis="Y", sx=3.0, sy=2.0),
+    "engine_bell": dict(mat="heat_metal", uw="cyl", axis="Y", sx=4.0, sy=1.5),
+    "decoupler": dict(mat="metal_panel", uw="cyl", axis="Y", sx=6.0, sy=1.0),
+    "fin": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
+    # fittings
+    "hatch_round": dict(mat="metal_panel", uw="smart", sx=1.5, sy=1.5),
+    "hatch_rect": dict(mat="metal_panel", uw="smart", sx=1.5, sy=1.5),
+    "dish_small": dict(mat="white_hull", uw="smart", sx=2.0, sy=2.0),
+    "dish_large": dict(mat="white_hull", uw="smart", sx=3.0, sy=3.0),
+    "tablet": dict(mat="screen_ui", uw="smart", sx=1.0, sy=1.0),   # screen shows once per face
 }
 
 

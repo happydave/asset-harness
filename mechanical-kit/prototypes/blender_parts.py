@@ -66,6 +66,17 @@ def box(sx, sy, sz, loc=(0, 0, 0)):
     bpy.ops.object.transform_apply(scale=True)
     return o
 
+def cone(r1, r2, depth, loc=(0, 0, 0), axis='Z'):
+    # r1 = base radius (toward -axis), r2 = top radius (toward +axis). For Y/X, +Z maps to +axis.
+    bpy.ops.mesh.primitive_cone_add(radius1=r1 * S, radius2=r2 * S, depth=depth * S,
+                                    location=tuple(c * S for c in loc))
+    o = bpy.context.active_object
+    if axis == 'X': o.rotation_euler[1] = math.radians(-90)
+    elif axis == 'Y': o.rotation_euler[0] = math.radians(-90)
+    if axis != 'Z':
+        bpy.ops.object.transform_apply(rotation=True)
+    return o
+
 def set_origin(obj, loc):
     bpy.context.scene.cursor.location = tuple(c * S for c in loc)
     bpy.context.view_layer.objects.active = obj
@@ -165,6 +176,64 @@ def steering_wheel():
     o = join([rim, hub] + spokes)
     assign(o, m_leather_light()); set_origin(o, (0, 0, 0)); return export(o, "steering_wheel")
 
+# --- rocket-domain catalog + fittings ---
+def m_white(): return mat("white_hull", (0.85, 0.86, 0.88), 0.1, 0.4)
+def m_heat(): return mat("heat_metal", (0.35, 0.33, 0.30), 0.9, 0.45)
+def m_screen(): return mat("screen", (0.02, 0.03, 0.05), 0.1, 0.15)
+
+# Axial rocket parts stack along +Y (rocket "up"); origin at the bottom mount plane unless noted.
+def fuel_tank():
+    o = cyl(0.25, 0.78, loc=(0, 0.39, 0), axis='Y'); bevel(o, 0.02, 1)
+    assign(o, m_white()); set_origin(o, (0, 0, 0)); return export(o, "fuel_tank")
+
+def nose_cone():
+    o = cone(0.25, 0.0, 0.46, loc=(0, 0.23, 0), axis='Y')   # base down at y=0, tip up
+    assign(o, m_white()); set_origin(o, (0, 0, 0)); return export(o, "nose_cone")
+
+def engine_bell():
+    o = cone(0.22, 0.06, 0.30, loc=(0, -0.15, 0), axis='Y')  # throat(top,+Y) at y=0, exit flares below
+    assign(o, m_heat()); set_origin(o, (0, 0, 0)); return export(o, "engine_bell")
+
+def decoupler():
+    o = cyl(0.27, 0.08, loc=(0, 0.04, 0), axis='Y'); bevel(o, 0.01, 1)
+    assign(o, m_metal_dark()); set_origin(o, (0, 0, 0)); return export(o, "decoupler")
+
+def fin():
+    o = box(0.22, 0.30, 0.02, loc=(0.11, 0.15, 0))   # root at x=0, blade +X, up +Y, thin Z
+    bevel(o, 0.05, 1)
+    assign(o, m_metal()); set_origin(o, (0, 0, 0)); return export(o, "fin")
+
+# Wall fittings face +Z (outward); origin at the hull-mount centre.
+def hatch_round():
+    disc = cyl(0.17, 0.04, axis='Z')
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.18 * S, minor_radius=0.02 * S, location=(0, 0, 0),
+                                     major_segments=32, minor_segments=8)
+    rim = bpy.context.active_object
+    handle = box(0.12, 0.03, 0.03, loc=(0, 0, 0.04))
+    o = join([disc, rim, handle]); assign(o, m_metal()); set_origin(o, (0, 0, 0)); return export(o, "hatch_round")
+
+def hatch_rect():
+    panel = box(0.30, 0.40, 0.04, loc=(0, 0, 0.01))
+    frame = box(0.34, 0.44, 0.02, loc=(0, 0, -0.01))
+    handle = box(0.04, 0.12, 0.03, loc=(0.10, 0, 0.05))
+    o = join([panel, frame, handle]); bevel(o, 0.01, 1)
+    assign(o, m_metal()); set_origin(o, (0, 0, 0)); return export(o, "hatch_rect")
+
+def _dish(r, name):
+    refl = cone(r * 0.35, r, r * 0.4, loc=(0, 0, 0), axis='Z')   # wide opening toward +Z
+    stem = cyl(0.02, 0.18, loc=(0, 0, -0.12), axis='Z')
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.03 * S, location=(0, 0, r * 0.4 * S))
+    feed = bpy.context.active_object
+    o = join([refl, stem, feed]); assign(o, m_white()); set_origin(o, (0, 0, -0.21))
+    return export(o, name)
+
+def dish_small(): return _dish(0.15, "dish_small")
+def dish_large(): return _dish(0.35, "dish_large")
+
+def tablet():
+    o = box(0.16, 0.24, 0.012, loc=(0, 0, 0)); bevel(o, 0.006, 2)   # flat slab, screen faces +Z
+    assign(o, m_screen()); set_origin(o, (0, 0, 0)); return export(o, "tablet")
+
 PARTS = {
     "tire": ("rubber", "hub centre", "+X axle; disc in YZ (rolls +Z)", tire),
     "rim": ("metal", "hub centre", "+X axle", rim),
@@ -176,6 +245,16 @@ PARTS = {
     "seat_leather": ("leather_light", "base centre", "faces +Z, up +Y", seat_leather),
     "solar_panel_2x1": ("solar_glass", "base centre", "panel in XZ, normal +Y", solar_panel_2x1),
     "steering_wheel": ("leather_light", "hub centre (column mount)", "rim in XY, faces +Z", steering_wheel),
+    "fuel_tank": ("white_hull", "bottom centre", "axis +Y; stacks up", fuel_tank),
+    "nose_cone": ("white_hull", "base centre", "axis +Y; tip up", nose_cone),
+    "engine_bell": ("heat_metal", "throat (top) centre", "axis +Y; exit flares down -Y", engine_bell),
+    "decoupler": ("metal_dark", "bottom centre", "axis +Y; inter-stage band", decoupler),
+    "fin": ("metal", "inner-bottom root", "blade +X, up +Y, thin Z", fin),
+    "hatch_round": ("metal", "hull-mount centre", "disc in XY, faces +Z", hatch_round),
+    "hatch_rect": ("metal", "hull-mount centre", "panel in XY, faces +Z", hatch_rect),
+    "dish_small": ("white_hull", "back mount centre", "opens +Z", dish_small),
+    "dish_large": ("white_hull", "back mount centre", "opens +Z", dish_large),
+    "tablet": ("screen", "back centre", "screen faces +Z", tablet),
 }
 
 
