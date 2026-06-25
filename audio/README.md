@@ -1,8 +1,11 @@
 # Track: audio
 
-**Status:** 🟡 SFX prototype done — Stable Audio 3 generate script + ffmpeg post (normalize /
-seamless loop / ogg+wav); thruster loop imported into DWA. See [discover.md](discover.md) and the
-[SFX findings](findings/2026-06-23-sfx-stable-audio-3.md). Music (ACE-Step, instrumental) next.
+**Status:** 🟢 both sub-streams working. **SFX** via Stable Audio 3 (incl. the DWA thruster
+start/burn/stop set); **ambient music** via ACE-Step 1.5 (instrumental loop beds). Shared ffmpeg
+post (normalize / seamless loop / ogg+wav). See [discover.md](discover.md) and findings:
+[SFX](findings/2026-06-23-sfx-stable-audio-3.md) ·
+[thruster set](findings/2026-06-24-thruster-set.md) ·
+[ambient music](findings/2026-06-24-ambient-music-ace-step.md).
 
 - **SFX** → **Stable Audio 3 Medium** (Stability Community License; fully-licensed training data;
   48 kHz; native SFX). Revenue-gated <$1M + bundles T5Gemma/Gemma terms — record in the gen log.
