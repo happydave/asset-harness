@@ -55,6 +55,26 @@ SKIN = {
     "tablet": dict(mat="screen_ui", uw="smart", sx=1.0, sy=1.0),   # screen shows once per face
 }
 
+# Split parts (WI 666): per sub-object skin specs, keyed by glTF node name. These parts are
+# NOT joined — each piece keeps its own node and material. Role tags are re-asserted by node
+# name on export so they survive regardless of import-extras fidelity.
+SPLIT_SKIN = {
+    "battery": {
+        "battery_body": dict(mat="battery", uw="smart", sx=2.0, sy=2.0),
+        "battery_lid": dict(mat="battery", uw="smart", sx=2.0, sy=2.0),
+        "battery_terminal_pos": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
+        "battery_terminal_neg": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
+    },
+}
+SPLIT_TAGS = {
+    "battery": {
+        "battery_body": {"role": "body"},
+        "battery_lid": {"role": "lid"},
+        "battery_terminal_pos": {"role": "terminal", "polarity": "positive"},
+        "battery_terminal_neg": {"role": "terminal", "polarity": "negative"},
+    },
+}
+
 
 def cylindrical_uv(obj, axis):
     """Per-vertex cylindrical unwrap about `axis` (object-local). u = angle (0..1), v = along-axis."""
@@ -137,41 +157,77 @@ def make_material(mat_name, mat_dir, base, sx, sy):
     return m
 
 
+def unwrap(obj, spec):
+    if spec["uw"] == "cyl":
+        cylindrical_uv(obj, spec["axis"])
+    elif spec["uw"] == "toroidal":
+        toroidal_uv(obj, spec["axis"], spec["major"])
+    else:
+        for o in bpy.context.selected_objects:
+            o.select_set(False)
+        obj.select_set(True)
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def skin_single(glb, part):
+    sk = SKIN[part]
+    mat_name = sk["mat"]
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+    for o in bpy.context.selected_objects:
+        o.select_set(False)
+    for o in meshes:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    if len(meshes) > 1:
+        bpy.ops.object.join()
+    obj = bpy.context.active_object
+    unwrap(obj, sk)
+    m = make_material(f"{part}_mat", MATS / mat_name, mat_name, sk["sx"], sk["sy"])
+    obj.data.materials.clear(); obj.data.materials.append(m)
+    bpy.ops.export_scene.gltf(filepath=str(OUT / f"{part}.glb"), export_format='GLB',
+                              use_selection=True)
+    print(f"skinned {part} with {mat_name} ({sk['uw']} uv {sk['sx']}x{sk['sy']})")
+
+
+def skin_split(glb, part):
+    """Skin a split part without re-joining: each sub-object gets its own UVs + material,
+    role tags re-asserted by node name, hierarchy + extras preserved on export."""
+    specs = SPLIT_SKIN[part]
+    tags = SPLIT_TAGS.get(part, {})
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    for obj in [o for o in bpy.context.scene.objects if o.type == 'MESH']:
+        spec = specs.get(obj.name)
+        if spec is None:
+            print(f"  warn: no skin spec for {part} sub-object {obj.name!r}; left unskinned")
+            continue
+        unwrap(obj, spec)
+        m = make_material(f"{obj.name}_mat", MATS / spec["mat"], spec["mat"], spec["sx"], spec["sy"])
+        obj.data.materials.clear(); obj.data.materials.append(m)
+        for k, v in tags.get(obj.name, {}).items():
+            obj[k] = v
+    for o in bpy.context.scene.objects:
+        o.select_set(True)
+    bpy.ops.export_scene.gltf(filepath=str(OUT / f"{part}.glb"), export_format='GLB',
+                              use_selection=True, export_extras=True)
+    print(f"skinned split {part}: {len(specs)} pieces")
+
+
 def main():
     for glb in sorted(IN.glob("*.glb")):
         part = glb.stem
-        if part not in SKIN or (ONLY and part not in ONLY):
+        if ONLY and part not in ONLY:
             continue
-        sk = SKIN[part]
-        mat_name = sk["mat"]
-        bpy.ops.wm.read_factory_settings(use_empty=True)
-        bpy.ops.import_scene.gltf(filepath=str(glb))
-        meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
-        for o in bpy.context.selected_objects:
-            o.select_set(False)
-        for o in meshes:
-            o.select_set(True)
-        bpy.context.view_layer.objects.active = meshes[0]
-        if len(meshes) > 1:
-            bpy.ops.object.join()
-        obj = bpy.context.active_object
-
-        if sk["uw"] == "cyl":
-            cylindrical_uv(obj, sk["axis"])
-        elif sk["uw"] == "toroidal":
-            toroidal_uv(obj, sk["axis"], sk["major"])
-        else:
-            bpy.ops.object.mode_set(mode='EDIT')
-            bpy.ops.mesh.select_all(action='SELECT')
-            bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
-            bpy.ops.object.mode_set(mode='OBJECT')
-
-        m = make_material(f"{part}_mat", MATS / mat_name, mat_name, sk["sx"], sk["sy"])
-        obj.data.materials.clear(); obj.data.materials.append(m)
-
-        bpy.ops.export_scene.gltf(filepath=str(OUT / f"{part}.glb"), export_format='GLB',
-                                  use_selection=True)
-        print(f"skinned {part} with {mat_name} ({sk['uw']} uv {sk['sx']}x{sk['sy']})")
+        if part in SPLIT_SKIN:
+            skin_split(glb, part)
+        elif part in SKIN:
+            skin_single(glb, part)
 
 
 if __name__ == "__main__":

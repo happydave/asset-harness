@@ -296,7 +296,32 @@
         "normal",
         "metallic_roughness"
       ],
-      "uv_unwrap": "smart"
+      "uv_unwrap": "smart",
+      "split": true,
+      "subparts": [
+        {
+          "node": "battery_body",
+          "role": "body",
+          "material_set": "battery"
+        },
+        {
+          "node": "battery_lid",
+          "role": "lid",
+          "material_set": "battery"
+        },
+        {
+          "node": "battery_terminal_pos",
+          "role": "terminal",
+          "polarity": "positive",
+          "material_set": "metal_panel"
+        },
+        {
+          "node": "battery_terminal_neg",
+          "role": "terminal",
+          "polarity": "negative",
+          "material_set": "metal_panel"
+        }
+      ]
     }
   },
   "textured": true,

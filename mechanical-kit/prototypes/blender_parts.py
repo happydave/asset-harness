@@ -90,6 +90,35 @@ def export(obj, name):
                               use_selection=True)
     return len(obj.data.vertices)
 
+# Split-part support (WI 666): export a part as a named, tagged node hierarchy under an
+# Empty root at the mount origin, instead of one joined mesh. Role tags ride in node
+# `extras` (Blender custom props + export_extras). SUBPARTS records them for the manifest.
+SUBPARTS = {}
+
+def new_empty(name):
+    e = bpy.data.objects.new(name, None)            # None data → Empty
+    bpy.context.scene.collection.objects.link(e)
+    e.location = (0, 0, 0)
+    return e
+
+def export_group(name, subparts):
+    """subparts: list of (obj, node_name, role_props). Parents each under an Empty named
+    `name` at the origin (identity → world transform preserved), tags it, and exports."""
+    root = new_empty(name)
+    for obj, node_name, props in subparts:
+        obj.name = node_name
+        for k, v in props.items():
+            obj[k] = v
+        obj.parent = root
+    for o in bpy.context.scene.objects: o.select_set(False)
+    root.select_set(True)
+    for obj, _, _ in subparts: obj.select_set(True)
+    bpy.context.view_layer.objects.active = root
+    bpy.ops.export_scene.gltf(filepath=str(OUT / f"{name}.glb"), export_format='GLB',
+                              use_selection=True, export_extras=True)
+    SUBPARTS[name] = [{"node": n, **props} for (_, n, props) in subparts]
+    return sum(len(obj.data.vertices) for obj, _, _ in subparts)
+
 # materials (created lazily per part to avoid cross-part leakage on reset)
 def m_rubber(): return mat("rubber", (0.04, 0.04, 0.045), 0.0, 0.9)
 def m_metal(): return mat("metal", (0.60, 0.62, 0.66), 1.0, 0.35)
@@ -158,14 +187,19 @@ def motor():
     assign(o, m_motor()); set_origin(o, (0, 0, 0)); return export(o, "motor")
 
 def battery():
-    # Battery pack: an upright box with a lid lip and two terminals on top. Origin at base centre so
-    # it sits on the mount plane (like the other chassis devices).
-    body = box(0.30, 0.20, 0.22, loc=(0, 0.10, 0))         # base at y=0
-    lid = box(0.32, 0.03, 0.24, loc=(0, 0.205, 0))         # top lid lip
-    t1 = cyl(0.022, 0.05, loc=(-0.09, 0.235, 0), axis='Y')  # terminals up +Y
-    t2 = cyl(0.022, 0.05, loc=(0.09, 0.235, 0), axis='Y')
-    o = join([body, lid, t1, t2]); bevel(o, 0.008, 1)
-    assign(o, m_battery()); set_origin(o, (0, 0, 0)); return export(o, "battery")
+    # Battery pack: plastic body + lid, two metal terminals. Exported as a tagged hierarchy
+    # (split part, WI 666) rather than one joined mesh. Origin at base centre = the mount.
+    plastic, metal = m_battery(), m_metal()
+    body = box(0.30, 0.20, 0.22, loc=(0, 0.10, 0)); bevel(body, 0.008, 1); assign(body, plastic)
+    lid = box(0.32, 0.03, 0.24, loc=(0, 0.205, 0)); bevel(lid, 0.008, 1); assign(lid, plastic)
+    t1 = cyl(0.022, 0.05, loc=(-0.09, 0.235, 0), axis='Y'); bevel(t1, 0.004, 1); assign(t1, metal)
+    t2 = cyl(0.022, 0.05, loc=(0.09, 0.235, 0), axis='Y'); bevel(t2, 0.004, 1); assign(t2, metal)
+    return export_group("battery", [
+        (body, "battery_body", {"role": "body"}),
+        (lid, "battery_lid", {"role": "lid"}),
+        (t1, "battery_terminal_pos", {"role": "terminal", "polarity": "positive"}),
+        (t2, "battery_terminal_neg", {"role": "terminal", "polarity": "negative"}),
+    ])
 
 # --- variants / additions ---
 def m_leather_light(): return mat("leather_light", (0.62, 0.52, 0.38), 0.0, 0.55)
@@ -296,6 +330,8 @@ def main():
         verts = fn()
         manifest["parts"][name] = {"file": f"{name}.glb", "material": material,
                                    "origin": origin, "orientation": axis, "verts": verts}
+        if name in SUBPARTS:
+            manifest["parts"][name]["subparts"] = SUBPARTS[name]
         print(f"built {name}: {verts} verts -> {name}.glb")
     mpath.write_text(json.dumps(manifest, indent=2))
     print("manifest ->", mpath)
