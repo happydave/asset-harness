@@ -269,6 +269,34 @@
         "normal",
         "metallic_roughness"
       ]
+    },
+    "motor": {
+      "file": "motor.glb",
+      "material": "metal",
+      "origin": "body centre (axle)",
+      "orientation": "+X axle; output shaft +X to wheel",
+      "verts": 792,
+      "material_set": "motor_casing",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ],
+      "uv_unwrap": "smart"
+    },
+    "battery": {
+      "file": "battery.glb",
+      "material": "battery",
+      "origin": "base centre",
+      "orientation": "upright box; terminals up +Y",
+      "verts": 304,
+      "material_set": "battery",
+      "embedded_maps": [
+        "albedo",
+        "normal",
+        "metallic_roughness"
+      ],
+      "uv_unwrap": "smart"
     }
   },
   "textured": true,

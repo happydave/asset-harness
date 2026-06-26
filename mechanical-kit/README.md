@@ -10,10 +10,12 @@ mount-at-origin, metres, Y-up) for Sounding WI 608 — parametric Blender shape 
 
 Modular mechanical part meshes. **Primary consumer: Sounding's `Part` catalog (WI 608)** — the
 voxel-skinning design explicitly defers authored per-part meshes to this track. Catalog now spans
-**rover** (tire/rim/suspension/seat/antenna/solar/bumper + variants), **rocket-domain**
-(tank/nose/engine-bell/decoupler/fin), and **fittings** (round+rect hatch, small+large dish, tablet)
-— 20 parts in [`parts/`](parts/). These are mostly revolved solids with consistent mount points,
-which whole-mesh AI generation is *worst* at. (DWA is 2D — its modules are served by the `2d` track.)
+**rover** (tire/rim/suspension/seat/antenna/solar/bumper/**motor**/**battery** + variants),
+**rocket-domain** (tank/nose/engine-bell/decoupler/fin), and **fittings** (round+rect hatch,
+small+large dish, tablet) — **22 parts** in [`parts/`](parts/). These are mostly revolved solids with
+consistent mount points, which whole-mesh AI generation is *worst* at. (DWA is 2D — its modules are
+served by the `2d` track.) Part **surfaces** use the pbr-materials **delight pass** (WI 624) so flat
+metal/glossy skins read evenly. (See [motor/battery + solar findings](findings/2026-06-25-motor-battery-and-delight-solar.md).)
 
 ## Approach (validated)
 

@@ -22,6 +22,7 @@ STYLE = ("flat even diffuse lighting, no shadows, no specular highlights, top-do
          "seamless tileable texture, photoscan albedo, ultra detailed")
 
 # Material sets keyed to the part catalog. metal / rough_base feed the local PBR derivation.
+# flatten (WI 624 delight): remove a baked lighting gradient from flat metal/glossy albedos.
 MATERIALS = [
     {"name": "metal_panel", "seed": 720, "metal": 0.9, "rough_base": 110,
      "prompt": "brushed aluminium spacecraft hull panel, fine horizontal brushed metal grain, "
@@ -29,18 +30,20 @@ MATERIALS = [
     {"name": "rubber", "seed": 721, "metal": 0.0, "rough_base": 205,
      "prompt": "black rubber tire tread, matte vulcanised rubber, fine grain with a subtle blocky "
                "tread pattern, very dark charcoal"},
-    {"name": "solar_cells", "seed": 722, "metal": 0.25, "rough_base": 70,
+    {"name": "solar_cells", "seed": 722, "metal": 0.25, "rough_base": 70, "flatten": True,
      "prompt": "photovoltaic solar panel surface, regular grid of dark blue monocrystalline cells "
-               "with thin silver busbar lines, glossy, deep blue"},
+               "with thin silver busbar lines, even matte tone, no central highlight, no glare, "
+               "deep blue, fine detail edge to edge"},
     {"name": "seat_fabric", "seed": 723, "metal": 0.0, "rough_base": 190,
      "prompt": "dark grey technical seat upholstery, woven padded fabric with subtle quilting, "
                "matte, fine textile weave"},
     {"name": "leather_light", "seed": 724, "metal": 0.0, "rough_base": 150,
      "prompt": "light tan leather upholstery, soft full-grain natural leather with fine pores and "
                "subtle stitched seams, warm cream beige"},
-    {"name": "solar_cells_2x1", "seed": 725, "metal": 0.25, "rough_base": 70,
+    {"name": "solar_cells_2x1", "seed": 725, "metal": 0.25, "rough_base": 70, "flatten": True,
      "prompt": "photovoltaic solar panel, regular grid of rectangular two-to-one landscape "
-               "monocrystalline cells with thin silver busbar lines, glossy, deep blue"},
+               "monocrystalline cells with thin silver busbar lines, even matte tone, no central "
+               "highlight, no glare, deep blue, fine detail edge to edge"},
     {"name": "white_hull", "seed": 726, "metal": 0.1, "rough_base": 80,
      "prompt": "white painted aerospace hull panel, glossy clean white with faint panel seams and "
                "subtle scuffs, smooth"},
@@ -50,6 +53,13 @@ MATERIALS = [
     {"name": "screen_ui", "seed": 728, "metal": 0.1, "rough_base": 30,
      "prompt": "dark glass tablet touchscreen displaying a faint glowing user interface with app "
                "icons, gauges and widgets, deep black glass, cyan and white accents"},
+    {"name": "motor_casing", "seed": 729, "metal": 0.9, "rough_base": 95, "flatten": True,
+     "normal_strength": 3.0,
+     "prompt": "dark anodized aluminium electric motor casing, fine concentric machined grooves and "
+               "cooling ridges, charcoal grey metal, even tone, no central highlight, industrial"},
+    {"name": "battery", "seed": 730, "metal": 0.15, "rough_base": 160, "flatten": True,
+     "prompt": "industrial battery pack casing, deep charcoal matte plastic with subtle ribbed cells "
+               "and small printed warning labels, even matte tone, no central highlight, fine detail"},
 ]
 
 
@@ -64,7 +74,9 @@ def main() -> None:
         prompt = f"{m['prompt']}, {STYLE}"
         print(f"[{name}] albedo on ai2 ...")
         albedo = gen_albedo.generate_albedo(SERVER, prompt, m["seed"], SIZE, OUT / "raw", name)
-        paths = derive_pbr.derive(albedo, mat_dir, name, metal=m["metal"], rough_base=m["rough_base"])
+        paths = derive_pbr.derive(albedo, mat_dir, name, metal=m["metal"], rough_base=m["rough_base"],
+                                  normal_strength=m.get("normal_strength", 4.0),
+                                  flatten=m.get("flatten", False))
         print(f"[{name}] -> {mat_dir} ({len(paths)} maps)")
 
 

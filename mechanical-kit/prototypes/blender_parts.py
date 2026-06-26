@@ -143,6 +143,30 @@ def bumper():
     bevel(o, 0.03, 2)
     assign(o, m_metal_dark()); set_origin(o, (0, 0, 0)); return export(o, "bumper")
 
+# --- drivetrain / power (WI 653) ---
+def m_motor(): return mat("motor", (0.18, 0.19, 0.22), 1.0, 0.45)
+def m_battery(): return mat("battery", (0.10, 0.12, 0.14), 0.2, 0.55)
+
+def motor():
+    # Electric drive motor: a finned can on the +X axle with an output shaft toward the wheel and a
+    # terminal box on top. Origin at the body centre (the axle-line mount).
+    body = cyl(0.11, 0.26, axis='X')
+    fins = [cyl(0.125, 0.015, loc=(x, 0, 0), axis='X') for x in (-0.08, -0.03, 0.02, 0.07)]
+    shaft = cyl(0.028, 0.12, loc=(0.19, 0, 0), axis='X')   # output shaft toward +X (the wheel)
+    term = box(0.09, 0.06, 0.13, loc=(0, 0.12, 0))         # terminal box on top (+Y)
+    o = join([body] + fins + [shaft, term]); bevel(o, 0.006, 1)
+    assign(o, m_motor()); set_origin(o, (0, 0, 0)); return export(o, "motor")
+
+def battery():
+    # Battery pack: an upright box with a lid lip and two terminals on top. Origin at base centre so
+    # it sits on the mount plane (like the other chassis devices).
+    body = box(0.30, 0.20, 0.22, loc=(0, 0.10, 0))         # base at y=0
+    lid = box(0.32, 0.03, 0.24, loc=(0, 0.205, 0))         # top lid lip
+    t1 = cyl(0.022, 0.05, loc=(-0.09, 0.235, 0), axis='Y')  # terminals up +Y
+    t2 = cyl(0.022, 0.05, loc=(0.09, 0.235, 0), axis='Y')
+    o = join([body, lid, t1, t2]); bevel(o, 0.008, 1)
+    assign(o, m_battery()); set_origin(o, (0, 0, 0)); return export(o, "battery")
+
 # --- variants / additions ---
 def m_leather_light(): return mat("leather_light", (0.62, 0.52, 0.38), 0.0, 0.55)
 
@@ -242,6 +266,8 @@ PARTS = {
     "antenna": ("metal", "base", "mast along +Y", antenna),
     "solar_panel": ("solar_glass", "base centre", "panel in XZ, normal +Y", solar_panel),
     "bumper": ("metal_dark", "mount centre", "long axis +X, front +Z", bumper),
+    "motor": ("metal", "body centre (axle)", "+X axle; output shaft +X to wheel", motor),
+    "battery": ("battery", "base centre", "upright box; terminals up +Y", battery),
     "seat_leather": ("leather_light", "base centre", "faces +Z, up +Y", seat_leather),
     "solar_panel_2x1": ("solar_glass", "base centre", "panel in XZ, normal +Y", solar_panel_2x1),
     "steering_wheel": ("leather_light", "hub centre (column mount)", "rim in XY, faces +Z", steering_wheel),

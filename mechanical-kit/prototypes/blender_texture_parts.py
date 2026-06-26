@@ -34,6 +34,8 @@ SKIN = {
     "antenna": dict(mat="metal_panel", uw="smart", sx=2.0, sy=2.0),
     "solar_panel": dict(mat="solar_cells", uw="smart", sx=2.0, sy=2.0),
     "bumper": dict(mat="metal_panel", uw="smart", sx=3.0, sy=3.0),
+    "motor": dict(mat="motor_casing", uw="smart", sx=2.0, sy=2.0),
+    "battery": dict(mat="battery", uw="smart", sx=2.0, sy=2.0),
     "seat_leather": dict(mat="leather_light", uw="smart", sx=2.0, sy=2.0),
     "solar_panel_2x1": dict(mat="solar_cells_2x1", uw="smart", sx=2.0, sy=2.0),
     # leather wrap follows the rim: toroidal unwrap about the wheel axis Z (major_radius 0.18 at
