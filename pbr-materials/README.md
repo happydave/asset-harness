@@ -1,9 +1,10 @@
 # Track: pbr-materials
 
-**Status:** 🟡 pipeline working — Z-Image albedo (`ai2`) + local clean derivation →
-Bevy-ready sets. See [discover.md](discover.md) and the
-[hull + ground findings](findings/2026-06-22-pbr-hull-and-ground.md). In-engine (Sounding)
-verification pending.
+**Status:** 🟢 pipeline working + imported in-engine — Z-Image albedo (`ai2`) + local clean
+derivation → Bevy-ready sets. See [discover.md](discover.md), the
+[hull + ground findings](findings/2026-06-22-pbr-hull-and-ground.md), and the
+[structural-material library](findings/2026-06-25-structural-material-library.md) (4 structural +
+3 surface sets; the structural four wired into Sounding WI 624).
 
 ## Purpose
 

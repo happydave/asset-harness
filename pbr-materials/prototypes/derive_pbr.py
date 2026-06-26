@@ -11,9 +11,24 @@ Usage: python derive_pbr.py albedo.png out_dir name --metal 0.85 --rough-base 15
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps, ImageStat
 
 L = "L"
+
+
+def flatten_luminance(img: Image.Image, radius: int = 96) -> Image.Image:
+    """Delight: remove low-frequency luminance variation (a baked highlight sweep / vignette /
+    gradient) while preserving high-frequency surface detail and each channel's mean colour.
+
+    For each channel: out = channel - blur(luma) + channel_mean (clamped). The large-scale lighting
+    gradient cancels; the fine grain/scratches survive. Pure PIL, deterministic — for flat metal
+    albedos the txt2img model tends to render as a lit surface."""
+    low = img.convert(L).filter(ImageFilter.GaussianBlur(radius))
+    out = []
+    for ch in img.convert("RGB").split():
+        m = int(round(ImageStat.Stat(ch).mean[0]))
+        out.append(ImageChops.subtract(ch, low, 1.0, m))  # (ch - low) + m, clamped to [0,255]
+    return Image.merge("RGB", out)
 
 
 def make_seamless(img: Image.Image, margin: int = 0) -> Image.Image:
@@ -66,9 +81,12 @@ def ao_map(height: Image.Image) -> Image.Image:
 
 def derive(albedo_path: Path, out_dir: Path, name: str,
            metal: float = 0.0, rough_base: int = 160, normal_strength: float = 4.0,
-           flip_g: bool = False) -> dict:
+           flip_g: bool = False, flatten: bool = False) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
-    albedo = make_seamless(Image.open(albedo_path).convert("RGB"))
+    src = Image.open(albedo_path).convert("RGB")
+    if flatten:  # delight a baked lighting gradient before tiling (flat-metal albedos, WI 624)
+        src = flatten_luminance(src)
+    albedo = make_seamless(src)
     height = height_proxy(albedo)
     normal = normal_map(height, normal_strength, flip_g)
     rough = roughness_map(albedo, rough_base)
@@ -109,9 +127,10 @@ def main() -> None:
     ap.add_argument("--rough-base", type=int, default=160)
     ap.add_argument("--normal-strength", type=float, default=3.0)
     ap.add_argument("--flip-g", action="store_true")
+    ap.add_argument("--flatten", action="store_true")
     args = ap.parse_args()
     paths = derive(Path(args.albedo), Path(args.out_dir), args.name,
-                   args.metal, args.rough_base, args.normal_strength, args.flip_g)
+                   args.metal, args.rough_base, args.normal_strength, args.flip_g, args.flatten)
     for k, v in paths.items():
         print(f"  {k}: {v}")
 
