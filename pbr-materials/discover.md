@@ -5,7 +5,7 @@
 ## Subject
 
 Producing tileable **PBR material sets** (base color + normal + roughness + metallic + AO) that
-[Sounding](../../../tickets/docs/projects/sounding/project.md) (Bevy/Rust 3D) can drop into a
+Sounding (Bevy/Rust 3D) can drop into a
 `StandardMaterial`, using the clean Z-Image stack on `ai2`. As of 2026-06-22.
 
 ## Motivation

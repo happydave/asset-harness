@@ -3,8 +3,8 @@
 Repeatable, AI-leaning pipelines that turn prompts/specs into **game-ready assets**, so the
 games can lean on generation instead of manual art/CAD.
 
-Initiative record & backlog (source of truth):
-`tickets/docs/projects/asset-harness/project.md`.
+Per-track status lives in the [tracks table](#tracks--status) below; each track's own
+`README.md`, `discover.md`, and `findings/` hold the detail.
 
 ## How this repo is organized
 
