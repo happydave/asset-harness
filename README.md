@@ -48,3 +48,23 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
   used, note why local fell short.
 - Large generated outputs and model weights are git-ignored (see `.gitignore`); commit
   *representative samples* small enough to be useful, plus the findings that reproduce them.
+
+## License
+
+Licensed under either of
+
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+  <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
+
+at your option.
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
+
+**This license covers the harness itself** — the scripts, workflows, and docs in
+this repo. It does **not** relicense generated asset outputs: each generated asset
+carries its own effective license, determined by the *most restrictive link* in its
+model/LoRA/ControlNet chain (see [Conventions](#conventions)). Check an asset's
+`findings.md` before redistributing it.
