@@ -121,7 +121,58 @@ def spider_miner(path: Path) -> None:
     print(f"wrote {path}")
 
 
-SHIPS = {"hauler": hauler, "miner": miner, "spider_miner": spider_miner}
+def leg_segment(path: Path) -> None:
+    """One reusable spider-miner LEG SEGMENT (DWA WI 818), drawn horizontally.
+
+    Directional (unlike the radially-symmetric body): a single tapered mechanical limb segment
+    that DWA WI 817 stretches along each rig segment (root->knee, knee->tip) and rotates into
+    pose. Contract: length axis = +x, proximal joint knuckle at the LEFT (the rotation pivot),
+    tapering to a small drill point at the RIGHT; the INNER/tool edge (drill + rock-chainsaw
+    teeth) is the BOTTOM, the armored plate is the TOP. Clean high-contrast edges for Canny.
+    """
+    img, d = _canvas()
+    root_x, tip_x, cy = 250, 800, H // 2
+    root_half, tip_half = 96, 52
+
+    def half(x: float) -> float:
+        t = (x - root_x) / (tip_x - root_x)
+        return root_half + (tip_half - root_half) * t
+
+    # Tapered body (top armored edge + bottom tool edge).
+    body = [(root_x, cy - root_half), (tip_x, cy - tip_half),
+            (tip_x, cy + tip_half), (root_x, cy + root_half)]
+    d.polygon(body, fill=(165, 165, 165), outline=OUTLINE)
+    d.line(body + [body[0]], fill=OUTLINE, width=6, joint="curve")
+
+    # Proximal joint knuckle (the pivot) + bore.
+    d.ellipse((root_x - root_half, cy - root_half, root_x + root_half, cy + root_half),
+              fill=(125, 125, 125), outline=OUTLINE, width=6)
+    d.ellipse((root_x - 34, cy - 34, root_x + 34, cy + 34), fill=(75, 75, 75), outline=OUTLINE, width=4)
+
+    # Distal drill point.
+    d.polygon([(tip_x, cy - tip_half), (tip_x + 150, cy), (tip_x, cy + tip_half)],
+              fill=(140, 140, 140), outline=OUTLINE)
+    d.line([(tip_x, cy - tip_half), (tip_x + 150, cy), (tip_x, cy + tip_half)], fill=OUTLINE, width=6)
+
+    # Inner tool edge: a row of drill / rock-chainsaw teeth hanging below the bottom edge.
+    n_teeth = 9
+    for i in range(n_teeth):
+        x0 = root_x + (tip_x - root_x) * (i + 0.1) / n_teeth
+        x1 = root_x + (tip_x - root_x) * (i + 0.9) / n_teeth
+        xm = (x0 + x1) / 2
+        base = cy + half(xm)
+        d.polygon([(x0, base), (x1, base), (xm, base + 48)], fill=(110, 110, 110), outline=OUTLINE)
+        d.line([(x0, base), (xm, base + 48), (x1, base)], fill=OUTLINE, width=4)
+
+    # A couple of panel lines along the armored top edge.
+    for f in (0.30, 0.62):
+        x = root_x + (tip_x - root_x) * f
+        d.line((x, cy - half(x) + 10, x, cy - 12), fill=OUTLINE, width=4)
+    img.save(path)
+    print(f"wrote {path}")
+
+
+SHIPS = {"hauler": hauler, "miner": miner, "spider_miner": spider_miner, "leg_segment": leg_segment}
 
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
