@@ -2,7 +2,8 @@
 """Downstream post-processing: trim -> downscale -> pack into a Phaser texture atlas.
 
 Takes the RGBA sprites produced by the generator and turns them into engine-ready output:
-  1. trim each sprite to its alpha bounding box (drop empty margins),
+  1. trim each sprite to its alpha bounding box (drop empty margins; sub-threshold matting
+     specks are ignored via --alpha-threshold so speckly mattes still trim tight),
   2. downscale so the largest dimension == --max-dim (game resolution),
   3. shelf-pack the frames into a single atlas PNG,
   4. emit a Phaser-compatible JSON-Hash atlas descriptor.
@@ -20,9 +21,16 @@ from PIL import Image
 PAD = 2
 
 
-def trim_and_fit(path: Path, max_dim: int) -> Image.Image:
+def trim_and_fit(path: Path, max_dim: int, alpha_threshold: int = 0) -> Image.Image:
     im = Image.open(path).convert("RGBA")
-    bbox = im.getchannel("A").getbbox()
+    alpha = im.getchannel("A")
+    if alpha_threshold > 0:
+        # Ignore sub-threshold matting specks when finding the crop box: BiRefNet sometimes
+        # leaves faint alpha (< a few /255) across otherwise-transparent borders, which makes a
+        # naive getbbox() return the full frame. The retained crop is still taken from the
+        # original image, so subject pixels and anti-aliased edges are untouched.
+        alpha = alpha.point(lambda a: a if a >= alpha_threshold else 0)
+    bbox = alpha.getbbox()
     if bbox:
         im = im.crop(bbox)
     w, h = im.size
@@ -54,6 +62,9 @@ def main() -> None:
     ap.add_argument("--indir", default="outputs/fleet")
     ap.add_argument("--outdir", default="outputs/atlas")
     ap.add_argument("--max-dim", type=int, default=256)
+    ap.add_argument("--alpha-threshold", type=int, default=8,
+                    help="ignore alpha below this value when finding the trim bbox (drops "
+                         "sub-threshold matting specks); 0 = legacy any-nonzero-alpha behavior")
     ap.add_argument("--atlas-width", type=int, default=1024)
     ap.add_argument("--name", default="dwa_ships")
     ap.add_argument("--cell", type=int, default=0,
@@ -75,7 +86,7 @@ def main() -> None:
         if args.cell:
             im = Image.open(p).convert("RGBA").resize((args.cell, args.cell), Image.LANCZOS)
         else:
-            im = trim_and_fit(p, args.max_dim)
+            im = trim_and_fit(p, args.max_dim, args.alpha_threshold)
         im.save(outdir / "sprites" / f"{name}.png")   # also keep standalone sprites
         imgs.append((name, im))
 
