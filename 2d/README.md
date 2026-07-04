@@ -5,8 +5,9 @@ ControlNet + BiRefNet, all Apache/MIT, on `ai2` gfx1201). Validated:
 [single sprite](findings/2026-06-21-dwa-hauler-zimage-controlnet.md),
 [style-coherent fleet + atlas](findings/2026-06-21-fleet-style-anchor-and-atlas.md), and a
 [grid/slot station-module kit](findings/2026-06-21-station-modules-grid-kit.md) whose ports
-tile. The hauler now renders **in-game in DWA**. Remaining polish: data-driven port/rotation
-manifest, more module types, and the DWA-side composed-base render.
+tile, and a [radially-symmetric spider-miner body](findings/2026-07-03-dwa-spider-miner.md) for
+DWA WI 813. The hauler now renders **in-game in DWA**. Remaining polish: data-driven
+port/rotation manifest, more module types, and the DWA-side composed-base render.
 
 ## Purpose
 

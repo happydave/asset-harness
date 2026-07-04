@@ -7,6 +7,7 @@ Distinct silhouettes per ship type so the fleet reads as different vessels.
 
 Usage: python make_primitives.py <hauler|miner|all> [out_dir]
 """
+import math
 import sys
 from pathlib import Path
 from PIL import Image, ImageDraw
@@ -64,7 +65,63 @@ def miner(path: Path) -> None:
     print(f"wrote {path}")
 
 
-SHIPS = {"hauler": hauler, "miner": miner}
+def spider_miner(path: Path) -> None:
+    """Top-down, RADIALLY SYMMETRIC spider-miner body/head hub (DWA WI 813).
+
+    Not a directional ship: the DWA entity Image is drawn un-rotated (facing comes from the
+    procedural legs), so this primitive has NO front — it is mirror-symmetric across both axes
+    and 180deg-rotation symmetric (a hexagonal hub, 6-fold, ringed by an 8-fold socket layout).
+    Structure = central crusher core (concentric maw + radial teeth), the hexagonal hub, and
+    eight leg-root SOCKETS at the rig's `legRootAngle(i) = (i/8)*2pi` positions on the hub edge,
+    so the drawn legs land on the art. Clean high-contrast edges for Canny.
+    """
+    img, d = _canvas()
+    cx = cy = W // 2
+    n = 8
+
+    hub_r = 300          # hexagonal hub circumradius (centre to vertex)
+    socket_ring_r = 300  # sockets centred on the hub edge
+    socket_r = 46        # socket radius
+    core_r = 150         # crusher core outer radius
+
+    # Hexagonal hub (a hex reads as machined + keeps a symmetric silhouette).
+    hexagon = [
+        (cx + hub_r * math.cos(math.pi / 6 + k * math.pi / 3),
+         cy + hub_r * math.sin(math.pi / 6 + k * math.pi / 3))
+        for k in range(6)
+    ]
+    d.polygon(hexagon, fill=(165, 165, 165), outline=OUTLINE)
+    d.line(hexagon + [hexagon[0]], fill=OUTLINE, width=6, joint="curve")
+
+    # Eight leg-root sockets at the exact rig angles, on the hub edge.
+    for i in range(n):
+        a = (i / n) * 2 * math.pi          # legRootAngle(i)
+        sx = cx + socket_ring_r * math.cos(a)
+        sy = cy + socket_ring_r * math.sin(a)
+        d.ellipse((sx - socket_r, sy - socket_r, sx + socket_r, sy + socket_r),
+                  fill=(120, 120, 120), outline=OUTLINE, width=6)
+        # inner bore so the socket reads as an attachment point, not a bump
+        br = socket_r * 0.45
+        d.ellipse((sx - br, sy - br, sx + br, sy + br), fill=(75, 75, 75), outline=OUTLINE, width=3)
+
+    # Crusher core: outer ring, radial teeth, inner maw.
+    d.ellipse((cx - core_r, cy - core_r, cx + core_r, cy + core_r),
+              fill=(140, 140, 140), outline=OUTLINE, width=6)
+    tooth_in, tooth_out = core_r * 0.62, core_r * 0.98
+    for k in range(12):
+        a = k * (2 * math.pi / 12)
+        d.line((cx + tooth_in * math.cos(a), cy + tooth_in * math.sin(a),
+                cx + tooth_out * math.cos(a), cy + tooth_out * math.sin(a)),
+               fill=OUTLINE, width=5)
+    d.ellipse((cx - core_r * 0.55, cy - core_r * 0.55, cx + core_r * 0.55, cy + core_r * 0.55),
+              fill=(95, 95, 95), outline=OUTLINE, width=5)
+    d.ellipse((cx - core_r * 0.22, cy - core_r * 0.22, cx + core_r * 0.22, cy + core_r * 0.22),
+              fill=(60, 60, 60), outline=OUTLINE, width=4)
+    img.save(path)
+    print(f"wrote {path}")
+
+
+SHIPS = {"hauler": hauler, "miner": miner, "spider_miner": spider_miner}
 
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
