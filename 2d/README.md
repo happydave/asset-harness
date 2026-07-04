@@ -50,4 +50,6 @@ anchor approach is an explicit goal of this track, not an afterthought.
   remaining gaps. **Read this first.**
 - `findings/` — one filled-in copy of [`../_template/findings.md`](../_template/findings.md)
   per experiment.
-- `prototypes/` — workflows, scripts, and representative sample outputs.
+- `prototypes/` — workflows, scripts, and representative sample outputs. Run
+  `python3 prototypes/test_build_atlas.py` to regression-check the atlas post-processing
+  (trim / alpha-threshold / packing; stdlib + PIL, no pytest, exits non-zero on failure).
