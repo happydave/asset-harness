@@ -2,9 +2,11 @@
 
 **Status:** 🟢 pipeline working + imported in-engine — Z-Image albedo (`ai2`) + local clean
 derivation → Bevy-ready sets. See [discover.md](discover.md), the
-[hull + ground findings](findings/2026-06-22-pbr-hull-and-ground.md), and the
+[hull + ground findings](findings/2026-06-22-pbr-hull-and-ground.md), the
 [structural-material library](findings/2026-06-25-structural-material-library.md) (4 structural +
-3 surface sets; the structural four wired into Sounding WI 624).
+3 surface sets; the structural four wired into Sounding WI 624), and the
+[biome terrain library](findings/2026-07-07-terrain-library.md) (10 tileable terrain sets for
+Sounding's biome layer, WI 871 — adds `tone_balance` hue anchoring + a multi-scale tiling audit).
 
 ## Purpose
 

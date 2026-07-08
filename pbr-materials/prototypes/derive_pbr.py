@@ -31,6 +31,23 @@ def flatten_luminance(img: Image.Image, radius: int = 96) -> Image.Image:
     return Image.merge("RGB", out)
 
 
+def tone_balance(img: Image.Image, target: tuple) -> Image.Image:
+    """Rebalance each channel's mean onto a target sRGB colour (0-1 floats): a per-channel
+    multiplicative gain, capped at 2x, with the remainder applied as an additive offset. Texture
+    (relative variation) survives; the overall hue lands on the target — used to anchor terrain
+    albedos to their consuming biome tints (WI 871) instead of fighting the txt2img model's
+    colour bias in the prompt. The gain cap keeps a near-empty channel (e.g. blue in a brown
+    forest floor) from blowing bright details out to a false colour; the offset lifts the
+    channel floor instead. Pure PIL, deterministic."""
+    out = []
+    for ch, t in zip(img.convert("RGB").split(), target):
+        m = max(1.0, ImageStat.Stat(ch).mean[0])
+        g = min(2.0, (t * 255.0) / m)
+        off = t * 255.0 - m * g
+        out.append(ch.point(lambda v, g=g, off=off: int(max(0.0, min(255.0, v * g + off)))))
+    return Image.merge("RGB", out)
+
+
 def make_seamless(img: Image.Image, margin: int = 0) -> Image.Image:
     """Border cross-fade: blend the right margin toward the left edge (and bottom toward top).
 
@@ -81,11 +98,13 @@ def ao_map(height: Image.Image) -> Image.Image:
 
 def derive(albedo_path: Path, out_dir: Path, name: str,
            metal: float = 0.0, rough_base: int = 160, normal_strength: float = 4.0,
-           flip_g: bool = False, flatten: bool = False) -> dict:
+           flip_g: bool = False, flatten: bool = False, tone: tuple | None = None) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     src = Image.open(albedo_path).convert("RGB")
     if flatten:  # delight a baked lighting gradient before tiling (flat-metal albedos, WI 624)
         src = flatten_luminance(src)
+    if tone:  # anchor the mean colour to a target sRGB (terrain sets -> biome tints, WI 871)
+        src = tone_balance(src, tone)
     albedo = make_seamless(src)
     height = height_proxy(albedo)
     normal = normal_map(height, normal_strength, flip_g)

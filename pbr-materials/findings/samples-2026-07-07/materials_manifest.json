@@ -1,0 +1,320 @@
+{
+  "seed": 424242,
+  "size": 1024,
+  "server": "http://ai2:8188",
+  "materials": [
+    {
+      "name": "aluminium_panel",
+      "metal": 0.95,
+      "rough_base": 130,
+      "seed": 424242,
+      "normal_strength": 3.0,
+      "flatten": true,
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, light neutral silver-grey aluminium, surface densely covered edge to edge with fine horizontal hairline scratches, tiny scuffs and faint specks, uniform even tone, no central highlight, no gradient, no vignette, no panels, no rivets",
+      "maps": {
+        "albedo": "aluminium_panel_albedo.png",
+        "normal": "aluminium_panel_normal.png",
+        "metallic_roughness": "aluminium_panel_metallic_roughness.png",
+        "occlusion": "aluminium_panel_occlusion.png",
+        "height": "aluminium_panel_height.png"
+      }
+    },
+    {
+      "name": "basalt",
+      "metal": 0.0,
+      "rough_base": 190,
+      "seed": 424242,
+      "normal_strength": 4.0,
+      "flatten": false,
+      "tone": [
+        0.22,
+        0.22,
+        0.23
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, dark volcanic basalt lava plain from directly above, near-black grey vesicular basalt with fine pits and broken cooled plates, dry",
+      "maps": {
+        "albedo": "basalt_albedo.png",
+        "normal": "basalt_normal.png",
+        "metallic_roughness": "basalt_metallic_roughness.png",
+        "occlusion": "basalt_occlusion.png",
+        "height": "basalt_height.png"
+      }
+    },
+    {
+      "name": "basalt_rock",
+      "metal": 0.0,
+      "rough_base": 185,
+      "prompt": "seamless tileable PBR base color texture, flat even diffuse lighting, no shadows, no specular highlights, top-down orthographic, photoscan albedo, ultra detailed, dark volcanic basalt rock, near-black grey, vesicular pitted texture with sharp fractured facets, dry",
+      "maps": {
+        "albedo": "basalt_rock_albedo.png",
+        "normal": "basalt_rock_normal.png",
+        "metallic_roughness": "basalt_rock_metallic_roughness.png",
+        "occlusion": "basalt_rock_occlusion.png",
+        "height": "basalt_rock_height.png"
+      }
+    },
+    {
+      "name": "carbon_weave",
+      "metal": 0.1,
+      "rough_base": 120,
+      "seed": 424242,
+      "normal_strength": 4.0,
+      "flatten": true,
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, dark charcoal carbon fibre composite, uniform fine 2x2 twill weave repeating edge to edge across the whole frame, subtle iridescent threads, even matte tone, no central highlight, no gradient, no vignette",
+      "maps": {
+        "albedo": "carbon_weave_albedo.png",
+        "normal": "carbon_weave_normal.png",
+        "metallic_roughness": "carbon_weave_metallic_roughness.png",
+        "occlusion": "carbon_weave_occlusion.png",
+        "height": "carbon_weave_height.png"
+      }
+    },
+    {
+      "name": "forest_floor",
+      "metal": 0.0,
+      "rough_base": 195,
+      "seed": 424777,
+      "normal_strength": 4.0,
+      "flatten": true,
+      "tone": [
+        0.2,
+        0.28,
+        0.1
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, mossy forest floor from directly above, deep green moss and dark brown soil mixed evenly, scattered pine needles and small twigs, ground fills the whole frame full bleed, no border, no frame, no vignette, no rows, no clusters",
+      "maps": {
+        "albedo": "forest_floor_albedo.png",
+        "normal": "forest_floor_normal.png",
+        "metallic_roughness": "forest_floor_metallic_roughness.png",
+        "occlusion": "forest_floor_occlusion.png",
+        "height": "forest_floor_height.png"
+      }
+    },
+    {
+      "name": "grass",
+      "metal": 0.0,
+      "rough_base": 200,
+      "seed": 777001,
+      "normal_strength": 4.0,
+      "flatten": true,
+      "tone": [
+        0.35,
+        0.48,
+        0.22
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, short dry meadow grass seen from directly above, muted olive green turf with faint brown dry blades mixed in, fine blade texture, uniform density edge to edge, even tone, no stripes, no mowing lines, no gradient, natural and dull",
+      "maps": {
+        "albedo": "grass_albedo.png",
+        "normal": "grass_normal.png",
+        "metallic_roughness": "grass_metallic_roughness.png",
+        "occlusion": "grass_occlusion.png",
+        "height": "grass_height.png"
+      }
+    },
+    {
+      "name": "ice_sheet",
+      "metal": 0.0,
+      "rough_base": 75,
+      "prompt": "seamless tileable PBR base color texture, flat even diffuse lighting, no shadows, no specular highlights, top-down orthographic, photoscan albedo, ultra detailed, cracked glacial ice sheet, pale blue-white, frosted surface with fine fracture lines and embedded air bubbles, glossy",
+      "maps": {
+        "albedo": "ice_sheet_albedo.png",
+        "normal": "ice_sheet_normal.png",
+        "metallic_roughness": "ice_sheet_metallic_roughness.png",
+        "occlusion": "ice_sheet_occlusion.png",
+        "height": "ice_sheet_height.png"
+      }
+    },
+    {
+      "name": "mud",
+      "metal": 0.0,
+      "rough_base": 140,
+      "seed": 424242,
+      "normal_strength": 4.0,
+      "flatten": true,
+      "tone": [
+        0.2,
+        0.28,
+        0.16
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, dark greenish-brown damp organic swamp mud from directly above, matte, fine cracks and small ruts evenly across the whole frame, scattered tiny decaying leaf fragments, no shine, no highlights, no gradient",
+      "maps": {
+        "albedo": "mud_albedo.png",
+        "normal": "mud_normal.png",
+        "metallic_roughness": "mud_metallic_roughness.png",
+        "occlusion": "mud_occlusion.png",
+        "height": "mud_height.png"
+      }
+    },
+    {
+      "name": "regolith_coarse",
+      "metal": 0.0,
+      "rough_base": 210,
+      "seed": 777006,
+      "normal_strength": 4.0,
+      "flatten": true,
+      "tone": [
+        0.35,
+        0.35,
+        0.36
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, coarse lunar regolith from directly above, small angular grey rock fragments half-buried in grey dust, evenly scattered edge to edge, uniform density, no large boulders, no empty areas, no gradient",
+      "maps": {
+        "albedo": "regolith_coarse_albedo.png",
+        "normal": "regolith_coarse_normal.png",
+        "metallic_roughness": "regolith_coarse_metallic_roughness.png",
+        "occlusion": "regolith_coarse_occlusion.png",
+        "height": "regolith_coarse_height.png"
+      }
+    },
+    {
+      "name": "regolith_fine",
+      "metal": 0.0,
+      "rough_base": 225,
+      "seed": 777005,
+      "normal_strength": 3.0,
+      "flatten": true,
+      "tone": [
+        0.51,
+        0.5,
+        0.49
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, fine lunar regolith from directly above, neutral medium grey powder dust, uniform fine grain with tiny pits and small compacted clods edge to edge, even tone, no rocks, no stones, no gradient, dry airless soil",
+      "maps": {
+        "albedo": "regolith_fine_albedo.png",
+        "normal": "regolith_fine_normal.png",
+        "metallic_roughness": "regolith_fine_metallic_roughness.png",
+        "occlusion": "regolith_fine_occlusion.png",
+        "height": "regolith_fine_height.png"
+      }
+    },
+    {
+      "name": "rock",
+      "metal": 0.0,
+      "rough_base": 190,
+      "seed": 424242,
+      "normal_strength": 4.0,
+      "flatten": false,
+      "tone": [
+        0.4,
+        0.39,
+        0.38
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, fractured rock scree from directly above, angular broken mid-grey stone fragments over exposed cracked bedrock, neutral grey, dry mountain surface",
+      "maps": {
+        "albedo": "rock_albedo.png",
+        "normal": "rock_normal.png",
+        "metallic_roughness": "rock_metallic_roughness.png",
+        "occlusion": "rock_occlusion.png",
+        "height": "rock_height.png"
+      }
+    },
+    {
+      "name": "sand",
+      "metal": 0.0,
+      "rough_base": 215,
+      "seed": 777002,
+      "normal_strength": 3.0,
+      "flatten": true,
+      "tone": [
+        0.74,
+        0.65,
+        0.44
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, fine desert sand from directly above, pale desaturated beige tan, small closely spaced fine wind ripples repeating edge to edge, uniform even muted tone, no large dunes, no gradient, dry granular surface, dull natural colour",
+      "maps": {
+        "albedo": "sand_albedo.png",
+        "normal": "sand_normal.png",
+        "metallic_roughness": "sand_metallic_roughness.png",
+        "occlusion": "sand_occlusion.png",
+        "height": "sand_height.png"
+      }
+    },
+    {
+      "name": "sand_dune",
+      "metal": 0.0,
+      "rough_base": 215,
+      "prompt": "seamless tileable PBR base color texture, flat even diffuse lighting, no shadows, no specular highlights, top-down orthographic, photoscan albedo, ultra detailed, fine wind-rippled desert sand, warm tan dunes, soft granular ripples, natural",
+      "maps": {
+        "albedo": "sand_dune_albedo.png",
+        "normal": "sand_dune_normal.png",
+        "metallic_roughness": "sand_dune_metallic_roughness.png",
+        "occlusion": "sand_dune_occlusion.png",
+        "height": "sand_dune_height.png"
+      }
+    },
+    {
+      "name": "snow",
+      "metal": 0.0,
+      "rough_base": 140,
+      "seed": 777004,
+      "normal_strength": 2.5,
+      "flatten": true,
+      "tone": [
+        0.85,
+        0.9,
+        0.95
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, smooth clean packed snow from directly above, bright blue-white, uniform fine grain and faint small ripples edge to edge, even tone, no footprints, no tracks, no debris, no rocks, no gradient",
+      "maps": {
+        "albedo": "snow_albedo.png",
+        "normal": "snow_normal.png",
+        "metallic_roughness": "snow_metallic_roughness.png",
+        "occlusion": "snow_occlusion.png",
+        "height": "snow_height.png"
+      }
+    },
+    {
+      "name": "steel_plate",
+      "metal": 1.0,
+      "rough_base": 100,
+      "seed": 424242,
+      "normal_strength": 3.5,
+      "flatten": true,
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, medium blue-grey stainless steel, busy surface covered edge to edge with fine criss-cross scratches, scattered scuffs, small pits and faint mottled grain, uniform even tone, no central highlight, no gradient, no panels, no seams",
+      "maps": {
+        "albedo": "steel_plate_albedo.png",
+        "normal": "steel_plate_normal.png",
+        "metallic_roughness": "steel_plate_metallic_roughness.png",
+        "occlusion": "steel_plate_occlusion.png",
+        "height": "steel_plate_height.png"
+      }
+    },
+    {
+      "name": "steppe",
+      "metal": 0.0,
+      "rough_base": 210,
+      "seed": 424242,
+      "normal_strength": 4.0,
+      "flatten": false,
+      "tone": [
+        0.5,
+        0.47,
+        0.3
+      ],
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, dry steppe grassland from directly above, sparse straw-yellow dry grass tufts and pale lichen on dusty grey-brown cracked soil, arid ground",
+      "maps": {
+        "albedo": "steppe_albedo.png",
+        "normal": "steppe_normal.png",
+        "metallic_roughness": "steppe_metallic_roughness.png",
+        "occlusion": "steppe_occlusion.png",
+        "height": "steppe_height.png"
+      }
+    },
+    {
+      "name": "titanium_panel",
+      "metal": 0.9,
+      "rough_base": 150,
+      "seed": 991733,
+      "normal_strength": 2.5,
+      "flatten": true,
+      "prompt": "seamless tileable PBR albedo texture swatch, flat lay overhead scan, even diffuse, no shadows no specular highlights no reflections, uniform tone edge to edge, fine surface texture filling the whole frame, ultra detailed, warm neutral grey titanium with a faint gold tint, dense uniform fine sandblasted micro-texture and tiny scratches across the whole frame, even matte tone, no central highlight, no radial sweep, no gradient, no panels, no squares, no grid",
+      "maps": {
+        "albedo": "titanium_panel_albedo.png",
+        "normal": "titanium_panel_normal.png",
+        "metallic_roughness": "titanium_panel_metallic_roughness.png",
+        "occlusion": "titanium_panel_occlusion.png",
+        "height": "titanium_panel_height.png"
+      }
+    }
+  ]
+}
