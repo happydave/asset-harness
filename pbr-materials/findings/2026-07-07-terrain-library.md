@@ -85,3 +85,16 @@ No LoRA/ControlNet, no hosted services. Effective license: clean for redistribut
   fallback until then. B5's in-engine UV scale is the remaining unaudited regime (deferred by
   the work item).
 - Height maps and tiled previews stay banked here (contract is 4 maps, WI 624 precedent).
+
+## Addendum (2026-07-08): KTX2 array packing for the splat shader (WI 872)
+
+`prototypes/pack_terrain_ktx2.py` repacks the library into the three texture arrays
+Sounding's splat shader consumes — `terrain_albedo.ktx2` (sRGB), `terrain_normal.ktx2`
+(linear), `terrain_surface.ktx2` (linear; R=roughness, G=AO, **B=the banked height**,
+metallic dropped — terrain is dielectric) — 10 layers each in the same **alphabetical**
+order as `TERRAIN_TEXTURE_LAYERS` in Sounding (`crates/sim/src/biome.rs`), full mip
+chains with **wrap-mode filtering** (mip edges of tiling textures must tile), UASTC +
+zstd. Tool: Khronos **`ktx create`** v5.0.0-rc1 (`/opt/KTX-Software/build/Release/ktx`;
+owner-provisioned), outputs `ktx validate`d. Gotcha recorded: untagged PNG inputs get a
+silent, *lossy* sRGB→linear value conversion — data maps require `--assign-tf linear`
+(albedo `srgb`, explicit). Bevy loads these with the `basis-universal` feature.
