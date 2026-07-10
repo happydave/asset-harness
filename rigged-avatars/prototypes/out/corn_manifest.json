@@ -1,0 +1,103 @@
+{
+  "asset": "Kerbal-tier corn-cob person (Direction B) \u2014 head: cob",
+  "generator_script": "blender_corn.py",
+  "frame": "authored Z-up; exported +Y up, metres",
+  "bind": "rigid: each part object-parented to one bone; no skin weights",
+  "head_variant": "cob",
+  "clips": {
+    "walk": {
+      "loop": true,
+      "fps": 24,
+      "frame_start": 1,
+      "frame_end": 25,
+      "nominal_duration_s": 1.0,
+      "events": [
+        {
+          "frame": 1,
+          "phase": 0.0,
+          "type": "foot_plant",
+          "foot": "L"
+        },
+        {
+          "frame": 13,
+          "phase": 0.5,
+          "type": "foot_lift",
+          "foot": "L"
+        },
+        {
+          "frame": 13,
+          "phase": 0.5,
+          "type": "foot_plant",
+          "foot": "R"
+        },
+        {
+          "frame": 25,
+          "phase": 1.0,
+          "type": "foot_lift",
+          "foot": "R"
+        }
+      ]
+    },
+    "idle": {
+      "loop": true,
+      "fps": 24,
+      "frame_start": 1,
+      "frame_end": 48,
+      "nominal_duration_s": 1.9583,
+      "events": []
+    }
+  },
+  "bones": [
+    "hips",
+    "spine",
+    "chest",
+    "neck",
+    "head",
+    "shoulder.L",
+    "upper_arm.L",
+    "forearm.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "foot.L",
+    "shoulder.R",
+    "upper_arm.R",
+    "forearm.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "foot.R"
+  ],
+  "parts": {
+    "pelvis": "hips",
+    "cob": "spine",
+    "husk.0": "chest",
+    "husk.1": "chest",
+    "husk.2": "chest",
+    "cob_head": "head",
+    "tuft_0": "head",
+    "tuft_1": "head",
+    "tuft_2": "head",
+    "eye.001": "head",
+    "eye": "head",
+    "smile": "head",
+    "upper_arm_m.L": "upper_arm.L",
+    "forearm_m.L": "forearm.L",
+    "hand_m.L": "hand.L",
+    "thigh_m.L": "thigh.L",
+    "shin_m.L": "shin.L",
+    "foot_m.L": "foot.L",
+    "upper_arm_m.R": "upper_arm.R",
+    "forearm_m.R": "forearm.R",
+    "hand_m.R": "hand.R",
+    "thigh_m.R": "thigh.R",
+    "shin_m.R": "shin.R",
+    "foot_m.R": "foot.R"
+  },
+  "failure_transform": {
+    "on": "catastrophic_failure",
+    "to": "popcorn_burst.glb",
+    "action": "despawn avatar, spawn burst at its transform"
+  },
+  "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion"
+}

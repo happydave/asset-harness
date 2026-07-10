@@ -31,3 +31,9 @@ env/
 
 # mechanical-kit AI material sets — regenerable (gen_part_materials.py) + embedded in parts/*.glb
 mechanical-kit/prototypes/materials/
+
+# rigged-avatars: preview contact-sheets + separate-file debug exports are regenerable bulk.
+# The deliverable glbs + manifests + the head bake-off montage are committed as representative samples.
+rigged-avatars/prototypes/out/*_walk_*.png
+rigged-avatars/prototypes/out/pop_*.png
+rigged-avatars/prototypes/out/debug/

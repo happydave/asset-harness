@@ -34,7 +34,7 @@ API-JSON).
 | [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | 🟡 20 AI-textured parts in `parts/` (rover + rocket-domain + fittings), mount-at-origin, for Sounding WI 608 |
 | [vfx](vfx/) | AI base particle textures + engine particle systems | 🟡 thruster flame sprites (plume/puff/spark) |
 | [audio](audio/) | Generated SFX + music/ambient → ffmpeg post → engine | 🟢 SFX (Stable Audio 3) + ambient music (ACE-Step) → ffmpeg loop post; thruster set in DWA |
-| [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig (deferred) | ⚪ not started |
+| [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig | 🟡 **Prototypes A + B work** (no AI, clean license): (A) rigid robot walks; (B) Kerbal-tier corn-person + **corn→popcorn failure transform** (reuses A rig). AI-mesh comparison = owner-run recipe |
 
 Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
 

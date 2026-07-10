@@ -1,0 +1,18 @@
+{
+  "asset": "popcorn burst \u2014 failure state of the corn person",
+  "generator_script": "blender_corn.py",
+  "frame": "authored Z-up; exported +Y up, metres",
+  "clips": {
+    "pop": {
+      "loop": false,
+      "one_shot": true,
+      "fps": 24,
+      "frame_start": 1,
+      "frame_end": 14,
+      "nominal_duration_s": 0.5417,
+      "events": []
+    }
+  },
+  "is_failure_state_of": "corn.glb",
+  "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion"
+}
