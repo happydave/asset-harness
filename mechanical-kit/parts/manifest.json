@@ -326,5 +326,21 @@
   },
   "textured": true,
   "texture_size": 256,
-  "surfaces": "AI PBR (pbr-materials: Z-Image albedo -> normal/metallic-roughness), embedded in glb"
+  "surfaces": "AI PBR (pbr-materials: Z-Image albedo -> normal/metallic-roughness), embedded in glb",
+  "schema_version": 1,
+  "id": "rover-parts",
+  "class": "mechanical-part-collection",
+  "license_record": {
+    "status": "clean",
+    "commercial_in_game": true,
+    "standalone_redistributable": true,
+    "source": {
+      "kind": "local-generation",
+      "note": "asset-harness clean lane; AI PBR surfaces generated locally (pbr-materials)"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "blender_parts.py"
+  }
 }

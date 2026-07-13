@@ -52,6 +52,28 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
 - Large generated outputs and model weights are git-ignored (see `.gitignore`); commit
   *representative samples* small enough to be useful, plus the findings that reproduce them.
 
+## Manifest validation (contracts gate)
+
+Sidecar manifests conform to the **Asset Studio contracts schema** (`schema_version 1`).
+The schema + a dependency-free validator are **vendored** at [`contracts/`](contracts/)
+with a `PIN` recording the pinned contracts version and per-file hashes; the source of
+truth lives in the asset-studio repo (`packages/contracts/`).
+
+**Gate (run before committing any change that touches a manifest or `contracts/`):**
+
+```
+python3 tools/validate_manifests.py
+```
+
+This is the CI gate under this repo's plain-python check convention (cf.
+`2d/prototypes/test_build_atlas.py`). It verifies the vendored files against `PIN`
+(hand-edits and un-pinned updates fail), then validates each known sidecar manifest.
+**PIN update rule:** contracts updates arrive only by re-running asset-studio's
+`packages/contracts/python/vendor_to_harness.py <this-repo>`, which rewrites the vendored
+files *and* the PIN together. Note: the generators do not yet emit the schema_version-1
+core fields themselves — if a regenerated manifest fails the gate, re-run asset-studio's
+`migrate_sidecars.py` (follow-up work item covers generator emission).
+
 ## License
 
 Licensed under either of

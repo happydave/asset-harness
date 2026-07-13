@@ -14,5 +14,21 @@
     }
   },
   "is_failure_state_of": "corn.glb",
-  "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion"
+  "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion",
+  "schema_version": 1,
+  "id": "popcorn-burst",
+  "class": "rigged-avatar",
+  "license_record": {
+    "status": "clean",
+    "commercial_in_game": true,
+    "standalone_redistributable": true,
+    "source": {
+      "kind": "authored"
+    },
+    "text": "clean: Blender (GPL) + authored geometry + hand-keyed motion"
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "blender_corn.py"
+  }
 }
