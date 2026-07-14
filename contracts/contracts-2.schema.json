@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://asset-studio.local/contracts-1.schema.json",
+  "$id": "https://asset-studio.local/contracts-2.schema.json",
   "title": "AssetStudioContracts",
-  "description": "Asset Studio cross-repo contracts, schema_version 1. Validation targets are the named definitions (e.g. #/definitions/sidecarManifest); the root is a container only. All record objects are open (additionalProperties true) unless a definition says otherwise; free-form values route through safeValue, which is the structural token-free layer (WI 902 invariant 1).",
+  "description": "Asset Studio cross-repo contracts, schema_version 2 (adds the sprite-atlas, material-set and audio-collection entry classes; schema_version 1 defined only rigged-avatar and mechanical-part-collection). Validation targets are the named definitions (e.g. #/definitions/sidecarManifest); the root is a container only. All record objects are open (additionalProperties true) unless a definition says otherwise; free-form values route through safeValue, which is the structural token-free layer (WI 902 invariant 1).",
   "definitions": {
     "idSlug": {
       "type": "string",
@@ -117,7 +117,7 @@
       "type": "object",
       "required": ["schema_version", "id", "class", "frame", "license_record", "provenance"],
       "properties": {
-        "schema_version": { "const": 1 },
+        "schema_version": { "const": 2 },
         "id": { "$ref": "#/definitions/idSlug" },
         "class": { "const": "rigged-avatar" },
         "frame": { "type": "string" },
@@ -163,7 +163,7 @@
       "type": "object",
       "required": ["schema_version", "id", "class", "frame", "cell_size", "license_record", "provenance", "parts"],
       "properties": {
-        "schema_version": { "const": 1 },
+        "schema_version": { "const": 2 },
         "id": { "$ref": "#/definitions/idSlug" },
         "class": { "const": "mechanical-part-collection" },
         "frame": { "type": "string" },
@@ -181,10 +181,150 @@
       },
       "additionalProperties": true
     },
+    "frameRect": {
+      "type": "object",
+      "required": ["frame"],
+      "properties": {
+        "frame": {
+          "type": "object",
+          "required": ["x", "y", "w", "h"],
+          "properties": {
+            "x": { "type": "integer" },
+            "y": { "type": "integer" },
+            "w": { "type": "integer", "minimum": 0 },
+            "h": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "rotated": { "type": "boolean" },
+        "trimmed": { "type": "boolean" },
+        "spriteSourceSize": { "$ref": "#/definitions/safeObject" },
+        "sourceSize": { "$ref": "#/definitions/safeObject" }
+      },
+      "additionalProperties": true
+    },
+    "spriteAtlasEntry": {
+      "type": "object",
+      "required": ["schema_version", "id", "class", "license_record", "provenance", "frames", "meta"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "id": { "$ref": "#/definitions/idSlug" },
+        "class": { "const": "sprite-atlas" },
+        "license_record": { "$ref": "#/definitions/licenseRecord" },
+        "provenance": { "$ref": "#/definitions/provenance" },
+        "frames": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/frameRect" }
+        },
+        "meta": {
+          "type": "object",
+          "required": ["image"],
+          "properties": {
+            "app": { "type": "string" },
+            "image": { "type": "string" },
+            "format": { "type": "string" },
+            "size": { "$ref": "#/definitions/safeObject" },
+            "scale": { "type": ["number", "string"] }
+          },
+          "additionalProperties": true
+        },
+        "frame": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "materialRecord": {
+      "type": "object",
+      "required": ["name", "maps"],
+      "properties": {
+        "name": { "type": "string" },
+        "maps": {
+          "type": "object",
+          "required": ["albedo"],
+          "properties": {
+            "albedo": { "type": "string" },
+            "normal": { "type": "string" },
+            "metallic_roughness": { "type": "string" },
+            "occlusion": { "type": "string" },
+            "height": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "metal": { "type": "number" },
+        "rough_base": { "type": "number" },
+        "seed": { "type": ["integer", "string", "null"] },
+        "normal_strength": { "type": "number" },
+        "flatten": { "type": "boolean" },
+        "tone": { "type": "array", "items": { "type": "number" } },
+        "prompt": { "$ref": "#/definitions/safeString" }
+      },
+      "additionalProperties": true
+    },
+    "materialSetEntry": {
+      "type": "object",
+      "required": ["schema_version", "id", "class", "license_record", "provenance", "materials"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "id": { "$ref": "#/definitions/idSlug" },
+        "class": { "const": "material-set" },
+        "license_record": { "$ref": "#/definitions/licenseRecord" },
+        "provenance": { "$ref": "#/definitions/provenance" },
+        "materials": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/materialRecord" }
+        },
+        "size": { "type": "number" },
+        "seed": { "type": ["integer", "string", "null"] },
+        "server": { "$ref": "#/definitions/safeString" },
+        "frame": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "audioClip": {
+      "type": "object",
+      "required": ["name", "file"],
+      "properties": {
+        "name": { "type": "string" },
+        "file": { "type": "string" },
+        "format": { "type": "string" },
+        "loop": { "type": "boolean" },
+        "duration_s": { "type": "number" },
+        "sample_rate": { "type": "integer" },
+        "channels": { "type": "integer" },
+        "seed": { "type": ["integer", "string", "null"] },
+        "lufs_target": { "type": "number" },
+        "bpm": { "type": "number" },
+        "key": { "$ref": "#/definitions/safeString" },
+        "tags": { "$ref": "#/definitions/safeString" },
+        "prompt": { "$ref": "#/definitions/safeString" }
+      },
+      "additionalProperties": true
+    },
+    "audioCollectionEntry": {
+      "type": "object",
+      "required": ["schema_version", "id", "class", "license_record", "provenance", "clips"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "id": { "$ref": "#/definitions/idSlug" },
+        "class": { "const": "audio-collection" },
+        "license_record": { "$ref": "#/definitions/licenseRecord" },
+        "provenance": { "$ref": "#/definitions/provenance" },
+        "clips": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/audioClip" }
+        },
+        "frame": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
     "sidecarManifest": {
       "oneOf": [
         { "$ref": "#/definitions/riggedAvatarEntry" },
-        { "$ref": "#/definitions/mechanicalCollectionEntry" }
+        { "$ref": "#/definitions/mechanicalCollectionEntry" },
+        { "$ref": "#/definitions/spriteAtlasEntry" },
+        { "$ref": "#/definitions/materialSetEntry" },
+        { "$ref": "#/definitions/audioCollectionEntry" }
       ]
     },
     "providerDescriptor": {
@@ -286,7 +426,7 @@
       "type": "object",
       "required": ["schema_version", "game", "resolved"],
       "properties": {
-        "schema_version": { "const": 1 },
+        "schema_version": { "const": 2 },
         "game": { "type": "string" },
         "resolved": {
           "type": "array",

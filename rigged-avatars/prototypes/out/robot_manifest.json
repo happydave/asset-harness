@@ -91,7 +91,7 @@
     "foot_m.R": "foot.R"
   },
   "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion",
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "robot",
   "class": "rigged-avatar",
   "license_record": {

@@ -54,10 +54,19 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
 
 ## Manifest validation (contracts gate)
 
-Sidecar manifests conform to the **Asset Studio contracts schema** (`schema_version 1`).
+Sidecar manifests conform to the **Asset Studio contracts schema** (`schema_version 2`).
 The schema + a dependency-free validator are **vendored** at [`contracts/`](contracts/)
 with a `PIN` recording the pinned contracts version and per-file hashes; the source of
 truth lives in the asset-studio repo (`packages/contracts/`).
+
+Fifteen committed sidecars are gated, across five entry classes: `rigged-avatar` (the three
+avatars), `mechanical-part-collection` (the rover parts kit), `sprite-atlas` (the six committed
+2D atlases — the catalog keys sit *beside* the `frames`/`meta` blocks Phaser loads, which are
+untouched), `material-set` (the two PBR sample sets), and `audio-collection` (the three audio
+sample sets, whose manifests are authored by
+[`audio/prototypes/write_audio_manifests.py`](audio/prototypes/write_audio_manifests.py) —
+it folds the generators' own `SFX[]`/`TRACKS[]` parameters together with what `ffprobe` measures
+from the shipped `.ogg` files).
 
 **Gate (run before committing any change that touches a manifest or `contracts/`):**
 
@@ -70,8 +79,9 @@ This is the CI gate under this repo's plain-python check convention (cf.
 (hand-edits and un-pinned updates fail), then validates each known sidecar manifest.
 **PIN update rule:** contracts updates arrive only by re-running asset-studio's
 `packages/contracts/python/vendor_to_harness.py <this-repo>`, which rewrites the vendored
-files *and* the PIN together. Note: the generators do not yet emit the schema_version-1
-core fields themselves — if a regenerated manifest fails the gate, re-run asset-studio's
+files *and* the PIN together (it also removes vendored files the new PIN no longer names, so a
+schema-version bump cannot leave a stale schema behind). Note: the generators do not yet emit the
+catalog core fields themselves — if a regenerated manifest fails the gate, re-run asset-studio's
 `migrate_sidecars.py` (follow-up work item covers generator emission).
 
 ## License

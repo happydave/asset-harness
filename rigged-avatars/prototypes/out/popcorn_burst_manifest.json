@@ -15,7 +15,7 @@
   },
   "is_failure_state_of": "corn.glb",
   "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion",
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "popcorn-burst",
   "class": "rigged-avatar",
   "license_record": {

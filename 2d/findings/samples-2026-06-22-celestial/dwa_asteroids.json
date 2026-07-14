@@ -110,5 +110,21 @@
       "h": 514
     },
     "scale": 1
+  },
+  "schema_version": 2,
+  "id": "dwa-asteroids",
+  "class": "sprite-atlas",
+  "license_record": {
+    "status": "clean",
+    "commercial_in_game": true,
+    "standalone_redistributable": true,
+    "source": {
+      "kind": "local-generation",
+      "note": "Z-Image Turbo (Apache 2.0) engine, no LoRAs/finetunes; local deterministic post"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "build_atlas.py"
   }
 }

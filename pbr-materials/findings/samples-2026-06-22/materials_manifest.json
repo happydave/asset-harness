@@ -26,5 +26,21 @@
         "height": "rocky_ground_height.png"
       }
     }
-  ]
+  ],
+  "schema_version": 2,
+  "id": "pbr-prototype-set",
+  "class": "material-set",
+  "license_record": {
+    "status": "clean",
+    "commercial_in_game": true,
+    "standalone_redistributable": true,
+    "source": {
+      "kind": "local-generation",
+      "note": "Z-Image Turbo (Apache 2.0) engine, no LoRAs/finetunes; local deterministic post"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "derive_pbr.py"
+  }
 }

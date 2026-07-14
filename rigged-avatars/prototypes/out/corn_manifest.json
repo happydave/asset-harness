@@ -100,7 +100,7 @@
     "action": "despawn avatar, spawn burst at its transform"
   },
   "license": "clean: Blender (GPL) + authored geometry + hand-keyed motion",
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "corn",
   "class": "rigged-avatar",
   "license_record": {

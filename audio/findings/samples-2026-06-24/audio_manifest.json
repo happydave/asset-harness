@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "id": "dwa-thruster-set",
+  "class": "audio-collection",
+  "license_record": {
+    "status": "conditional",
+    "commercial_in_game": true,
+    "standalone_redistributable": false,
+    "source": {
+      "kind": "provider-tos",
+      "note": "Stable Audio 3 Medium under the Stability Community License: commercial use revenue-gated under $1M/yr and bundling T5Gemma/Gemma terms; cleared for in-game use, not for standalone redistribution"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "generate_sfx.py"
+  },
+  "clips": [
+    {
+      "name": "thruster_start",
+      "file": "thruster_start.ogg",
+      "format": "ogg",
+      "duration_s": 2.043,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": false,
+      "seed": 415,
+      "lufs_target": -16,
+      "prompt": "Powerful spaceship rocket engine ignition, a deep low-end thump and pressurized whoosh spooling up into a sustained resonant low-frequency roar, smooth and building, full-bodied, no hiss, no static."
+    },
+    {
+      "name": "thruster_stop",
+      "file": "thruster_stop.ogg",
+      "format": "ogg",
+      "duration_s": 1.85,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": false,
+      "seed": 416,
+      "lufs_target": -16,
+      "prompt": "Powerful spaceship rocket engine shutdown, a deep low roar winding down through a descending pitch into a soft mechanical thud and silence, smooth spool-down, no hiss, no static."
+    }
+  ]
+}

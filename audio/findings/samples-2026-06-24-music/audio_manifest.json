@@ -1,0 +1,62 @@
+{
+  "schema_version": 2,
+  "id": "ambient-beds",
+  "class": "audio-collection",
+  "license_record": {
+    "status": "clean",
+    "commercial_in_game": true,
+    "standalone_redistributable": true,
+    "source": {
+      "kind": "local-generation",
+      "note": "ACE-Step 1.5 (MIT); instrumental/ambient only, per the track's shipping rule"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "generate_music.py"
+  },
+  "clips": [
+    {
+      "name": "ambient_deep_space",
+      "file": "ambient_deep_space.ogg",
+      "format": "ogg",
+      "duration_s": 43.5,
+      "sample_rate": 48000,
+      "channels": 2,
+      "loop": true,
+      "seed": 501,
+      "lufs_target": -23,
+      "bpm": 60,
+      "key": "A minor",
+      "tags": "ambient, dark ambient, space, instrumental, slow evolving synth pads, deep drones, distant shimmer, sub bass, no drums, no vocals, cinematic, vast, lonely"
+    },
+    {
+      "name": "ambient_exploration",
+      "file": "ambient_exploration.ogg",
+      "format": "ogg",
+      "duration_s": 43.5,
+      "sample_rate": 48000,
+      "channels": 2,
+      "loop": true,
+      "seed": 502,
+      "lufs_target": -23,
+      "bpm": 70,
+      "key": "C major",
+      "tags": "ambient, instrumental, calm, wondrous, warm synth pads, soft slow arpeggio, gentle bells, airy texture, no drums, no vocals, hopeful, spacious, cinematic"
+    },
+    {
+      "name": "ambient_tense",
+      "file": "ambient_tense.ogg",
+      "format": "ogg",
+      "duration_s": 43.5,
+      "sample_rate": 48000,
+      "channels": 2,
+      "loop": true,
+      "seed": 503,
+      "lufs_target": -22,
+      "bpm": 80,
+      "key": "D minor",
+      "tags": "dark ambient, instrumental, suspenseful, ominous low drone, subtle pulsing bass, dissonant pads, industrial tension, no melody, no vocals, brooding, cinematic"
+    }
+  ]
+}

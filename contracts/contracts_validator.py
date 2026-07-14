@@ -2,7 +2,7 @@
 
 This module is vendored into asset-harness (contracts/) so manifest validation runs
 with plain host python3 and no third-party imports (WI 902 invariant 3). It implements
-exactly the constructs used by contracts-1.schema.json:
+exactly the constructs used by contracts-2.schema.json:
 
     type (string or list), required, properties, additionalProperties (bool or schema),
     patternProperties, propertyNames, enum, const, pattern, items (single schema),

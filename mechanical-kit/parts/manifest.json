@@ -327,7 +327,7 @@
   "textured": true,
   "texture_size": 256,
   "surfaces": "AI PBR (pbr-materials: Z-Image albedo -> normal/metallic-roughness), embedded in glb",
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "rover-parts",
   "class": "mechanical-part-collection",
   "license_record": {

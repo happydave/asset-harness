@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "id": "dwa-sfx",
+  "class": "audio-collection",
+  "license_record": {
+    "status": "conditional",
+    "commercial_in_game": true,
+    "standalone_redistributable": false,
+    "source": {
+      "kind": "provider-tos",
+      "note": "Stable Audio 3 Medium under the Stability Community License: commercial use revenue-gated under $1M/yr and bundling T5Gemma/Gemma terms; cleared for in-game use, not for standalone redistribution"
+    }
+  },
+  "provenance": {
+    "source_of_truth": "manual-import",
+    "generator_script": "generate_sfx.py"
+  },
+  "clips": [
+    {
+      "name": "impact_metal",
+      "file": "impact_metal.ogg",
+      "format": "ogg",
+      "duration_s": 1.627,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": false,
+      "seed": 103,
+      "lufs_target": -14,
+      "prompt": "Heavy metal-on-metal collision impact, deep bass thud with a sharp metallic clang and a short ringing decay, dry, close perspective."
+    },
+    {
+      "name": "station_hum",
+      "file": "station_hum.ogg",
+      "format": "ogg",
+      "duration_s": 11.381,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "seed": 104,
+      "lufs_target": -22,
+      "prompt": "Space station interior ambience, low steady mechanical drone with a subtle electrical buzz and distant air-handling, smooth and continuous, spacious."
+    },
+    {
+      "name": "thruster_loop",
+      "file": "thruster_loop.ogg",
+      "format": "ogg",
+      "duration_s": 5.637,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": true,
+      "seed": 412,
+      "lufs_target": -18,
+      "prompt": "Powerful spaceship rocket engine sustained burn, deep resonant low-frequency roar and thick warm sub-bass rumble, smooth full-bodied drone, steady and continuous, no hiss, no transients, no static."
+    },
+    {
+      "name": "ui_click",
+      "file": "ui_click.ogg",
+      "format": "ogg",
+      "duration_s": 0.177,
+      "sample_rate": 44100,
+      "channels": 2,
+      "loop": false,
+      "seed": 101,
+      "lufs_target": -16,
+      "prompt": "Soft futuristic user-interface button click, a single short crisp digital tick with a subtle synthetic resonance, clean and dry, very close perspective."
+    }
+  ]
+}
