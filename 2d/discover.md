@@ -75,6 +75,7 @@ The **effective output license is the most restrictive artifact in the chain.**
 | Artifact (on ai2) | Origin | License | Commercial / clean pack? | Confidence |
 |---|---|---|---|---|
 | `z_image_turbo_bf16` | Alibaba Tongyi (Z-Image) | **Apache 2.0** | ✅ Yes | Confirmed |
+| `z_image_bf16` (Base) | Alibaba Tongyi (Z-Image) | **Apache 2.0** | ✅ Yes | Confirmed |
 | `zimageTurboBadmilk_v10` | community ZIT finetune | inherits ZIT? own card unverified | ⚠️ verify | Inconclusive |
 | `flux2Klein_9bBase` | Black Forest Labs | **FLUX.2-dev Non-Commercial** | ❌ No (prototype only) | Confirmed |
 | FLUX.2 **klein 4B** *(not installed)* | Black Forest Labs | **Apache 2.0** | ✅ Yes | Confirmed |

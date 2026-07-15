@@ -22,12 +22,32 @@ from pathlib import Path
 import requests
 
 # --- installed artifact names on the target server (verified via /object_info) ---
-UNET = "z_image_turbo_bf16.safetensors"
+# Shared across every Z-Image preset (same text encoder / VAE / ControlNet / matte model):
 CLIP = "qwen_3_4b.safetensors"
 CLIP_TYPE = "lumina2"
 VAE = "ae.safetensors"
 CNET_PATCH = "Z-Image-Turbo-Fun-Controlnet-Union-2.1-2602-8steps.safetensors"
 BG_MODEL = "BiRefNet-HR-matting.safetensors"
+
+# Model presets. Turbo→Base is a *regime* swap, not just a checkpoint swap: the distilled Turbo
+# runs at cfg 1 with the negative zeroed out, while Base is non-distilled and wants a real cfg, more
+# steps, and a genuinely encoded negative prompt. Each preset therefore carries the whole regime.
+MODELS = {
+    # Reproduces the historical behaviour exactly (do not change — see plan invariant I1).
+    "turbo": {"unet": "z_image_turbo_bf16.safetensors", "steps": 8, "cfg": 1.0,
+              "sampler": "res_multistep", "scheduler": "simple", "shift": 3.0, "zero_negative": True},
+    # Non-distilled: real negatives + cfg. Defaults are sane starting points, override with --cfg/--steps.
+    "base": {"unet": "z_image_bf16.safetensors", "steps": 20, "cfg": 4.0,
+             "sampler": "euler", "scheduler": "simple", "shift": 3.0, "zero_negative": False},
+}
+# Used only when a preset does not zero the negative (i.e. Base). Generic quality guard.
+DEFAULT_NEGATIVE = (
+    "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, "
+    "deformed, extra limbs, bad anatomy, cluttered background"
+)
+
+# Back-compat: some callers still reference the module-level Turbo checkpoint name.
+UNET = MODELS["turbo"]["unet"]
 
 # Canonical house style — the project's STYLE ANCHOR. Prepended to every subject so a whole
 # fleet stays visually coherent (used in lieu of LoRA/IPAdapter, which we deliberately avoid).
@@ -66,19 +86,34 @@ def upload_image(server: str, path: Path) -> str:
     return name
 
 
+def _negative_node(preset: dict, negative: str) -> dict:
+    """Node '3', the KSampler negative source. Turbo zeroes it (distilled, cfg 1); Base encodes a
+    real negative prompt. Keeping the id stable at '3' means the Turbo graph is byte-identical to the
+    historical one (plan invariant I1 / behaviour B2)."""
+    if preset["zero_negative"]:
+        return {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["2", 0]}}
+    return {"class_type": "CLIPTextEncode", "inputs": {"text": negative, "clip": ["1", 0]}}
+
+
 def build_graph(control_name: str, prompt: str, seed: int, strength: float,
-                prefix: str = "asset_harness/hauler") -> dict:
+                prefix: str = "asset_harness/hauler", model: str = "turbo",
+                negative: str = DEFAULT_NEGATIVE, steps: int | None = None,
+                cfg: float | None = None) -> dict:
+    if model not in MODELS:
+        raise SystemExit(f"unknown model {model!r}; valid: {', '.join(MODELS)}")
+    preset = MODELS[model]
+    steps = preset["steps"] if steps is None else steps
+    cfg = preset["cfg"] if cfg is None else cfg
     return {
         "1": {"class_type": "CLIPLoader",
               "inputs": {"clip_name": CLIP, "type": CLIP_TYPE, "device": "default"}},
         "2": {"class_type": "CLIPTextEncode",
               "inputs": {"text": prompt, "clip": ["1", 0]}},
-        "3": {"class_type": "ConditioningZeroOut",
-              "inputs": {"conditioning": ["2", 0]}},
+        "3": _negative_node(preset, negative),
         "4": {"class_type": "UNETLoader",
-              "inputs": {"unet_name": UNET, "weight_dtype": "default"}},
+              "inputs": {"unet_name": preset["unet"], "weight_dtype": "default"}},
         "5": {"class_type": "ModelSamplingAuraFlow",
-              "inputs": {"model": ["4", 0], "shift": 3.0}},
+              "inputs": {"model": ["4", 0], "shift": preset["shift"]}},
         "6": {"class_type": "VAELoader", "inputs": {"vae_name": VAE}},
         "7": {"class_type": "ModelPatchLoader", "inputs": {"name": CNET_PATCH}},
         "8": {"class_type": "LoadImage", "inputs": {"image": control_name}},
@@ -93,8 +128,8 @@ def build_graph(control_name: str, prompt: str, seed: int, strength: float,
         "13": {"class_type": "EmptySD3LatentImage",
                "inputs": {"width": ["12", 0], "height": ["12", 1], "batch_size": 1}},
         "14": {"class_type": "KSampler",
-               "inputs": {"model": ["11", 0], "seed": seed, "steps": 8, "cfg": 1.0,
-                          "sampler_name": "res_multistep", "scheduler": "simple",
+               "inputs": {"model": ["11", 0], "seed": seed, "steps": steps, "cfg": cfg,
+                          "sampler_name": preset["sampler"], "scheduler": preset["scheduler"],
                           "positive": ["2", 0], "negative": ["3", 0],
                           "latent_image": ["13", 0], "denoise": 1.0}},
         "15": {"class_type": "VAEDecode", "inputs": {"samples": ["14", 0], "vae": ["6", 0]}},
@@ -153,6 +188,12 @@ def main() -> None:
     ap.add_argument("--name", default="hauler", help="output basename / atlas frame key")
     ap.add_argument("--seed", type=int, default=729703840979498)
     ap.add_argument("--strength", type=float, default=0.85)
+    ap.add_argument("--model", default="turbo", choices=sorted(MODELS),
+                    help="Z-Image engine: turbo (fast, distilled, cfg1) or base (real cfg + negatives)")
+    ap.add_argument("--negative", default=DEFAULT_NEGATIVE,
+                    help="negative prompt; used only by --model base (turbo zeroes the negative)")
+    ap.add_argument("--cfg", type=float, default=None, help="override the preset cfg")
+    ap.add_argument("--steps", type=int, default=None, help="override the preset step count")
     ap.add_argument("--out", default="outputs")
     args = ap.parse_args()
 
@@ -160,18 +201,29 @@ def main() -> None:
     client_id = uuid.uuid4().hex
     out_dir = Path(args.out)
     prompt = args.prompt or compose(args.subject, args.style)
+    if args.negative != DEFAULT_NEGATIVE and MODELS[args.model]["zero_negative"]:
+        print(f"note: --negative is ignored for --model {args.model} (its negative is zeroed)")
 
     print(f"uploading {args.control} ...")
     control_name = upload_image(server, Path(args.control))
-    graph = build_graph(control_name, prompt, args.seed, args.strength, prefix=f"asset_harness/{args.name}")
+    graph = build_graph(control_name, prompt, args.seed, args.strength,
+                        prefix=f"asset_harness/{args.name}", model=args.model,
+                        negative=args.negative, steps=args.steps, cfg=args.cfg)
 
+    preset = MODELS[args.model]
+    ks = graph["14"]["inputs"]
     # persist the exact graph + provenance next to outputs
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "last_graph.json").write_text(json.dumps(graph, indent=2))
     (out_dir / "last_run.json").write_text(json.dumps({
         "server": server, "control": control_name, "seed": args.seed,
         "strength": args.strength, "prompt": prompt,
-        "models": {"unet": UNET, "clip": CLIP, "vae": VAE, "controlnet": CNET_PATCH, "bg": BG_MODEL},
+        "model": args.model,
+        "sampling": {"steps": ks["steps"], "cfg": ks["cfg"], "sampler": ks["sampler_name"],
+                     "scheduler": ks["scheduler"], "shift": preset["shift"],
+                     "negative": None if preset["zero_negative"] else args.negative},
+        "models": {"unet": preset["unet"], "clip": CLIP, "vae": VAE,
+                   "controlnet": CNET_PATCH, "bg": BG_MODEL},
     }, indent=2))
 
     print("queueing ...")

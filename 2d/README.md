@@ -6,7 +6,11 @@ ControlNet + BiRefNet, all Apache/MIT, on `ai2` gfx1201). Validated:
 [style-coherent fleet + atlas](findings/2026-06-21-fleet-style-anchor-and-atlas.md), and a
 [grid/slot station-module kit](findings/2026-06-21-station-modules-grid-kit.md) whose ports
 tile, and a [radially-symmetric spider-miner body](findings/2026-07-03-dwa-spider-miner.md) for
-DWA WI 813. The hauler now renders **in-game in DWA**. Remaining polish: data-driven
+DWA WI 813. The hauler now renders **in-game in DWA**. The generators also expose a selectable
+**Z-Image Base** engine (`--model base`, full CFG + working negative prompts, Apache 2.0) alongside the
+default Turbo, for stylized/anime txt2img and LoRA-training data —
+[findings](findings/2026-07-14-zimage-base.md) (Base is a **txt2img** engine here; the Turbo-trained
+ControlNet does not transfer, so ControlNet-driven sprites stay on Turbo). Remaining polish: data-driven
 port/rotation manifest, more module types, and the DWA-side composed-base render.
 
 ## Purpose
