@@ -24,6 +24,9 @@ OUT.mkdir(parents=True, exist_ok=True)
 FPS = 24
 # `--heads a,b,c` builds only those corn head variants (corn_<v>.glb), no popcorn — for comparison.
 HEADS = argv[argv.index("--heads") + 1].split(",") if "--heads" in argv else None
+# `--vrm` also emits corn.vrm (1.0) + corn.vrm0.vrm (0.x) via the saturday06 VRM add-on (WI 925).
+# Requires a Blender 4.2+ with that add-on (on ai2: ~/blender-4.2/blender). Adds a husk-tuft spring chain.
+VRM = "--vrm" in argv
 
 # ---- shared helpers (same idioms as blender_robot.py) ----------------------
 def mat(name, rgb, metallic, rough):
@@ -335,7 +338,36 @@ def build_corn(head):
     arm.animation_data.action = bpy.data.actions["walk"]
     return arm, parts
 
+def add_tuft_chain(arm):
+    """Add a 2-joint 'tuft' bone chain up from the head top and re-parent the cob-head husk-tuft cones
+    onto its swaying tip, so the tuft can be a VRM spring chain (WI 925). Inert in corn.glb (no action
+    channels touch it); the +2 bones are the only structural change to the game-lane asset."""
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='EDIT')
+    eb = arm.data.edit_bones
+    t0 = eb.new("tuft.0"); t0.head = (0, 0, 1.30); t0.tail = (0, 0, 1.38)
+    t0.use_connect = False; t0.parent = eb["head"]
+    t1 = eb.new("tuft.1"); t1.head = (0, 0, 1.38); t1.tail = (0, 0, 1.46)
+    t1.use_connect = False; t1.parent = t0
+    bpy.ops.object.mode_set(mode='OBJECT')
+    for o in list(bpy.data.objects):
+        if o.name.startswith("tuft_"):            # the cob-head husk-tuft cones (tuft_0/1/2)
+            parent_to_bone(o, arm, "tuft.1")
+    return ["tuft.0", "tuft.1"]
+
 def main():
+    # VRM mode: emit corn.glb (with a husk-tuft spring bone) + corn.vrm (1.0) + corn.vrm0.vrm (0.x).
+    if VRM:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import vrm_export
+        arm, parts = build_corn("cob")
+        joints = add_tuft_chain(arm)
+        export("corn", 'ACTIONS')                       # game-lane glb (now +2 tuft bones, clips intact)
+        write_manifest("corn", corn_manifest(parts, "cob"))
+        p1, p0 = vrm_export.export_vrm(arm, OUT, "corn", spring_joint_bones=joints, center_bone="head")
+        print(f"built corn + VRM: {OUT/'corn.glb'}, {p1}, {p0}")
+        return
+
     # Head bake-off mode: build only the requested corn head variants.
     if HEADS:
         for hv in HEADS:

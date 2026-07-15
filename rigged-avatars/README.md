@@ -6,6 +6,14 @@ corn-person + **corn→popcorn failure transform** ([findings](findings/2026-07-
 Discovery complete 2026-07-08 ([discover.md](discover.md)). [visual/manual] owner sign-off pending on
 both; AI-mesh comparison (Meshy→UniRig) is an owner-run recipe in the B findings.
 
+**VRM export (WI 925, 2026-07-14):** the corn-person now also exports **VRM 1.0 + 0.x** via
+`blender_corn.py --vrm` — 19-bone humanoid map (no re-rig), clean-lane meta, a husk-tuft spring chain,
+game-lane `.glb` kept (VRMs drop clips by convention). The reusable exporter is
+[`prototypes/vrm_export.py`](prototypes/vrm_export.py); [findings](findings/2026-07-14-corn-vrm.md).
+Needs Blender 4.2+ with the saturday06 VRM add-on (on ai2: `~/blender-4.2/blender`, WI 933). [visual/manual]
+three-vrm browser load pending. This is the VTuber ladder's walking skeleton — it de-risks the export chain
+before the WI 926 skinned + shape-key kill-shot.
+
 ## Purpose
 
 Rigged, animated characters (Sounding player/NPC avatar). The **weakest fit** for AI generation —
