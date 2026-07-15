@@ -26,6 +26,8 @@ MODELS = {
               "sampler": "res_multistep", "scheduler": "simple", "shift": 3.0, "zero_negative": True},
     "base": {"unet": "z_image_bf16.safetensors", "steps": 20, "cfg": 4.0,
              "sampler": "euler", "scheduler": "simple", "shift": 3.0, "zero_negative": False},
+    "zanime": {"unet": "z-anime-base-bf16.safetensors", "steps": 20, "cfg": 4.0,
+               "sampler": "euler", "scheduler": "simple", "shift": 3.0, "zero_negative": False},
 }
 DEFAULT_NEGATIVE = (
     "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, "

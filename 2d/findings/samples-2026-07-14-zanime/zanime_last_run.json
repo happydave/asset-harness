@@ -1,0 +1,21 @@
+{
+  "server": "http://ai2:8188",
+  "seed": 77001,
+  "size": 768,
+  "name": "zanime",
+  "prompt": "flat cel-shaded anime character portrait, clean bold lineart, big expressive eyes, simple pastel studio background, front view, crisp",
+  "model": "zanime",
+  "sampling": {
+    "steps": 20,
+    "cfg": 4.0,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "shift": 3.0,
+    "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, deformed, extra limbs, bad anatomy, cluttered background"
+  },
+  "models": {
+    "unet": "z-anime-base-bf16.safetensors",
+    "clip": "qwen_3_4b.safetensors",
+    "vae": "ae.safetensors"
+  }
+}

@@ -39,6 +39,9 @@ MODELS = {
     # Non-distilled: real negatives + cfg. Defaults are sane starting points, override with --cfg/--steps.
     "base": {"unet": "z_image_bf16.safetensors", "steps": 20, "cfg": 4.0,
              "sampler": "euler", "scheduler": "simple", "shift": 3.0, "zero_negative": False},
+    # Z-Anime: Apache-2.0 anime full fine-tune of Z-Image Base — same non-distilled regime as base.
+    "zanime": {"unet": "z-anime-base-bf16.safetensors", "steps": 20, "cfg": 4.0,
+               "sampler": "euler", "scheduler": "simple", "shift": 3.0, "zero_negative": False},
 }
 # Used only when a preset does not zero the negative (i.e. Base). Generic quality guard.
 DEFAULT_NEGATIVE = (
