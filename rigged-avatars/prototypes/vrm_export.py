@@ -83,6 +83,54 @@ def _set_meta(ext, name, author):
     m0.commercial_ussage_name = "Allow"
 
 
+# VRM 1.0 preset expression attr -> VRM 0.x blend-shape preset_name enum (only the genuinely double-duty
+# presets we compose; see WI 923 discovery: blink + visemes(aa/ih/ou/ee/oh) + emotions(happy/angry/sad/…)).
+_VRM1_PRESET_TO_VRM0 = {
+    "blink": "blink", "blink_left": "blink_l", "blink_right": "blink_r",
+    "aa": "a", "ih": "i", "ou": "u", "ee": "e", "oh": "o",
+    "happy": "joy", "angry": "angry", "sad": "sorrow", "relaxed": "fun", "neutral": "neutral",
+    "look_up": "lookup", "look_down": "lookdown", "look_left": "lookleft", "look_right": "lookright",
+}
+
+
+def _set_expressions(ext, expr_spec):
+    """Bind ARKit shape keys to VRM expressions on both specs (WI 926).
+
+    expr_spec = {
+      "customs": {arkit_name: [(mesh_object_name, shape_key_name), ...], ...},  # 1:1 raw ARKit morphs
+      "presets": {vrm1_preset_attr: [(mesh_object_name, shape_key_name), ...], ...},  # composed presets
+    }
+
+    Research rule (WI 923): raw ARKit shapes are 1:1 **custom** expressions ("one morph per clip"); the
+    genuinely double-duty shapes are additionally composed into **presets** (blink, a viseme, an emotion).
+    Binding both in one file is what answers the Warudo raw-morph-vs-expression precedence question. The
+    bind selector `index` is the shape-key NAME string (probed live on v4.4.0), the mesh is by object name."""
+    v1 = ext.vrm1.expressions
+    v1.custom.clear()
+    for arkit_name, binds in expr_spec.get("customs", {}).items():
+        ce = v1.custom.add(); ce.custom_name = arkit_name
+        for mesh_name, sk_name in binds:
+            b = ce.morph_target_binds.add()
+            b.node.mesh_object_name = mesh_name; b.index = sk_name; b.weight = 1.0
+    for preset_attr, binds in expr_spec.get("presets", {}).items():
+        pe = getattr(v1.preset, preset_attr)
+        pe.morph_target_binds.clear()
+        for mesh_name, sk_name in binds:
+            b = pe.morph_target_binds.add()
+            b.node.mesh_object_name = mesh_name; b.index = sk_name; b.weight = 1.0
+    # VRM 0.x: presets only (0.x has no arbitrary custom ARKit clips; that is a 1.0 capability).
+    bsm = ext.vrm0.blend_shape_master
+    bsm.blend_shape_groups.clear()
+    for preset_attr, binds in expr_spec.get("presets", {}).items():
+        preset0 = _VRM1_PRESET_TO_VRM0.get(preset_attr)
+        if preset0 is None:
+            continue
+        grp = bsm.blend_shape_groups.add(); grp.name = preset_attr; grp.preset_name = preset0
+        for mesh_name, sk_name in binds:
+            bd = grp.binds.add()
+            bd.mesh.mesh_object_name = mesh_name; bd.index = sk_name; bd.weight = 1.0
+
+
 def _set_spring(ext, joint_bones, center_bone):
     """One VRM 1.0 spring chain over joint_bones, centred on center_bone (the `center` node is the
     anti-explosion tool from the WI 923 spring-bone finding — it keeps the chain from thrashing when the
@@ -99,8 +147,9 @@ def _set_spring(ext, joint_bones, center_bone):
 
 
 def export_vrm(arm, out_dir, name, author="asset-harness (WI 925)",
-               humanoid=None, spring_joint_bones=(), center_bone="head"):
+               humanoid=None, spring_joint_bones=(), center_bone="head", expressions=None):
     """Configure VRM data on `arm` and export {name}.vrm (1.0) + {name}.vrm0.vrm (0.x) into out_dir.
+    `expressions` (WI 926) is the optional ARKit shape-key binding spec passed to _set_expressions.
     Returns the two output paths."""
     from pathlib import Path
     ensure_addon()
@@ -111,10 +160,18 @@ def export_vrm(arm, out_dir, name, author="asset-harness (WI 925)",
     _set_meta(ext, name, author)
     if spring_joint_bones:
         _set_spring(ext, list(spring_joint_bones), center_bone)
+    if expressions:
+        _set_expressions(ext, expressions)
 
     for o in bpy.context.scene.objects:
         o.select_set(False)
     arm.select_set(True); bpy.context.view_layer.objects.active = arm
+    # Include the armature's mesh children (bone-parented rigid parts AND armature-modifier skinned meshes)
+    # so a skinned probe (WI 926) is not dropped; the add-on gathers by armature_object_name, this is additive.
+    for o in bpy.context.scene.objects:
+        if o.type == 'MESH' and (o.parent is arm or any(
+                getattr(md, "object", None) is arm for md in o.modifiers if md.type == 'ARMATURE')):
+            o.select_set(True)
 
     common = dict(armature_object_name=arm.name, ignore_warning=True, export_gltf_animations=False)
     p1 = out_dir / f"{name}.vrm"

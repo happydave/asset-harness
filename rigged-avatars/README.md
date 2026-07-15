@@ -14,6 +14,17 @@ Needs Blender 4.2+ with the saturday06 VRM add-on (on ai2: `~/blender-4.2/blende
 three-vrm browser load pending. This is the VTuber ladder's walking skeleton — it de-risks the export chain
 before the WI 926 skinned + shape-key kill-shot.
 
+**Kill-shot spike (WI 926, 2026-07-14) — PASSED:** a **skinned** mesh (armature modifier + weights, not
+bone-parenting) carrying **four ARKit-named shape keys** (`eyeBlinkLeft/Right`, `jawOpen`, `mouthSmileLeft`)
+survives headless Blender → **VRM 1.0 + 0.x** with skin, morph targets, morph names, and expression binds all
+intact and re-importable (18/18 automated checks). **The VTuber approach is not dead; the ladder can
+proceed.** Second question answered: **VRM export drops glTF animation clips** (both VRMs `animations=0`, the
+`.glb` keeps its clip) → the game lane needs its own `.glb`, VRM + `.glb` are two artifacts from one source
+scene. Generator [`prototypes/blender_face_spike.py`](prototypes/blender_face_spike.py); the shared
+[`vrm_export.py`](prototypes/vrm_export.py) now carries skinning + morph-expression binding (raw ARKit 1:1
+customs + composed presets), inherited by the real head (WI 923 step 5). [findings](findings/2026-07-14-face-spike.md);
+[visual/manual] three-vrm drive-each-expression pending.
+
 ## Purpose
 
 Rigged, animated characters (Sounding player/NPC avatar). The **weakest fit** for AI generation —

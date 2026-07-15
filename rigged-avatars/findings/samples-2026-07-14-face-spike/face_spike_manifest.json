@@ -1,0 +1,31 @@
+{
+  "asset": "WI 926 skinned + shape-key VRM spike (kill-shot probe)",
+  "generator_script": "blender_face_spike.py",
+  "frame": "authored Z-up; exported +Y up, metres",
+  "bind": "SKINNED: armature modifier + auto vertex weights (NOT object/bone-parenting)",
+  "meshes": [
+    "face_head",
+    "face_body"
+  ],
+  "shape_keys_arkit": [
+    "eyeBlinkLeft",
+    "eyeBlinkRight",
+    "jawOpen",
+    "mouthSmileLeft"
+  ],
+  "expression_binding": "1:1 VRM1 customs (raw ARKit) + composed presets blink/aa/happy; VRM0 preset groups",
+  "clip": {
+    "nod": {
+      "loop": false,
+      "fps": 24,
+      "frame_start": 1,
+      "frame_end": 24
+    }
+  },
+  "artifacts": [
+    "face_spike.glb",
+    "face_spike.vrm",
+    "face_spike.vrm0.vrm"
+  ],
+  "license": "clean: Blender (GPL) + authored geometry + hand-set morphs"
+}
