@@ -21,7 +21,7 @@
   ],
   "morphs": {
     "jawOpen": {
-      "max_disp_m": 0.0621,
+      "max_disp_m": 0.0459,
       "technique": "bone_pose_bake"
     },
     "eyeBlinkLeft": {

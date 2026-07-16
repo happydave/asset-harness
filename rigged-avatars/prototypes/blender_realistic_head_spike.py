@@ -100,17 +100,35 @@ def _morph_specs(obj):
 def _bake_bone_shapekey(mesh, arm, sk_name, bone_name, angle=0.5):
     """Bake a facial-bone pose into a named shape key. Used for jawOpen: rotating the `jaw` bone opens the
     mouth correctly because MPFB skins the lips to it — something a single weight-group displacement can't
-    reproduce. Rotation sign is auto-detected (the one that lowers the chin/tail). Returns (max_disp, 1)."""
+    reproduce. Rotation sign is auto-detected (the one that lowers the chin/tail). Returns (max_disp, 1).
+
+    The morph is the **posed-minus-rest** evaluated delta, NOT `modifier_apply_as_shapekey`. That operator
+    stores the fully-evaluated mesh absolutely, which on an MPFB character silently includes the active
+    macro-detail shape keys (`$md-…` age/gender/proportions) — so the jawOpen shape key would carry the
+    whole-body proportioning and morph the entire body at weight 1 (WI 938 owner review found this). Taking
+    (posed_eval − rest_eval) with the macros active in both cancels them, leaving only the jaw articulation
+    (verified: body verts move ~0). Non-armature modifiers are disabled during eval so the evaluated vertex
+    count matches the base mesh."""
     armmod = next((m for m in mesh.modifiers if m.type == "ARMATURE"), None)
     if armmod is None or bone_name not in arm.pose.bones:
         return (0.0, 0)
     if mesh.data.shape_keys is None:
         mesh.shape_key_add(name="Basis", from_mix=False)
+    basis = mesh.data.shape_keys.key_blocks["Basis"]
+
+    saved = [(m, m.show_viewport) for m in mesh.modifiers if m.type != "ARMATURE"]
+    for m, _ in saved:
+        m.show_viewport = False
+
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode="POSE")
     pb = arm.pose.bones[bone_name]
     pb.rotation_mode = "XYZ"
+
+    def eval_coords():
+        deps = bpy.context.evaluated_depsgraph_get()
+        return [v.co.copy() for v in mesh.evaluated_get(deps).data.vertices]
 
     def tail_z(sign):
         pb.rotation_euler = (sign * angle, 0.0, 0.0)
@@ -118,27 +136,31 @@ def _bake_bone_shapekey(mesh, arm, sk_name, bone_name, angle=0.5):
         return (arm.matrix_world @ pb.tail).z
 
     sign = 1.0 if tail_z(1.0) < tail_z(-1.0) else -1.0
+    pb.rotation_euler = (0.0, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    rest = eval_coords()
     pb.rotation_euler = (sign * angle, 0.0, 0.0)
+    bpy.context.view_layer.update()
+    posed = eval_coords()
+    pb.rotation_euler = (0.0, 0.0, 0.0)
     bpy.context.view_layer.update()
 
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.objects.active = mesh
-    before = {k.name for k in mesh.data.shape_keys.key_blocks}
-    bpy.ops.object.modifier_apply_as_shapekey(keep_modifier=True, modifier=armmod.name)
-    added = [k for k in mesh.data.shape_keys.key_blocks if k.name not in before]
-    disp = 0.0
-    if added:
-        nk = added[0]; nk.name = sk_name; nk.value = 0.0
-        basis = mesh.data.shape_keys.key_blocks["Basis"]
-        for i, vd in enumerate(nk.data):
-            disp = max(disp, (vd.co - basis.data[i].co).length)
+    for m, show in saved:
+        m.show_viewport = show
 
-    bpy.context.view_layer.objects.active = arm
-    bpy.ops.object.mode_set(mode="POSE")
-    pb.rotation_euler = (0.0, 0.0, 0.0)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    bpy.context.view_layer.objects.active = mesh
-    return (round(disp, 4), 1 if added else 0)
+    if not (len(rest) == len(posed) == len(basis.data)):
+        return (0.0, 0)
+    sk = mesh.shape_key_add(name=sk_name, from_mix=False)  # starts equal to Basis
+    sk.value = 0.0
+    disp = 0.0
+    for i in range(len(sk.data)):
+        d = posed[i] - rest[i]
+        sk.data[i].co = basis.data[i].co + d
+        if d.length > disp:
+            disp = d.length
+    return (round(disp, 4), 1)
 
 
 def _add_morph(obj, name, specs):

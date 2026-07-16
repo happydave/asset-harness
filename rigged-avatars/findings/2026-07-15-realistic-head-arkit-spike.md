@@ -28,7 +28,7 @@ depends on whether the shape is skinned articulation or a localized surface defo
 
 | Technique | Used for | How | Why |
 |-----------|----------|-----|-----|
-| **Bone-pose bake** | `jawOpen` | Rotate the `jaw` bone, `modifier_apply_as_shapekey(keep_modifier=True)`, rename → `jawOpen` | The mouth-opening is **skinned to the lip (`oris`) bones, not the `jaw` group** — so a jaw-group displacement drops the chin but the lips stay shut. Posing the bone lets MPFB's skinning carry the lips **open** correctly (62 mm, reads as a proper open mouth). |
+| **Bone-pose bake** | `jawOpen` | Rotate the `jaw` bone; store the **posed-minus-rest evaluated delta** as the shape key | The mouth-opening is **skinned to the lip (`oris`) bones, not the `jaw` group** — so a jaw-group displacement drops the chin but the lips stay shut. Posing the bone lets MPFB's skinning carry the lips **open** correctly (46 mm, reads as a proper open mouth). |
 | **Weight-mask displacement** | `eyeBlinkLeft/Right`, `mouthSmileLeft/Right` | Displace verts of a facial bone's **weight group** along a world direction, weight = smooth falloff | Localized surface shapes have a single dominant muscle group (`orbicularis03.L/R` eyelid, `risorius03.L/R` mouth corner); the group is the mask, we pick the direction. Clean, no bone-frame math. |
 
 **Dense realistic topology paid off exactly where WI 936 predicted:** the `eyeBlink` closes the eyelid to a
@@ -69,6 +69,19 @@ Inherited from WI 927, verified there from primary text — unchanged here.
   eyeBlink = clean single-eye closure; mouthSmile = visible corner lift. Distinct and plausible.
 - **Note:** the MPFB base mesh ships its own macro-detail shape keys (`$md-…`, age/gender/ethnicity); they
   ride along in the export at value 0 (harmless). A clean WI 930 asset would prune or freeze them.
+
+### Bug found + fixed by owner review (2026-07-15): jawOpen was morphing the whole body
+
+The owner's inspector review flagged that expressions moved the whole body. A region check confirmed a real
+bug: the first `jawOpen` (baked via `modifier_apply_as_shapekey`) moved **all 9,140 body verts** (avg 40 mm)
+— because that operator stores the *fully-evaluated* mesh **absolutely**, silently including the active
+macro-detail shape keys (`$md-…` proportions). The jawOpen delta thus carried the whole-body proportioning and
+double-applied it at weight 1. **Fix:** bake the shape from the **posed-minus-rest evaluated delta** (macros
+active in both → they cancel), leaving only the jaw articulation. After the fix the region check shows body
+verts moved drop to **80 verts, max 7 mm** (the throat skin under the jaw, which legitimately follows an open
+mouth) — and the mouth still opens cleanly. **General lesson for WI 930:** never bake a corrective/expression
+shape from `modifier_apply_as_shapekey` on a mesh carrying active shape keys; use a posed-minus-rest delta.
+(The weight-mask morphs were never affected — they displace relative to Basis and stay local.)
 
 ## Repeatability
 
