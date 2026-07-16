@@ -35,13 +35,13 @@
       "technique": "weight_mask"
     },
     "mouthSmileLeft": {
-      "max_disp_m": 0.0147,
-      "masked_verts": 339,
+      "max_disp_m": 0.0149,
+      "masked_verts": 711,
       "technique": "weight_mask"
     },
     "mouthSmileRight": {
-      "max_disp_m": 0.0147,
-      "masked_verts": 338,
+      "max_disp_m": 0.0149,
+      "masked_verts": 710,
       "technique": "weight_mask"
     }
   }

@@ -98,11 +98,16 @@ scene-global — start from an empty scene or purge non-avatar objects before ex
 
 The owner noted `mouthSmileLeft/Right` (and `happy`, which composes them) puffed the upper cheeks instead of
 lifting the mouth. Cause: I picked the mask group **by name** — `risorius03.L/R` *sounds* like the smile
-muscle, but a centroid probe shows it sits at **z ≈ 1.506 (upper cheek)**, well above the mouth line. **Fix:**
-mask by the true lip-corner group **`oris07.L/R`** (centroid z ≈ 1.474, on the mouth line), displaced up +
-slightly back. The corners now lift into a smile and the cheeks stay put. **Lesson for WI 930:** choose a
-morph's mask group by **probing its centroid against the feature's anatomy**, not by the bone's name — MPFB's
-facial bone names do not map one-to-one to ARKit feature locations.
+muscle, but a centroid probe shows it sits at **z ≈ 1.506 (upper cheek)**, well above the mouth line. **Fix,
+in two passes** (each from an owner render check): (1) mask by the lip-corner group **`oris07.L/R`** (centroid
+z ≈ 1.474) instead of the cheek — but that lifted only the **lower** lip; so (2) add the upper-lip-side group
+**`oris03.L/R`** (z ≈ 1.484) so the whole corner (both lips) lifts together, and tune amplitude/direction
+(the two groups overlap at the corner, so their displacements sum — halve the per-group scale and bias more
+outward than up to avoid a distorted over-pulled crease). Final: both lips lift up-and-out into a natural
+smile, cheeks still. **Lessons for WI 930:** (a) choose a morph's mask group by **probing its centroid against
+the feature's anatomy**, not the bone's name — MPFB facial bone names do not map one-to-one to ARKit feature
+locations; (b) a natural mouth-corner shape needs **both lip groups** (upper `oris03` + lower `oris07`), and
+overlapping masks sum so amplitudes must be de-rated.
 
 ## Repeatability
 
