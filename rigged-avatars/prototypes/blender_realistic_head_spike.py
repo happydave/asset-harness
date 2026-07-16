@@ -232,6 +232,15 @@ def main():
 
     _render_heads(basemesh, out_dir, ["", *authored])
 
+    # Purge scaffolding before export so the artifacts contain ONLY the avatar. This matters because the VRM
+    # exporter sweeps the whole scene (it does not honor selection like glTF does), so Blender's default
+    # startup Cube/Camera/Light, the render camera/light/aim empty, and MPFB bone-widget meshes would
+    # otherwise ride along as stray objects (WI 938 owner review: a stray "Cube" appeared in the inspector).
+    keep = {basemesh.name, arm.name}
+    for o in list(bpy.data.objects):
+        if o.name not in keep:
+            bpy.data.objects.remove(o, do_unlink=True)
+
     # game-lane glb
     glb = os.path.join(out_dir, "realistic_head.glb")
     for o in bpy.context.scene.objects:

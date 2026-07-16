@@ -83,6 +83,17 @@ mouth) — and the mouth still opens cleanly. **General lesson for WI 930:** nev
 shape from `modifier_apply_as_shapekey` on a mesh carrying active shape keys; use a posed-minus-rest delta.
 (The weight-mask morphs were never affected — they displace relative to Basis and stay local.)
 
+### Second bug found + fixed by owner review (2026-07-15): a stray "Cube" in the VRM
+
+The owner also saw a stray `Cube` mesh in the inspector. Cause: the script started from Blender's **default
+startup scene** (which has `Cube` / `Camera` / `Light`) and never cleared it, and the **VRM exporter sweeps
+the whole scene** (unlike glTF, it does not honor selection) — so it emitted `Human` + `Armature` **plus the
+startup `Cube` and the render `aim` empty**. **Fix:** purge every object except the avatar mesh + rig right
+before export. The VRM is now `Armature` + `Human` only. (The glTF `.glb` was already clean — grepping the
+file shows one mesh `base.001` on the `Human` node, no strays; an "Icosphere" that appeared on *reimport* was
+a Blender glTF-importer display artifact, not in the file.) **Lesson for WI 930:** the VRM exporter is
+scene-global — start from an empty scene or purge non-avatar objects before export.
+
 ## Repeatability
 
 `blender_realistic_head_spike.py --out <dir>` on ai2 (MPFB2 + VRM add-on installed). Deterministic; the jaw
