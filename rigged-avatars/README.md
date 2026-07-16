@@ -14,6 +14,17 @@ Needs Blender 4.2+ with the saturday06 VRM add-on (on ai2: `~/blender-4.2/blende
 three-vrm browser load pending. This is the VTuber ladder's walking skeleton — it de-risks the export chain
 before the WI 926 skinned + shape-key kill-shot.
 
+**Realistic-head ARKit-morph spike (WI 938, 2026-07-15) — works:** de-risks WI 930's head fork on the
+MPFB2 CC0 head. [`blender_realistic_head_spike.py`](prototypes/blender_realistic_head_spike.py) generates the
+MPFB `default`-rig human → clean **13.4k pure-quad** head, authors **5 ARKit morphs**, exports **VRM 1.0 + 0.x
++ glb** via `vrm_export.py` **unchanged**. Main finding = a **two-technique recipe**: *bone-pose bake* for
+skinned articulation (jawOpen — the mouth is skinned to the lip bones, not the jaw group) + *weight-mask
+displacement* for localized surface shapes (eyelids, lip corners). **The dense topology gives the clean blink
+the WI 936 smooth sphere couldn't** — confirming 936's topology call. Automated: glb + VRM re-import with all
+5 morphs, 15/15 humanoid slots, presets bound. [findings](findings/2026-07-15-realistic-head-arkit-spike.md);
+[visual/manual] load `realistic_head.vrm` in the Studio inspector. 930's gated parts (FLAME/texture/52-shapes)
+stay deferred.
+
 **MPFB2 body-donor eval (WI 927, 2026-07-15) — qualified:** timeboxed evaluation of **MPFB2** (MakeHuman's
 Blender add-on) as a **CC0 skinned-body donor**. Verdict: **no for the current Kerbal-tier stylized
 direction** (a primitive-authored body is cheaper *and* a better aesthetic fit; MPFB's realistic 13.4k-quad

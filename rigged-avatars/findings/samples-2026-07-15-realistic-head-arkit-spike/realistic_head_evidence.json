@@ -1,0 +1,48 @@
+{
+  "mesh": "Human",
+  "armature": "Human.rig",
+  "clean_vertices": 13380,
+  "clean_polys": 13378,
+  "shape_keys": [
+    "Basis",
+    "$md-$as-$fe-$yn",
+    "$md-$as-$ma-$yn",
+    "$md-$ca-$fe-$yn",
+    "$md-$ca-$ma-$yn",
+    "$md-$af-$fe-$yn",
+    "$md-$af-$ma-$yn",
+    "$md-universal-$fe-$yn-$av$mu-$av$wg",
+    "$md-universal-$ma-$yn-$av$mu-$av$wg",
+    "jawOpen",
+    "eyeBlinkLeft",
+    "eyeBlinkRight",
+    "mouthSmileLeft",
+    "mouthSmileRight"
+  ],
+  "morphs": {
+    "jawOpen": {
+      "max_disp_m": 0.0621,
+      "technique": "bone_pose_bake"
+    },
+    "eyeBlinkLeft": {
+      "max_disp_m": 0.0152,
+      "masked_verts": 177,
+      "technique": "weight_mask"
+    },
+    "eyeBlinkRight": {
+      "max_disp_m": 0.0152,
+      "masked_verts": 176,
+      "technique": "weight_mask"
+    },
+    "mouthSmileLeft": {
+      "max_disp_m": 0.0157,
+      "masked_verts": 466,
+      "technique": "weight_mask"
+    },
+    "mouthSmileRight": {
+      "max_disp_m": 0.0157,
+      "masked_verts": 465,
+      "technique": "weight_mask"
+    }
+  }
+}
