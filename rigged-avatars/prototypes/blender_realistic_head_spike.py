@@ -89,11 +89,15 @@ def _morph_specs(obj):
     # (blink, smile) sculpt cleanly as single-group weight-mask displacements, but jawOpen does NOT — the
     # mouth-opening is skinned to the lip (oris) bones, not the jaw group, so jawOpen is baked from a jaw
     # BONE pose instead (see _bake_bone_shapekey), letting MPFB's skinning carry the lips open.
+    # mouthSmile pulls the LIP CORNER up + back. Use `oris07.L/R` (the lip-corner group, centroid z≈1.474
+    # on the mouth line), NOT `risorius03.L/R` — that group is the upper cheek (z≈1.506), so driving it just
+    # puffs the cheeks (WI 938 owner review). +Z lifts the corner, −Y pulls it slightly back, outward sign
+    # from the group centroid x.
     return {
         "eyeBlinkLeft": [("orbicularis03.L", (0.0, 0.0, -1.0), 0.016)],
         "eyeBlinkRight": [("orbicularis03.R", (0.0, 0.0, -1.0), 0.016)],
-        "mouthSmileLeft": [("risorius03.L", (sx("risorius03.L") * 0.6, 0.0, 1.0), 0.022)],
-        "mouthSmileRight": [("risorius03.R", (sx("risorius03.R") * 0.6, 0.0, 1.0), 0.022)],
+        "mouthSmileLeft": [("oris07.L", (sx("oris07.L") * 0.5, -0.3, 1.0), 0.034)],
+        "mouthSmileRight": [("oris07.R", (sx("oris07.R") * 0.5, -0.3, 1.0), 0.034)],
     }
 
 

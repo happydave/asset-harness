@@ -29,7 +29,7 @@ depends on whether the shape is skinned articulation or a localized surface defo
 | Technique | Used for | How | Why |
 |-----------|----------|-----|-----|
 | **Bone-pose bake** | `jawOpen` | Rotate the `jaw` bone; store the **posed-minus-rest evaluated delta** as the shape key | The mouth-opening is **skinned to the lip (`oris`) bones, not the `jaw` group** — so a jaw-group displacement drops the chin but the lips stay shut. Posing the bone lets MPFB's skinning carry the lips **open** correctly (46 mm, reads as a proper open mouth). |
-| **Weight-mask displacement** | `eyeBlinkLeft/Right`, `mouthSmileLeft/Right` | Displace verts of a facial bone's **weight group** along a world direction, weight = smooth falloff | Localized surface shapes have a single dominant muscle group (`orbicularis03.L/R` eyelid, `risorius03.L/R` mouth corner); the group is the mask, we pick the direction. Clean, no bone-frame math. |
+| **Weight-mask displacement** | `eyeBlinkLeft/Right`, `mouthSmileLeft/Right` | Displace verts of a facial bone's **weight group** along a world direction, weight = smooth falloff | Localized surface shapes have a single dominant muscle group (eyelid `orbicularis03.L/R`; lip corner **`oris07.L/R`**); the group is the mask, we pick the direction. Clean, no bone-frame math. **Pick the group by anatomy, not by name** — see the smile fix below. |
 
 **Dense realistic topology paid off exactly where WI 936 predicted:** the `eyeBlink` closes the eyelid to a
 clean slit over the real eye socket (see `rhead_eyeBlinkLeft.png`) — the crisp single-eye closure the WI 936
@@ -93,6 +93,16 @@ before export. The VRM is now `Armature` + `Human` only. (The glTF `.glb` was al
 file shows one mesh `base.001` on the `Human` node, no strays; an "Icosphere" that appeared on *reimport* was
 a Blender glTF-importer display artifact, not in the file.) **Lesson for WI 930:** the VRM exporter is
 scene-global — start from an empty scene or purge non-avatar objects before export.
+
+### Third bug found + fixed by owner review (2026-07-15): mouthSmile moved the cheeks, not the mouth
+
+The owner noted `mouthSmileLeft/Right` (and `happy`, which composes them) puffed the upper cheeks instead of
+lifting the mouth. Cause: I picked the mask group **by name** — `risorius03.L/R` *sounds* like the smile
+muscle, but a centroid probe shows it sits at **z ≈ 1.506 (upper cheek)**, well above the mouth line. **Fix:**
+mask by the true lip-corner group **`oris07.L/R`** (centroid z ≈ 1.474, on the mouth line), displaced up +
+slightly back. The corners now lift into a smile and the cheeks stay put. **Lesson for WI 930:** choose a
+morph's mask group by **probing its centroid against the feature's anatomy**, not by the bone's name — MPFB's
+facial bone names do not map one-to-one to ARKit feature locations.
 
 ## Repeatability
 
