@@ -14,6 +14,18 @@ Needs Blender 4.2+ with the saturday06 VRM add-on (on ai2: `~/blender-4.2/blende
 three-vrm browser load pending. This is the VTuber ladder's walking skeleton — it de-risks the export chain
 before the WI 926 skinned + shape-key kill-shot.
 
+**MPFB2 body-donor eval (WI 927, 2026-07-15) — qualified:** timeboxed evaluation of **MPFB2** (MakeHuman's
+Blender add-on) as a **CC0 skinned-body donor**. Verdict: **no for the current Kerbal-tier stylized
+direction** (a primitive-authored body is cheaper *and* a better aesthetic fit; MPFB's realistic 13.4k-quad
+mesh would fight the blocky look), **qualified yes as a reserve donor** for any future realistic/semi-realistic
+avatar (e.g. deferred WI 930). Every hard gate passed — scripted headless generation works, topology is
+production-grade **pure-quad**, the **`game_engine` 53-bone rig maps 1:1 onto our 19-bone VRM humanoid**, and
+the **CC0 asset licence is clean** (verified from `LICENSE.md`/`LICENSE.ASSETS.md`; §D disclaims scripted
+output; the MakeHuman-standalone automation carve-out — a trap — does **not** apply to MPFB2). Body only:
+MPFB2 has **no ARKit shape keys** (bone-based face, WI 923), so face morphs stay ours (WI 936). Harness:
+[`prototypes/mpfb2_body_eval.py`](prototypes/mpfb2_body_eval.py); [findings](findings/2026-07-15-mpfb2-body-donor.md).
+MPFB2 v2.0.17 installed as a Blender extension on ai2.
+
 **Stylized expressive head (WI 936, 2026-07-15):** [`blender_expressive_head.py`](prototypes/blender_expressive_head.py)
 — the first cut of the **stylized head archetype** (WI 923 ladder step 5) and a proper expressive demo for
 the Studio VRM inspector. A skinned Kerbal-tier head with **14 authored ARKit morphs** (blinks, eye
