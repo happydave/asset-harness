@@ -14,6 +14,14 @@ Needs Blender 4.2+ with the saturday06 VRM add-on (on ai2: `~/blender-4.2/blende
 three-vrm browser load pending. This is the VTuber ladder's walking skeleton — it de-risks the export chain
 before the WI 926 skinned + shape-key kill-shot.
 
+**Stylized expressive head (WI 936, 2026-07-15):** [`blender_expressive_head.py`](prototypes/blender_expressive_head.py)
+— the first cut of the **stylized head archetype** (WI 923 ladder step 5) and a proper expressive demo for
+the Studio VRM inspector. A skinned Kerbal-tier head with **14 authored ARKit morphs** (blinks, eye
+wide/squint, brows, jaw, smile/frown) and the **full ARKit-52 declared** (14 bound + 38 empty Perfect-Sync
+stubs); eyes/brows/mouth are material regions on the single deformable mesh so the morphs read. VRM 1.0 + 0.x
++ glb via `vrm_export.py`; 14/14 automated + readable by preview render. [findings](findings/2026-07-15-expressive-head.md).
+[visual/manual] load in the Studio inspector.
+
 **Kill-shot spike (WI 926, 2026-07-14) — PASSED:** a **skinned** mesh (armature modifier + weights, not
 bone-parenting) carrying **four ARKit-named shape keys** (`eyeBlinkLeft/Right`, `jawOpen`, `mouthSmileLeft`)
 survives headless Blender → **VRM 1.0 + 0.x** with skin, morph targets, morph names, and expression binds all

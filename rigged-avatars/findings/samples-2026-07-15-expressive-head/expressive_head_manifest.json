@@ -1,0 +1,23 @@
+{
+  "asset": "WI 936 stylized expressive head (ARKit-52 declared, ~14 authored)",
+  "generator_script": "blender_expressive_head.py",
+  "bind": "SKINNED: armature modifier + auto weights",
+  "authored_morphs": [
+    "eyeBlinkLeft",
+    "eyeBlinkRight",
+    "eyeWideLeft",
+    "eyeWideRight",
+    "eyeSquintLeft",
+    "eyeSquintRight",
+    "browInnerUp",
+    "browDownLeft",
+    "browDownRight",
+    "jawOpen",
+    "mouthSmileLeft",
+    "mouthSmileRight",
+    "mouthFrownLeft",
+    "mouthFrownRight"
+  ],
+  "arkit_declared": 52,
+  "license": "clean: Blender (GPL) + authored geometry + hand-authored morphs"
+}
