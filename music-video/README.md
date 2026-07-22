@@ -3,8 +3,8 @@
 **Status:** 🟡 in progress — the track is open, its **[license lane](license-lane.md)** is written, and
 the **lyric-timing question is answered**: post-hoc alignment (Demucs → WhisperX → reconcile against
 the authored sheet) aligned all 16 lines of a real ACE-Step vocal song at high confidence in 39 s on
-CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). Remaining: the Wan2.2 cost spike, the
-model-native timing route, and a 60-second walking skeleton (WIs 1002–1004). Discovery:
+CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). **Motion clips are blocked** on `ai2` by an fp8/ROCm wheel gap (below). Remaining: the
+model-native timing route and a 60-second walking skeleton (WIs 1003–1004). Discovery:
 [WI 989](../../../tickets/docs/pending/989-ah-music-video-track/discover.md).
 
 ## Purpose
@@ -46,7 +46,7 @@ rules, the gate each check runs at, and what a findings entry must record.
 | Candidates (3–5) | same graph, `batch_size` / seed sweep | — | `ai2` |
 | Lyric→time alignment | **Demucs** → **WhisperX** → reconcile *(default route)*; owner-tap as the floor | MIT / BSD-2-Clause | **workstation**, track-local `.venv`, CPU |
 | Stills | **Z-Image** (Turbo / Base / Z-Anime) | Apache-2.0 | `ai2` |
-| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` |
+| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` — **currently unusable**, see below |
 | Assembly | **ffmpeg** (concat / zoompan / xfade) | — | **workstation** |
 
 - **Generation is remote, assembly is local.** `ai2` has no ffmpeg — a constraint the `audio` track
@@ -60,6 +60,26 @@ rules, the gate each check runs at, and what a findings entry must record.
 - **Hybrid by design.** Stills with Ken Burns for most shots, Wan clips for a hero moment or two. A
   3-minute song at ~5 s per clip is ~36 generations, and constant motion on every shot reads as noise
   — so this is the better edit as well as the cheaper one.
+
+### ⚠ Motion clips are blocked on `ai2` (fp8 → dequantisation fallback)
+
+**Do not plan on Wan clips from `ai2` until this is fixed.** One 5-second clip takes **~45+ minutes**
+against a ~97 s reference on comparable CUDA hardware. Cause, stated by ComfyUI's own log:
+
+```
+FP8 _scaled_mm failed: Float8_e4m3fn is only supported for ROCm 6.5 and above,
+falling back to dequantization
+```
+
+ComfyUI's torch is `2.9.1+rocm6.4` (HIP 6.4) while the box's `rocm-core` is **7.2.4** — one wheel
+built 0.1 behind the threshold. `_scaled_mm` is the matmul, so this hits inference, not just loading,
+and it affects **every fp8 model on that box**, silently (it is a warning, not an error).
+
+Fix: upgrade the torch wheel in `/opt/comfyui-env` to a ROCm ≥ 6.5 build (fixes fp8 box-wide), or use
+the fp16 Wan checkpoints (fixes Wan only, 28.6 GB per stage). Detail:
+[findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md).
+
+Until then, shots are **stills plus Ken Burns only**.
 
 ### Wan2.2 is the only sanctioned video model
 
@@ -105,7 +125,7 @@ python3 -m venv .venv && .venv/bin/pip install demucs whisperx
 | WI | Title | Why it comes first |
 |---|---|---|
 | ~~1001~~ | ~~SPIKE — lyric→time alignment via Demucs + WhisperX~~ | **done** — post-hoc adopted as the default route ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)) |
-| 1002 | SPIKE — one Wan2.2 i2v clip on `ai2` | ROCm viability + wall-clock; deliverable is a number |
+| ~~1002~~ | ~~SPIKE — one Wan2.2 i2v clip on `ai2`~~ | **done** — ~45+ min/clip; root cause is a torch wheel built against ROCm 6.4 ([findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md)) |
 | 1003 | SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps | model-native route, complementary to 1001 |
 | 1004 | Walking skeleton — 60 s Clamor lobby loop, end to end | prove the artifact before building the gates |
 
