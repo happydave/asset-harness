@@ -9,7 +9,9 @@ Asset Harness is a set of **repeatable pipelines that turn prompts/specs into
 game-ready assets**. It is not a game and it is not an art library — it's the
 machinery that produces assets, plus the notes proving how each one was made.
 
-The mental model, applied per asset class ("track"):
+The mental model, applied per asset class ("track") — and to `music-video`, which
+is a composite track that combines several others rather than producing an asset
+class of its own:
 
 > **discovery** (what tools/models exist, do they run, what are their licenses)
 > → **prototypes** (try them, capture outputs + provenance)
@@ -44,7 +46,9 @@ model weights installed. The weights are deliberately *not* in this repo
    artifact names (checkpoints, ControlNets, VAE) **and a license matrix** — read
    it before running and install those into your ComfyUI. Scripts default to
    `--server http://ai2:8188`; override it with your own host.
-3. **ffmpeg** — for the `audio` track and any loop/normalize post-processing.
+3. **ffmpeg** — for the `audio` track and any loop/normalize post-processing, and
+   for `music-video` assembly (which runs on your workstation, not on the ComfyUI
+   server).
 4. **Blender** — for the `3d-static-props` and `mechanical-kit` tracks (mesh
    cleanup, decimation, the parametric kit). Not needed for `2d`/`audio`.
 
