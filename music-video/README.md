@@ -1,8 +1,10 @@
 # Track: music-video
 
-**Status:** ⚪ not started — the track is open and its **[license lane](license-lane.md)** is written;
-no prototype has run yet. First work: the two alignment spikes and the Wan2.2 cost spike
-(WIs 1001–1003), then a 60-second walking skeleton (WI 1004). Discovery:
+**Status:** 🟡 in progress — the track is open, its **[license lane](license-lane.md)** is written, and
+the **lyric-timing question is answered**: post-hoc alignment (Demucs → WhisperX → reconcile against
+the authored sheet) aligned all 16 lines of a real ACE-Step vocal song at high confidence in 39 s on
+CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). Remaining: the Wan2.2 cost spike, the
+model-native timing route, and a 60-second walking skeleton (WIs 1002–1004). Discovery:
 [WI 989](../../../tickets/docs/pending/989-ah-music-video-track/discover.md).
 
 ## Purpose
@@ -42,7 +44,7 @@ rules, the gate each check runs at, and what a findings entry must record.
 |---|---|---|---|
 | Music + lyrics | **ACE-Step 1.5** (`acestep_v1.5_xl_base_bf16`) | MIT | `ai2` (ComfyUI) |
 | Candidates (3–5) | same graph, `batch_size` / seed sweep | — | `ai2` |
-| Lyric→time alignment | **Demucs** → **WhisperX**, and/or a model-native route | MIT / BSD-2-Clause | route undecided — WIs 1001 / 1003 |
+| Lyric→time alignment | **Demucs** → **WhisperX** → reconcile *(default route)*; owner-tap as the floor | MIT / BSD-2-Clause | **workstation**, track-local `.venv`, CPU |
 | Stills | **Z-Image** (Turbo / Base / Z-Anime) | Apache-2.0 | `ai2` |
 | Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` |
 | Assembly | **ffmpeg** (concat / zoompan / xfade) | — | **workstation** |
@@ -72,16 +74,37 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
 
 ## Contents
 
-- `license-lane.md` — the vocal/lyrics license lane. Required reading before generating.
-- `prototypes/`, `findings/` — created when work starts; use
-  [`../_template/findings.md`](../_template/findings.md), plus the extra records the license lane
-  requires.
+- [`license-lane.md`](license-lane.md) — the vocal/lyrics license lane. **Required reading before
+  generating.**
+- `prototypes/`
+  - [`generate_song.py`](prototypes/generate_song.py) — ACE-Step 1.5 with lyrics; `--seeds a,b,c`
+    gives the 3–5 candidates the pick gate wants.
+  - [`timeline.py`](prototypes/timeline.py) — the lyric timeline (JSON + LRC). **Every route emits
+    this**, so the shot list cannot tell which produced it. Validates at emit time.
+  - [`align_posthoc.py`](prototypes/align_posthoc.py) — Demucs → WhisperX → reconcile against the
+    authored sheet. The default route. Needs the track-local venv.
+  - [`tap_align.py`](prototypes/tap_align.py) — tap ENTER per line. The floor: stdlib + `ffplay`,
+    nothing to install, and it cannot be defeated by melisma.
+  - [`generate_clip.py`](prototypes/generate_clip.py) — Wan2.2 image-to-video, both regimes.
+  - [`test_timeline.py`](prototypes/test_timeline.py) — `python3 test_timeline.py`, 35 checks.
+- `findings/` — per [`../_template/findings.md`](../_template/findings.md), **plus** the vocal flag,
+  intended use, lyric provenance and check table the [license lane](license-lane.md) requires.
+
+### Environment
+
+Song and clip generation are ComfyUI-over-HTTP and need only the system `python3` + `requests`.
+**Alignment needs a track-local venv** (git-ignored, ~7.6 GB — `whisperx` pins its own CUDA torch):
+
+```
+python3 -m venv .venv && .venv/bin/pip install demucs whisperx
+.venv/bin/python prototypes/align_posthoc.py --audio ... --lyrics ...
+```
 
 ## Open work
 
 | WI | Title | Why it comes first |
 |---|---|---|
-| 1001 | SPIKE — lyric→time alignment via Demucs + WhisperX (post-hoc) | the spike that decides the track's shape |
+| ~~1001~~ | ~~SPIKE — lyric→time alignment via Demucs + WhisperX~~ | **done** — post-hoc adopted as the default route ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)) |
 | 1002 | SPIKE — one Wan2.2 i2v clip on `ai2` | ROCm viability + wall-clock; deliverable is a number |
 | 1003 | SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps | model-native route, complementary to 1001 |
 | 1004 | Walking skeleton — 60 s Clamor lobby loop, end to end | prove the artifact before building the gates |
