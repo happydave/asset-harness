@@ -63,8 +63,9 @@ rules, the gate each check runs at, and what a findings entry must record.
 
 ### ⚠ Motion clips are blocked on `ai2` (fp8 → dequantisation fallback)
 
-**Do not plan on Wan clips from `ai2` until this is fixed.** One 5-second clip takes **~45+ minutes**
-against a ~97 s reference on comparable CUDA hardware. Cause, stated by ComfyUI's own log:
+**Do not plan on Wan clips from `ai2` until this is fixed.** One 5-second clip measured at
+**45 m 24 s** against a ~97 s reference on comparable CUDA hardware — a ~28× gap. Sampling alone is
+**~2.8 min/step** on a resident model, so even fully pre-warmed a 4-step clip cannot beat ~11 min. Cause, stated by ComfyUI's own log:
 
 ```
 FP8 _scaled_mm failed: Float8_e4m3fn is only supported for ROCm 6.5 and above,
@@ -80,6 +81,14 @@ the fp16 Wan checkpoints (fixes Wan only, 28.6 GB per stage). Detail:
 [findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md).
 
 Until then, shots are **stills plus Ken Burns only**.
+
+**Two input rules for when i2v is re-attempted** — both learned from the one clip produced, and
+neither dependent on the ROCm fix:
+
+- **Feed opaque stills only.** The test used an RGBA game sprite; the model spent its capacity
+  inventing a background. Composite a sprite onto a real background first.
+- **Expect title-card text hallucination** on centred-subject inputs (the clip grew the words
+  `PEONG` and `FROMT`). The stock negative prompt lists subtitles and did not prevent it.
 
 ### Wan2.2 is the only sanctioned video model
 
