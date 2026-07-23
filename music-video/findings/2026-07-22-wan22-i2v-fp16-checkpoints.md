@@ -1,5 +1,11 @@
 # Wan2.2 i2v on `ai2` — fp16 checkpoints vs fp8_scaled (WI 1015)
 
+> **REFRAMED 2026-07-23** ([viability reframe](2026-07-23-wan-on-ai2-viability-reframe.md)): the owner
+> confirmed clips queue offline with **no deadline**, so the "not viable on time" verdict below no
+> longer holds — quality is the gate, not wall-clock. Consequence: **prefer fp8** (full fit) over the
+> fp16 studied here (it spills), and the poor motion in the sample is the **4-step LoRA**, not Wan.
+> The measurements below stand; their *framing* is superseded.
+
 **Date:** 2026-07-22 · **Box:** `ai2`, R9700 (gfx1201, 31.9 GiB), ComfyUI torch **2.10.0+rocm7.0**
 · **Sibling:** [`2026-07-22-wan22-i2v-rocm-fp8.md`](2026-07-22-wan22-i2v-rocm-fp8.md) (the fp8 run this
 challenges)
