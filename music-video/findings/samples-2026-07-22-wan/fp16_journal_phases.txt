@@ -1,0 +1,11 @@
+Jul 22 22:59:22  [INFO] Requested to load WanTEModel
+Jul 22 22:59:22  [INFO] loaded completely;  6419.48 MB loaded, full load: True
+Jul 22 22:59:26  [INFO] Requested to load WanVAE
+Jul 22 22:59:26  [INFO] loaded completely; 26618.50 MB usable, 242.03 MB loaded, full load: True
+Jul 22 22:59:39  [INFO] Requested to load WAN21
+Jul 22 23:19:25  [INFO] loaded partially; 25112.23 MB usable, 24862.20 MB loaded, 2390.77 MB offloaded, 250.03 MB buffer reserved, lowvram patches: 45
+Jul 22 23:22:54  [INFO] Requested to load WAN21
+Jul 22 23:42:41  [INFO] loaded partially; 25108.23 MB usable, 24858.19 MB loaded, 2394.78 MB offloaded, 250.03 MB buffer reserved, lowvram patches: 45
+Jul 22 23:45:57  [INFO] Requested to load WanVAE
+Jul 22 23:45:57  [INFO] loaded completely; 25833.25 MB usable, 242.03 MB loaded, full load: True
+Jul 22 23:46:08  [INFO] Prompt executed in 00:52:26

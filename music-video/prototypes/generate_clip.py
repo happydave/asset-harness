@@ -60,16 +60,20 @@ NEGATIVE = ("色调艳丽，过曝，静态，细节模糊不清，字幕，风�
 
 def build_graph(image_name: str, prompt: str, *, width: int, height: int, frames: int,
                 fps: int, seed: int, use_lora: bool, steps: int, cfg: float,
-                prefix: str) -> dict:
-    """Two model branches (high-noise, low-noise), optionally each through its speed LoRA."""
+                prefix: str, high_unet: str = HIGH_UNET, low_unet: str = LOW_UNET) -> dict:
+    """Two model branches (high-noise, low-noise), optionally each through its speed LoRA.
+
+    `high_unet`/`low_unet` default to the fp8_scaled checkpoints; WI 1015 passes the fp16 pair to
+    measure whether skipping fp8 weight-prep removes the ~36-min-per-checkpoint load cost.
+    """
     g: dict = {
         "1": {"class_type": "CLIPLoader", "inputs": {"clip_name": CLIP, "type": "wan", "device": "default"}},
         "2": {"class_type": "VAELoader", "inputs": {"vae_name": VAE}},
         "3": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["1", 0], "text": prompt}},
         "4": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["1", 0], "text": NEGATIVE}},
         "5": {"class_type": "LoadImage", "inputs": {"image": image_name, "upload": "image"}},
-        "10": {"class_type": "UNETLoader", "inputs": {"unet_name": HIGH_UNET, "weight_dtype": "default"}},
-        "20": {"class_type": "UNETLoader", "inputs": {"unet_name": LOW_UNET, "weight_dtype": "default"}},
+        "10": {"class_type": "UNETLoader", "inputs": {"unet_name": high_unet, "weight_dtype": "default"}},
+        "20": {"class_type": "UNETLoader", "inputs": {"unet_name": low_unet, "weight_dtype": "default"}},
     }
 
     if use_lora:
@@ -178,22 +182,29 @@ def main() -> None:
                     help="skip the 4-step speed LoRAs: slower, but keeps motion dynamics")
     ap.add_argument("--steps", type=int, default=None, help="default 4 with LoRA, 20 without")
     ap.add_argument("--cfg", type=float, default=None, help="default 1.0 with LoRA, 3.5 without")
+    ap.add_argument("--fp16", action="store_true",
+                    help="use the fp16 UNET checkpoints instead of fp8_scaled (WI 1015): no fp8 "
+                         "weight-prep at load, but 2x the VRAM (26.6 GiB/checkpoint)")
     ap.add_argument("--timeout", type=float, default=3600)
     args = ap.parse_args()
 
     steps = args.steps if args.steps is not None else (4 if args.lora else 20)
     cfg = args.cfg if args.cfg is not None else (1.0 if args.lora else 3.5)
     server = args.server.rstrip("/")
-    tag = "lora4" if args.lora else "nolora"
+    dtype = "fp16" if args.fp16 else "fp8"
+    high_unet = HIGH_UNET.replace("fp8_scaled", "fp16") if args.fp16 else HIGH_UNET
+    low_unet = LOW_UNET.replace("fp8_scaled", "fp16") if args.fp16 else LOW_UNET
+    tag = f"{'lora4' if args.lora else 'nolora'}_{dtype}"
     out = Path(args.out) if args.out else here / "outputs" / f"clip_{tag}_s{args.seed}"
 
     name = upload_image(server, Path(args.image))
     graph = build_graph(name, args.prompt, width=args.width, height=args.height,
                         frames=args.frames, fps=args.fps, seed=args.seed,
                         use_lora=args.lora, steps=steps, cfg=cfg,
-                        prefix=f"asset_harness/mv_clip_{tag}")
+                        prefix=f"asset_harness/mv_clip_{tag}",
+                        high_unet=high_unet, low_unet=low_unet)
 
-    print(f"regime={tag} steps={steps} cfg={cfg} {args.width}x{args.height} "
+    print(f"regime={tag} unet={high_unet} steps={steps} cfg={cfg} {args.width}x{args.height} "
           f"{args.frames}f@{args.fps}fps (~{args.frames / args.fps:.2f}s) seed={args.seed}")
     t0 = time.time()
     hist = wait(server, queue(server, graph), args.timeout)
