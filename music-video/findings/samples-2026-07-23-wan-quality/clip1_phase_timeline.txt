@@ -1,0 +1,14 @@
+Run #1: fp8 no-LoRA 20-step, character still, 1280x720, seed 901
+Server journal (Jul 23):
+  01:48:27  got prompt
+  01:55:09  WanTEModel loaded          (TE/umt5 load ~6m42)
+  01:55:14  WanVAE loaded
+  01:55:27  Requested WAN21 (high)
+  02:09:16  loaded completely FULL     (high-noise load 13m49, NO spill at 720p)
+  02:45:44  Requested WAN21 (low)      (stage-1 sampling 36m28)
+  02:59:49  loaded completely FULL     (low-noise load 14m05, NO spill)
+  03:36:11  Requested WanVAE           (stage-2 sampling 36m22)
+  03:36:36  Prompt executed in 01:48:09
+Note: at 720p the fp8 UNET LOADS COMPLETELY (full load, no host offload) -> 720p fits fp8.
+Note: sampling (20-step no-LoRA + cfg) dominates (72min); loads ~28min total (and were FASTER
+      than WI 1013's 35m/checkpoint -> load cost is variable run-to-run).

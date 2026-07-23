@@ -1,0 +1,10 @@
+{
+  "prompt": "a menacing horde of shambling undead advancing down a debris-strewn city avenue at night toward a makeshift barricade, dozens of silhouetted rotting figures backlit by cold moonlight and drifting embers, ruined smoke-wreathed buildings looming on both sides, overturned burnt-out cars, fog rolling low across cracked pavement, painterly tabletop RPG concept art, dramatic volumetric moonlight, ominous epic establishing shot, richly detailed, muted cold palette with sickly green highlights",
+  "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy",
+  "width": 1280,
+  "height": 720,
+  "seed": 108,
+  "model": "base",
+  "steps": 20,
+  "cfg": 4.0
+}

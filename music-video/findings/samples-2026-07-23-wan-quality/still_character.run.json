@@ -1,0 +1,10 @@
+{
+  "prompt": "a lone survivor scavenger standing in a ruined overgrown city street at dusk, worn leather armor and a heavy backpack, gripping a makeshift metal weapon, alert wary posture, abandoned rusted cars and broken storefronts, tall weeds pushing through cracked asphalt, moody atmospheric volumetric light, warm lantern glow against cool blue shadows, painterly tabletop RPG concept art, dramatic rim lighting, cinematic wide establishing shot, richly detailed, muted desaturated palette",
+  "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy",
+  "width": 1280,
+  "height": 720,
+  "seed": 42,
+  "model": "base",
+  "steps": 20,
+  "cfg": 4.0
+}
