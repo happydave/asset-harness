@@ -22,12 +22,13 @@ LICENSE LANE — read ../license-lane.md before changing the lyrics or tags. In 
 Candidates: pass several seeds (`--seeds 701,702,703`) to get the 3-5 variants the pick gate wants.
 Same tags + same lyrics + different noise; ACE-Step's own "retake lottery" in its simplest form.
 """
+from __future__ import annotations
+
 import argparse
 import time
-import uuid
 from pathlib import Path
 
-import requests
+import comfy_client
 
 UNET = "acestep_v1.5_xl_base_bf16.safetensors"
 CLIP1 = "qwen_0.6b_ace15.safetensors"
@@ -107,46 +108,14 @@ def build_graph(t: dict, seed: int, prefix: str) -> dict:
     }
 
 
-def _queue(server, graph):
-    r = requests.post(f"{server}/prompt", json={"prompt": graph, "client_id": uuid.uuid4().hex}, timeout=30)
-    if r.status_code != 200:
-        raise SystemExit(f"/prompt rejected ({r.status_code}):\n{r.text}")
-    return r.json()["prompt_id"]
-
-
-def _wait(server, pid, timeout=1800):
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        h = requests.get(f"{server}/history/{pid}", timeout=30).json()
-        if pid in h:
-            return h[pid]
-        time.sleep(3)
-    raise SystemExit("timed out")
-
-
-def _download(server, hist, out_dir, name):
-    out_dir.mkdir(parents=True, exist_ok=True)
-    for node in hist.get("outputs", {}).values():
-        for au in node.get("audio", []):
-            r = requests.get(f"{server}/view", params={"filename": au["filename"],
-                             "subfolder": au.get("subfolder", ""), "type": au.get("type", "output")},
-                             timeout=300)
-            r.raise_for_status()
-            ext = Path(au["filename"]).suffix or ".flac"
-            p = out_dir / f"{name}{ext}"
-            p.write_bytes(r.content)
-            return p
-    raise SystemExit(f"no audio in history outputs for {name}")
-
-
-def generate(server: str, t: dict, seed: int, out_dir: Path) -> tuple[Path, float]:
+def generate(server: str, t: dict, seed: int, out_dir: Path,
+             backstop: float | None = None) -> tuple[Path, float]:
     server = server.rstrip("/")
     name = f"{t['name']}_seed{seed}"
     graph = build_graph(t, seed, f"asset_harness/mv_{name}")
     t0 = time.time()
-    pid = _queue(server, graph)
-    hist = _wait(server, pid)
-    path = _download(server, hist, out_dir, name)
+    path = comfy_client.run_job(server, graph, out_dir / name, kinds=("audio",),
+                                backstop=backstop, label=name)[0]
     return path, time.time() - t0
 
 

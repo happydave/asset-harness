@@ -22,10 +22,9 @@ from __future__ import annotations
 import argparse
 import json
 import time
-import uuid
 from pathlib import Path
 
-import requests
+import comfy_client
 
 CLIP = "qwen_3_4b.safetensors"
 CLIP_TYPE = "lumina2"
@@ -70,42 +69,6 @@ def build_graph(prompt: str, negative: str, *, width: int, height: int, seed: in
     }
 
 
-def queue(server: str, graph: dict) -> str:
-    r = requests.post(f"{server}/prompt", json={"prompt": graph, "client_id": uuid.uuid4().hex},
-                      timeout=30)
-    if r.status_code != 200:
-        raise SystemExit(f"/prompt rejected ({r.status_code}):\n{r.text}")
-    return r.json()["prompt_id"]
-
-
-def wait(server: str, pid: str, timeout: float) -> dict:
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        h = requests.get(f"{server}/history/{pid}", timeout=30).json()
-        if pid in h:
-            st = h[pid].get("status", {})
-            if st.get("status_str") == "error":
-                raise SystemExit(f"execution failed:\n{st}")
-            return h[pid]
-        time.sleep(3)
-    raise SystemExit(f"timed out after {timeout:.0f}s")
-
-
-def download(server: str, hist: dict, out: Path) -> Path:
-    out.parent.mkdir(parents=True, exist_ok=True)
-    for node in hist.get("outputs", {}).values():
-        for item in node.get("images", []):
-            r = requests.get(f"{server}/view",
-                             params={"filename": item["filename"],
-                                     "subfolder": item.get("subfolder", ""),
-                                     "type": item.get("type", "output")}, timeout=120)
-            r.raise_for_status()
-            p = out.with_suffix(Path(item["filename"]).suffix or ".png")
-            p.write_bytes(r.content)
-            return p
-    raise SystemExit("no image in history outputs")
-
-
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--server", default="http://ai2:8188")
@@ -118,7 +81,8 @@ def main() -> None:
     ap.add_argument("--model", default="base", choices=sorted(MODELS))
     ap.add_argument("--steps", type=int, default=None)
     ap.add_argument("--cfg", type=float, default=None)
-    ap.add_argument("--timeout", type=float, default=600)
+    ap.add_argument("--timeout", type=float, default=None,
+                    help="optional backstop in seconds; default: wait indefinitely for the server")
     args = ap.parse_args()
 
     preset = MODELS[args.model]
@@ -131,9 +95,9 @@ def main() -> None:
                         prefix=f"asset_harness/mv_still_{args.model}")
     print(f"model={args.model} {args.width}x{args.height} steps={steps} cfg={cfg} seed={args.seed}")
     t0 = time.time()
-    hist = wait(server, queue(server, graph), args.timeout)
     out = Path(args.out)
-    path = download(server, hist, out)
+    path = comfy_client.run_job(server, graph, out, kinds=("images",),
+                                backstop=args.timeout, label=args.model)[0]
     out.with_suffix(".run.json").write_text(json.dumps(
         {"prompt": args.prompt, "negative": args.negative, "width": args.width,
          "height": args.height, "seed": args.seed, "model": args.model, "steps": steps,

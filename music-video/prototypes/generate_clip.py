@@ -38,10 +38,11 @@ from __future__ import annotations
 
 import argparse
 import time
-import uuid
 from pathlib import Path
 
 import requests
+
+import comfy_client
 
 HIGH_UNET = "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors"
 LOW_UNET = "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors"
@@ -127,45 +128,6 @@ def upload_image(server: str, path: Path) -> str:
     return f"{j['subfolder']}/{j['name']}" if j.get("subfolder") else j["name"]
 
 
-def queue(server: str, graph: dict) -> str:
-    r = requests.post(f"{server}/prompt", json={"prompt": graph, "client_id": uuid.uuid4().hex},
-                      timeout=60)
-    if r.status_code != 200:
-        raise SystemExit(f"/prompt rejected ({r.status_code}):\n{r.text}")
-    return r.json()["prompt_id"]
-
-
-def wait(server: str, pid: str, timeout: float) -> dict:
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        h = requests.get(f"{server}/history/{pid}", timeout=30).json()
-        if pid in h:
-            st = h[pid].get("status", {})
-            if st.get("status_str") == "error":
-                raise SystemExit(f"execution failed:\n{st}")
-            return h[pid]
-        time.sleep(5)
-    raise SystemExit(f"timed out after {timeout:.0f}s — report this as the measurement "
-                     f"('longer than {timeout:.0f}s'), it still answers the sizing question")
-
-
-def download(server: str, hist: dict, out: Path) -> Path:
-    out.parent.mkdir(parents=True, exist_ok=True)
-    for node in hist.get("outputs", {}).values():
-        for key in ("videos", "gifs", "images"):
-            for item in node.get(key, []):
-                r = requests.get(f"{server}/view",
-                                 params={"filename": item["filename"],
-                                         "subfolder": item.get("subfolder", ""),
-                                         "type": item.get("type", "output")}, timeout=600)
-                r.raise_for_status()
-                p = out.with_suffix(Path(item["filename"]).suffix or ".mp4")
-                p.write_bytes(r.content)
-                return p
-    raise SystemExit(f"no video in history outputs; keys were "
-                     f"{[k for n in hist.get('outputs', {}).values() for k in n]}")
-
-
 def main() -> None:
     here = Path(__file__).parent
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -185,7 +147,10 @@ def main() -> None:
     ap.add_argument("--fp16", action="store_true",
                     help="use the fp16 UNET checkpoints instead of fp8_scaled (WI 1015): no fp8 "
                          "weight-prep at load, but 2x the VRAM (26.6 GiB/checkpoint)")
-    ap.add_argument("--timeout", type=float, default=3600)
+    ap.add_argument("--timeout", type=float, default=None,
+                    help="optional backstop in seconds; default: wait indefinitely for the server "
+                         "(a finished job is never discarded). On exceed, recover the clip with "
+                         "fetch_from_history.py.")
     args = ap.parse_args()
 
     steps = args.steps if args.steps is not None else (4 if args.lora else 20)
@@ -207,8 +172,8 @@ def main() -> None:
     print(f"regime={tag} unet={high_unet} steps={steps} cfg={cfg} {args.width}x{args.height} "
           f"{args.frames}f@{args.fps}fps (~{args.frames / args.fps:.2f}s) seed={args.seed}")
     t0 = time.time()
-    hist = wait(server, queue(server, graph), args.timeout)
-    path = download(server, hist, out)
+    path = comfy_client.run_job(server, graph, out, kinds=("videos", "gifs"),
+                                backstop=args.timeout, label=tag)[0]
     elapsed = time.time() - t0
     clip_s = args.frames / args.fps
     print(f"-> {path}")
