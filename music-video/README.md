@@ -72,13 +72,13 @@ FP8 _scaled_mm failed: Float8_e4m3fn is only supported for ROCm 6.5 and above,
 falling back to dequantization
 ```
 
-ComfyUI's torch is `2.9.1+rocm6.4` (HIP 6.4) while the box's `rocm-core` is **7.2.4** — one wheel
-built 0.1 behind the threshold. `_scaled_mm` is the matmul, so this hits inference, not just loading,
-and it affects **every fp8 model on that box**, silently (it is a warning, not an error).
-
-Fix: upgrade the torch wheel in `/opt/comfyui-env` to a ROCm ≥ 6.5 build (fixes fp8 box-wide), or use
-the fp16 Wan checkpoints (fixes Wan only, 28.6 GB per stage). Detail:
-[findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md).
+**Update (WI 1013, 2026-07-22):** the wheel was upgraded to `torch 2.10.0+rocm7.0` and **fp8
+`_scaled_mm` now runs natively** (0 fallback warnings). But a clip still took **79 min** — because the
+real cost is **loading** the two 14 GB fp8 checkpoints (~36 min each), which the matmul fix does not
+touch. So the fallback was not the dominant cost, and **video from `ai2` is still impractical**. The
+concrete next lever is the **fp16 Wan checkpoints** (no fp8 weights to prepare at load). Detail:
+[findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md) +
+[WI 1013](../../../tickets/docs/pending/1013-ai2-comfyui-torch-rocm65-fp8/code.md).
 
 Until then, shots are **stills plus Ken Burns only**.
 
