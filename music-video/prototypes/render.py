@@ -39,11 +39,47 @@ def _run(cmd: list[str]) -> None:
     subprocess.run(cmd, check=True)
 
 
+class RenderError(RuntimeError):
+    """A rendered artifact does not match what the manifest asked for. Raised before the next stage so
+    a silent short segment (WI 1004 B-1) fails loudly and located instead of collapsing the assembly."""
+
+
+# Duration tolerance: a looped-image segment quantises to round(seg_dur*FPS) frames, so the measured
+# duration can differ from the target by up to half a frame; encoding adds a little slack. Two frames
+# is comfortably inside that noise yet far below any real short-segment bug (B-1 shortfalls were seconds,
+# not frames).
+DUR_TOL = 2.0 / FPS
+
+
 def _probe_duration(path: Path) -> float:
     out = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
          "default=nk=1:nw=1", str(path)], check=True, capture_output=True, text=True)
     return float(out.stdout.strip())
+
+
+def _probe_video_duration(path: Path) -> float:
+    """The VIDEO STREAM's real length (packet count / FPS), NOT the container duration.
+
+    The distinction is the whole point of the final guard: after muxing, `format=duration` reports the
+    max over streams, so an audio-padded-but-short video (exactly the B-1 symptom -- a 12 s video in a
+    75 s container) passes a container-duration check. Counting video packets sees the truncation."""
+    out = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-count_packets",
+         "-show_entries", "stream=nb_read_packets", "-of", "default=nk=1:nw=1", str(path)],
+        check=True, capture_output=True, text=True)
+    return int(out.stdout.strip()) / FPS
+
+
+def _assert_duration(path: Path, expected: float, what: str, *, tol: float = DUR_TOL,
+                     video_stream: bool = False) -> None:
+    """Raise RenderError if `path` is not `expected` seconds (within `tol`). `video_stream` measures the
+    video stream length rather than the container -- use it for the muxed output."""
+    actual = _probe_video_duration(path) if video_stream else _probe_duration(path)
+    if abs(actual - expected) > tol:
+        raise RenderError(
+            f"{what}: expected {expected:.3f}s but got {actual:.3f}s "
+            f"(diff {actual - expected:+.3f}s, tol {tol:.3f}s) -- {path}")
 
 
 def _kenburns_vf(kb: dict, seg_dur: float) -> str:
@@ -151,8 +187,14 @@ def render(man: M.Manifest, manifest_dir: Path, out: Path, workdir: Path) -> Pat
             _render_video_segment(asset, seg_dur, seg)
         else:
             _render_still_segment(asset, s.kb, seg_dur, seg)
+        # Guard: a segment shorter than asked-for makes the xfade offsets overrun it and collapses the
+        # whole chain (WI 1004 B-1). Catch it here, at its source, not three stages downstream.
+        _assert_duration(seg, seg_dur, f"shot {s.index} segment ({s.kind})")
         segments.append(seg)
     _assemble(segments, boundaries, (manifest_dir / man.audio).resolve(), man.duration, out)
+    # Guard: the muxed VIDEO STREAM must reach the song duration -- a container-duration check would be
+    # fooled by an audio-padded-but-short video (the visible B-1 symptom).
+    _assert_duration(out, man.duration, "assembled video stream", tol=3.0 / FPS, video_stream=True)
     return out
 
 
