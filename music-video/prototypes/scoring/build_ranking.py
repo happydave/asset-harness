@@ -33,11 +33,15 @@ def tile(images, dst, cols):
         letter = string.ascii_uppercase[i]
         filt.append(f"[{i}:v]scale=480:270,drawtext=text='{letter}':x=12:y=10:fontsize=40:"
                     f"fontcolor=white:box=1:boxcolor=black@0.6:boxborderw=8[t{i}]")
+    # NB: ffmpeg's `tile` filter takes a SINGLE input (it tiles frames of one stream over time).
+    # Separate image inputs must be combined with hstack/xstack instead.
     concat = "".join(f"[t{i}]" for i in range(n))
-    filt.append(f"{concat}tile={cols}x{rows}:padding=8:color=gray[out]")
+    filt.append(f"{concat}hstack=inputs={n}[out]")
     dst.parent.mkdir(parents=True, exist_ok=True)
+    # -frames:v 1: the image2 muxer refuses a single-image output without it (it wants a %03d pattern)
     subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", *inputs,
-                    "-filter_complex", ";".join(filt), "-map", "[out]", str(dst)], check=True)
+                    "-filter_complex", ";".join(filt), "-map", "[out]", "-frames:v", "1",
+                    str(dst)], check=True)
 
 
 def main():

@@ -50,8 +50,14 @@ def score_images():
     from PIL import Image
     results = {}  # group -> {name -> {clip, pickscore}}
     groups = {}
+    # The off-brief sanity image is scored against a REAL shot's prompt and must be ranked INSIDE that
+    # shot's group -- in its own group it would trivially rank 1st of 1, which says nothing. Putting it
+    # in the reference group is what makes "garbage ranks last" an actual test.
+    ref_group = sorted({p.name.split("_seed")[0] for p in STILLS.glob("*.png")
+                        if not p.name.startswith("sanity")})
+    ref_group = ref_group[0] if ref_group else "shot4"
     for p in sorted(STILLS.glob("*.png")):
-        key = "sanity" if p.name.startswith("sanity") else p.name.split("_seed")[0]
+        key = ref_group if p.name.startswith("sanity") else p.name.split("_seed")[0]
         groups.setdefault(key, []).append(p)
     # each real shot group is scored against ITS prompt; sanity is scored against BOTH shot prompts
     # (it must lose to the real candidates under whichever prompt it is compared).
@@ -181,18 +187,26 @@ def score_audio():
     except Exception as e:
         print(f"Audiobox unavailable: {e}")
 
+    # A scorer that LOADS can still throw on its first item (Audiobox loads, then its torchcodec audio
+    # reader fails). Guard per item so one bad scorer degrades the run instead of killing it.
     g = {}
     for name, path in songs.items():
         rec = {}
         if clap:
-            rec["clap"] = round(clap(SONG_BRIEF, path), 4)
+            try:
+                rec["clap"] = round(clap(SONG_BRIEF, path), 4)
+            except Exception as e:
+                print(f"  clap failed on {name}: {str(e)[:70]}")
         if aes:
-            rec["audiobox"] = aes(path)
+            try:
+                rec["audiobox"] = aes(path)
+            except Exception as e:
+                print(f"  audiobox failed on {name}: {str(e)[:70]}")
         g[name] = rec
     out = {"brief": SONG_BRIEF, "scores": g}
-    if clap:
+    if any("clap" in v for v in g.values()):
         out["rank_clap"] = _ranks({k: v["clap"] for k, v in g.items() if "clap" in v})
-    if aes:
+    if any("audiobox" in v for v in g.values()):
         out["rank_audiobox_CE"] = _ranks({k: v["audiobox"]["CE"] for k, v in g.items()
                                           if "audiobox" in v})
         out["rank_audiobox_PQ"] = _ranks({k: v["audiobox"]["PQ"] for k, v in g.items()
