@@ -18,6 +18,10 @@ enough; **RIFE stays a flagged, un-installed upgrade** if temporal playback late
 fast motion. **This — not the settings — is what fixes the framey look**, and it's dirt cheap and
 retargetable (32/48/60 fps without regenerating the ~2 h clip).
 
+**Owner-confirmed on playback (2026-07-23):** the owner watched native-vs-interpolated for both the
+character and crowd clips and confirmed the interpolated video "looks wildly better" — closing the
+`[visual/manual]` gate that the agent's stills-only inspection could only partially reach.
+
 ### Settings (res_multistep / sgm_uniform / cfg 5 / 30 steps) — DON'T bump
 
 Ran the WI 1018 character still with the community-recommended bundle (else identical). Result:
