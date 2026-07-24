@@ -3,8 +3,10 @@
 **Status:** 🟡 in progress — the track is open, its **[license lane](license-lane.md)** is written, and
 the **lyric-timing question is answered**: post-hoc alignment (Demucs → WhisperX → reconcile against
 the authored sheet) aligned all 16 lines of a real ACE-Step vocal song at high confidence in 39 s on
-CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). **Motion clips are blocked** on `ai2` by an fp8/ROCm wheel gap (below). Remaining: the
-model-native timing route and a 60-second walking skeleton (WIs 1003–1004). Discovery:
+CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). The **model-native timing route was
+investigated and declined** (WI 1003: real feature, but not reachable as a ComfyUI node and blocked on
+our XL checkpoint's missing layer config — post-hoc stays the sole route). **Motion clips are blocked**
+on `ai2` by an fp8/ROCm wheel gap (below). Remaining: a 60-second walking skeleton (WI 1004). Discovery:
 [WI 989](../../../tickets/docs/pending/989-ah-music-video-track/discover.md).
 
 ## Purpose
@@ -135,7 +137,7 @@ python3 -m venv .venv && .venv/bin/pip install demucs whisperx
 |---|---|---|
 | ~~1001~~ | ~~SPIKE — lyric→time alignment via Demucs + WhisperX~~ | **done** — post-hoc adopted as the default route ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)) |
 | ~~1002~~ | ~~SPIKE — one Wan2.2 i2v clip on `ai2`~~ | **done** — ~45+ min/clip; root cause is a torch wheel built against ROCm 6.4 ([findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md)) |
-| 1003 | SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps | model-native route, complementary to 1001 |
+| ~~1003~~ | ~~SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps~~ | **done — no node.** The feature is real & cross-attention-derived, but the port dropped the whole alignment subsystem and our XL checkpoint lacks its layer config; post-hoc stays the sole route ([findings](findings/2026-07-23-acestep-native-lyric-timing.md)) |
 | 1004 | Walking skeleton — 60 s Clamor lobby loop, end to end | prove the artifact before building the gates |
 
 Detail lives in [`tickets/docs/pending/`](../../../tickets/docs/pending/) and in the
