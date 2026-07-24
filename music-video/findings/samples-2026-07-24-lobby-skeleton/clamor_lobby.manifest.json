@@ -1,0 +1,192 @@
+{
+  "audio": "assets/clamor_hold_the_line_seed701.flac",
+  "duration": 75.0,
+  "source_timeline": "clamor_hold_the_line_seed701_posthoc.timeline.json",
+  "shots": [
+    {
+      "index": 0,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 0,
+          "text": "Six of us went out at first light"
+        },
+        {
+          "index": 1,
+          "text": "Counting every step and every round"
+        }
+      ],
+      "t_start": 0.0,
+      "t_end": 14.337,
+      "kind": "kenburns",
+      "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot00.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "index": 1,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 2,
+          "text": "The colony is waiting on the far side"
+        },
+        {
+          "index": 3,
+          "text": "Of a city that has forgotten how to make a sound"
+        }
+      ],
+      "t_start": 14.337,
+      "t_end": 23.902,
+      "kind": "kenburns",
+      "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot01.png",
+      "kb": {
+        "zoom": "none",
+        "pan": "r"
+      }
+    },
+    {
+      "index": 2,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 4,
+          "text": "Hold the line, hold the line"
+        },
+        {
+          "index": 5,
+          "text": "Take what we can carry, leave the rest behind"
+        }
+      ],
+      "t_start": 23.902,
+      "t_end": 29.246,
+      "kind": "video",
+      "prompt": "[hero clip, WI 1018] a lone survivor scavenger holding ground in a ruined street at dusk, subtle motion; painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot02.mp4",
+      "kb": {
+        "zoom": "none",
+        "pan": "c"
+      }
+    },
+    {
+      "index": 3,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 6,
+          "text": "One more street, one more night"
+        },
+        {
+          "index": 7,
+          "text": "We are going home, we are going home tonight"
+        }
+      ],
+      "t_start": 29.246,
+      "t_end": 37.093,
+      "kind": "kenburns",
+      "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot03.png",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      }
+    },
+    {
+      "index": 4,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 8,
+          "text": "She has got the map and I have got the last flare"
+        },
+        {
+          "index": 9,
+          "text": "Something in the stairwell heard us come"
+        }
+      ],
+      "t_start": 37.093,
+      "t_end": 46.228,
+      "kind": "kenburns",
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot04.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "index": 5,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 10,
+          "text": "Do not you run, do not you make a sound out there"
+        },
+        {
+          "index": 11,
+          "text": "Count it down and take them one by one"
+        }
+      ],
+      "t_start": 46.228,
+      "t_end": 56.616,
+      "kind": "kenburns",
+      "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot05.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "u"
+      }
+    },
+    {
+      "index": 6,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 12,
+          "text": "Hold the line, hold the line"
+        },
+        {
+          "index": 13,
+          "text": "Take what we can carry, leave the rest behind"
+        }
+      ],
+      "t_start": 56.616,
+      "t_end": 61.9,
+      "kind": "kenburns",
+      "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot06.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "index": 7,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 14,
+          "text": "One more street, one more night"
+        },
+        {
+          "index": 15,
+          "text": "We are going home, we are going home tonight"
+        }
+      ],
+      "t_start": 61.9,
+      "t_end": 75.0,
+      "kind": "kenburns",
+      "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "assets/shot07.png",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      }
+    }
+  ],
+  "notes": "WI 1004 walking skeleton; 8 shots x 2 lyric lines; hero video on chorus shot 2 (WI 1018 clip, interpolated); stills reuse 2 vetted WI 1018 frames + 5 Z-Image base."
+}

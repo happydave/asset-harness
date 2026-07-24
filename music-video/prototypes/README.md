@@ -38,6 +38,12 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   failure is caught and the batch continues.
 - **`generate_clip.py`** — Wan2.2 i2v. **`generate_still.py`** — opaque Z-Image text-to-image.
   **`generate_song.py`** — ACE-Step 1.5 song-with-lyrics. All three use `comfy_client`.
+- **`timeline.py`** — the lyric timeline (JSON + LRC); every alignment route emits it.
+- **`manifest.py`** — the shot-list manifest schema (timeline → shots); the track's durable artifact.
+  **`test_manifest.py`** — 17 checks (`python3 test_manifest.py`).
+- **`render.py`** — the pure renderer: manifest + assets → lobby-loop mp4 (workstation ffmpeg).
+- **`build_lobby.py`** — the WI 1004 skeleton driver (authors the manifest, gens assets, renders).
+- **`interpolate.py`** — workstation ffmpeg `minterpolate` fps raise (WI 1019 smoothness fix).
 
 ## Licence
 

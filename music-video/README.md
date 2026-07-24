@@ -6,7 +6,10 @@ the authored sheet) aligned all 16 lines of a real ACE-Step vocal song at high c
 CPU ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)). The **model-native timing route was
 investigated and declined** (WI 1003: real feature, but not reachable as a ComfyUI node and blocked on
 our XL checkpoint's missing layer config — post-hoc stays the sole route). **Motion clips are blocked**
-on `ai2` by an fp8/ROCm wheel gap (below). Remaining: a 60-second walking skeleton (WI 1004). Discovery:
+on `ai2` by an fp8/ROCm wheel gap (below). The **walking skeleton is built** (WI 1004): a shot-list
+manifest → pure renderer → a 75 s / 7.1 MB Clamor lobby loop, end to end
+([findings](findings/2026-07-24-lobby-skeleton.md)). Remaining before the full gated pipeline: owner
+review + a loop-seam finish step. Discovery:
 [WI 989](../../../tickets/docs/pending/989-ah-music-video-track/discover.md).
 
 ## Purpose
@@ -112,6 +115,18 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
     gives the 3–5 candidates the pick gate wants.
   - [`timeline.py`](prototypes/timeline.py) — the lyric timeline (JSON + LRC). **Every route emits
     this**, so the shot list cannot tell which produced it. Validates at emit time.
+  - [`manifest.py`](prototypes/manifest.py) — the **shot-list manifest** schema (the track's durable
+    artifact): timeline → 8 shots, each `{lines, t_start/t_end, kind, prompt, asset, kb}`; validates a
+    contiguous partition + asset existence at emit. [`test_manifest.py`](prototypes/test_manifest.py)
+    (17 checks).
+  - [`render.py`](prototypes/render.py) — the **pure renderer**: manifest + assets → lobby-loop mp4
+    (zoompan Ken Burns with the pre-upscale fix, xfade chain, audio mux, web encode). No creative
+    decisions live here — the whole edit is a function of the manifest.
+  - [`build_lobby.py`](prototypes/build_lobby.py) — the WI 1004 skeleton driver: authors the 8-shot
+    manifest, generates missing stills on `ai2`, interpolates the hero clip, emits the manifest.
+  - [`generate_still.py`](prototypes/generate_still.py) — opaque Z-Image text-to-image stills.
+  - [`interpolate.py`](prototypes/interpolate.py) — workstation ffmpeg `minterpolate` fps raise (the
+    WI 1019 smoothness fix for Wan clips).
   - [`align_posthoc.py`](prototypes/align_posthoc.py) — Demucs → WhisperX → reconcile against the
     authored sheet. The default route. Needs the track-local venv.
   - [`tap_align.py`](prototypes/tap_align.py) — tap ENTER per line. The floor: stdlib + `ffplay`,
@@ -138,7 +153,7 @@ python3 -m venv .venv && .venv/bin/pip install demucs whisperx
 | ~~1001~~ | ~~SPIKE — lyric→time alignment via Demucs + WhisperX~~ | **done** — post-hoc adopted as the default route ([findings](findings/2026-07-22-lyric-alignment-posthoc.md)) |
 | ~~1002~~ | ~~SPIKE — one Wan2.2 i2v clip on `ai2`~~ | **done** — ~45+ min/clip; root cause is a torch wheel built against ROCm 6.4 ([findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md)) |
 | ~~1003~~ | ~~SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps~~ | **done — no node.** The feature is real & cross-attention-derived, but the port dropped the whole alignment subsystem and our XL checkpoint lacks its layer config; post-hoc stays the sole route ([findings](findings/2026-07-23-acestep-native-lyric-timing.md)) |
-| 1004 | Walking skeleton — 60 s Clamor lobby loop, end to end | prove the artifact before building the gates |
+| ~~1004~~ | ~~Walking skeleton — 60 s Clamor lobby loop, end to end~~ | **done — pipeline runs end to end.** manifest → pure renderer → 75 s / 7.1 MB lobby loop; `manifest.py` + `render.py` are the reusable core ([findings](findings/2026-07-24-lobby-skeleton.md)). Owner `[human]` review + a loop-seam finish step are the remaining gates before the full gated pipeline |
 
 Detail lives in [`tickets/docs/pending/`](../../../tickets/docs/pending/) and in the
 [project backlog](../../../tickets/docs/projects/asset-harness/project.md).
