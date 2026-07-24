@@ -9,6 +9,7 @@ listed for the owner to listen to and order.
 Run with plain python3 (needs ffmpeg for the tiling), after fetch_all.py.
 """
 import json
+import shutil
 import string
 import subprocess
 from pathlib import Path
@@ -48,7 +49,12 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     key = {}
     form = ["# WI 1037 blind ranking form\n",
-            "Rank each group best -> worst using the tile letters. Do NOT look at machine_scores.json.\n"]
+            "\n**Everything you need is in THIS folder** — sheets and songs are copied here, so there\n"
+            "is no digging across directories. Do NOT look at `machine_scores.json`.\n",
+            "\nFor each group: give the order best -> worst, **and a line on _why_** — what made the\n"
+            "winner win and the loser lose (composition? lighting? on-brief-ness? vocal clarity?).\n"
+            "The reasons are worth more than the ordering: they say which axis a scorer would have to\n"
+            "capture to match your taste.\n"]
 
     # stills grouped by shot (exclude the sanity-floor from ranking; it is a separate control)
     groups = {}
@@ -60,8 +66,10 @@ def main():
         paths = sorted(paths)
         key[shot] = {string.ascii_uppercase[i]: p.name for i, p in enumerate(paths)}
         tile(paths, OUT / f"{shot}_candidates.png", cols=len(paths))
-        form.append(f"\n## {shot}  ({OUT.name}/{shot}_candidates.png) — {len(paths)} candidates "
-                    f"{list(key[shot])}\n- Best -> worst: ______\n")
+        form.append(f"\n## {shot} — open `{shot}_candidates.png` (one sheet, {len(paths)} tiles "
+                    f"labelled {', '.join(key[shot])})\n"
+                    f"- Best -> worst: ______\n"
+                    f"- Why (what separated best from worst?): ______\n")
 
     # sanity control sheet (real best vs the off-brief image) — must the owner rank the off-brief last?
     sanity = sorted(STILLS.glob("sanity*.png"))
@@ -70,8 +78,12 @@ def main():
         ctrl = [sorted(groups[first_shot])[0], sanity[0]]
         tile(ctrl, OUT / "sanity_control.png", cols=2)
         key["sanity_control"] = {"A": ctrl[0].name, "B": ctrl[1].name}
-        form.append("\n## sanity_control (sanity_control.png) — A is a real candidate, B is off-brief.\n"
-                    "- Which is better for a zombie-survival lobby (A/B)? ______\n")
+        form.append("\n## sanity_control — open `sanity_control.png` "
+                    "(**ONE image containing BOTH tiles side by side**, labelled A and B; there is no\n"
+                    "second file to find). This is a deliberate control: one tile is a real candidate,\n"
+                    "the other is off-brief. It should be obvious — it exists to prove the scorers\n"
+                    "reject garbage, so a trivially easy answer is the point.\n"
+                    "- Which suits a zombie-survival lobby (A/B)? ______\n")
 
     # songs
     songs = []
@@ -80,11 +92,20 @@ def main():
     for p in sorted(SONGS.glob("*.flac")):
         songs.append((p.stem.replace("clamor_hold_the_line_", ""), p))
     if songs:
-        key["songs"] = {s[0]: str(s[1]) for s in songs}
-        form.append("\n## songs — listen and order these files best -> worst:\n")
-        for name, p in songs:
-            form.append(f"  - {name}: {p}\n")
-        form.append("- Best -> worst: ______\n")
+        # Copy the songs INTO this folder and letter them, so the owner never leaves the folder and the
+        # answer format matches the image groups (letters, not seed names -- which caused an ambiguous
+        # answer the first time round).
+        key["songs"] = {}
+        form.append("\n## songs — all copied into this folder; listen and order best -> worst:\n")
+        for i, (name, p) in enumerate(songs):
+            letter = string.ascii_uppercase[i]
+            dst = OUT / f"song_{letter}.flac"
+            if not dst.exists():
+                shutil.copyfile(p, dst)
+            key["songs"][letter] = name
+            form.append(f"  - **{letter}** = `{dst.name}`\n")
+        form.append("- Best -> worst (letters): ______\n"
+                    "- Why (vocal clarity? mix? mood fit? which lines land?): ______\n")
 
     (OUT / "ranking_form.md").write_text("".join(form))
     (OUT / "_label_key.json").write_text(json.dumps(key, indent=2))  # de-anonymise AFTER ranking
