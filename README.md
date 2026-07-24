@@ -52,6 +52,9 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
   used, note why local fell short.
 - Large generated outputs and model weights are git-ignored (see `.gitignore`); commit
   *representative samples* small enough to be useful, plus the findings that reproduce them.
+- **Prompt a model? Read its skill first.** Per-model prompting/usage guides live in
+  [`skills/`](skills/) — one per model we drive (Wan2.2 i2v, Z-Image, ACE-Step 1.5, …), capturing the
+  wording, settings, and traps already paid for. Add a skill when a new model is validated in-repo.
 
 ## Manifest validation (contracts gate)
 
