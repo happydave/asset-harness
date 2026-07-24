@@ -61,7 +61,9 @@ def main() -> None:
         try:
             graph = _graph_for(server, spec)
             # queue -> wait on /history terminal state -> download. No pgrep, no discarding a finish.
-            path = comfy_client.run_job(server, graph, out, kinds=("videos", "gifs"),
+            # "images" is required: SaveVideo emits the mp4 under that key (animated=True), not
+            # "videos" (WI 1019 caught this WI 1020 regression).
+            path = comfy_client.run_job(server, graph, out, kinds=("videos", "gifs", "images"),
                                         backstop=args.backstop, label=f"{i+1}/{len(specs)}:{out}")[0]
             dt = time.time() - t0
             results.append((out, "ok", str(path), dt))

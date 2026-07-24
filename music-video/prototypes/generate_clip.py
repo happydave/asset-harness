@@ -61,7 +61,8 @@ NEGATIVE = ("色调艳丽，过曝，静态，细节模糊不清，字幕，风�
 
 def build_graph(image_name: str, prompt: str, *, width: int, height: int, frames: int,
                 fps: int, seed: int, use_lora: bool, steps: int, cfg: float,
-                prefix: str, high_unet: str = HIGH_UNET, low_unet: str = LOW_UNET) -> dict:
+                prefix: str, high_unet: str = HIGH_UNET, low_unet: str = LOW_UNET,
+                sampler: str = "euler", scheduler: str = "simple", shift: float = 5.0) -> dict:
     """Two model branches (high-noise, low-noise), optionally each through its speed LoRA.
 
     `high_unet`/`low_unet` default to the fp8_scaled checkpoints; WI 1015 passes the fp16 pair to
@@ -86,8 +87,8 @@ def build_graph(image_name: str, prompt: str, *, width: int, height: int, frames
     else:
         high_src, low_src = ["10", 0], ["20", 0]
 
-    g["12"] = {"class_type": "ModelSamplingSD3", "inputs": {"model": high_src, "shift": 5.0}}
-    g["22"] = {"class_type": "ModelSamplingSD3", "inputs": {"model": low_src, "shift": 5.0}}
+    g["12"] = {"class_type": "ModelSamplingSD3", "inputs": {"model": high_src, "shift": shift}}
+    g["22"] = {"class_type": "ModelSamplingSD3", "inputs": {"model": low_src, "shift": shift}}
 
     g["30"] = {"class_type": "WanImageToVideo",
                "inputs": {"positive": ["3", 0], "negative": ["4", 0], "vae": ["2", 0],
@@ -100,13 +101,13 @@ def build_graph(image_name: str, prompt: str, *, width: int, height: int, frames
     split = steps // 2
     g["40"] = {"class_type": "KSamplerAdvanced",
                "inputs": {"model": ["12", 0], "add_noise": "enable", "noise_seed": seed,
-                          "steps": steps, "cfg": cfg, "sampler_name": "euler", "scheduler": "simple",
+                          "steps": steps, "cfg": cfg, "sampler_name": sampler, "scheduler": scheduler,
                           "positive": ["30", 0], "negative": ["30", 1], "latent_image": ["30", 2],
                           "start_at_step": 0, "end_at_step": split,
                           "return_with_leftover_noise": "enable"}}
     g["41"] = {"class_type": "KSamplerAdvanced",
                "inputs": {"model": ["22", 0], "add_noise": "disable", "noise_seed": seed,
-                          "steps": steps, "cfg": cfg, "sampler_name": "euler", "scheduler": "simple",
+                          "steps": steps, "cfg": cfg, "sampler_name": sampler, "scheduler": scheduler,
                           "positive": ["30", 0], "negative": ["30", 1], "latent_image": ["40", 0],
                           "start_at_step": split, "end_at_step": steps,
                           "return_with_leftover_noise": "disable"}}
@@ -147,6 +148,11 @@ def main() -> None:
     ap.add_argument("--fp16", action="store_true",
                     help="use the fp16 UNET checkpoints instead of fp8_scaled (WI 1015): no fp8 "
                          "weight-prep at load, but 2x the VRAM (26.6 GiB/checkpoint)")
+    ap.add_argument("--sampler", default="euler",
+                    help="KSampler sampler_name (WI 1019: res_multistep reported better than euler)")
+    ap.add_argument("--scheduler", default="simple",
+                    help="KSampler scheduler (WI 1019: sgm_uniform reported better than simple)")
+    ap.add_argument("--shift", type=float, default=5.0, help="ModelSamplingSD3 shift (blueprint: 5.0)")
     ap.add_argument("--timeout", type=float, default=None,
                     help="optional backstop in seconds; default: wait indefinitely for the server "
                          "(a finished job is never discarded). On exceed, recover the clip with "
@@ -167,12 +173,17 @@ def main() -> None:
                         frames=args.frames, fps=args.fps, seed=args.seed,
                         use_lora=args.lora, steps=steps, cfg=cfg,
                         prefix=f"asset_harness/mv_clip_{tag}",
-                        high_unet=high_unet, low_unet=low_unet)
+                        high_unet=high_unet, low_unet=low_unet,
+                        sampler=args.sampler, scheduler=args.scheduler, shift=args.shift)
 
-    print(f"regime={tag} unet={high_unet} steps={steps} cfg={cfg} {args.width}x{args.height} "
+    print(f"regime={tag} unet={high_unet} steps={steps} cfg={cfg} {args.sampler}/{args.scheduler} "
+          f"shift={args.shift} {args.width}x{args.height} "
           f"{args.frames}f@{args.fps}fps (~{args.frames / args.fps:.2f}s) seed={args.seed}")
     t0 = time.time()
-    path = comfy_client.run_job(server, graph, out, kinds=("videos", "gifs"),
+    # NOTE: this ComfyUI's SaveVideo emits the mp4 under the "images" key (animated=True), not
+    # "videos" — so "images" MUST be in kinds or the finished clip isn't found (WI 1019 caught this
+    # WI 1020 regression: the refactor had narrowed it to videos/gifs).
+    path = comfy_client.run_job(server, graph, out, kinds=("videos", "gifs", "images"),
                                 backstop=args.timeout, label=tag)[0]
     elapsed = time.time() - t0
     clip_s = args.frames / args.fps
