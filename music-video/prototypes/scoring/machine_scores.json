@@ -1,0 +1,123 @@
+{
+  "images": {
+    "sanity": {
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "scores": {
+        "sanity_offbrief_seed41.png": {
+          "clip": 0.0739,
+          "pickscore": 0.1238
+        }
+      },
+      "rank_clip": {
+        "sanity_offbrief_seed41.png": 1
+      },
+      "rank_pickscore": {
+        "sanity_offbrief_seed41.png": 1
+      }
+    },
+    "shot4": {
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "scores": {
+        "shot4_seed41.png": {
+          "clip": 0.3865,
+          "pickscore": 0.1971
+        },
+        "shot4_seed42.png": {
+          "clip": 0.3699,
+          "pickscore": 0.2084
+        },
+        "shot4_seed43.png": {
+          "clip": 0.3638,
+          "pickscore": 0.1933
+        },
+        "shot4_seed44.png": {
+          "clip": 0.3436,
+          "pickscore": 0.1934
+        },
+        "shot4_seed45.png": {
+          "clip": 0.3838,
+          "pickscore": 0.2088
+        }
+      },
+      "rank_clip": {
+        "shot4_seed41.png": 1,
+        "shot4_seed45.png": 2,
+        "shot4_seed42.png": 3,
+        "shot4_seed43.png": 4,
+        "shot4_seed44.png": 5
+      },
+      "rank_pickscore": {
+        "shot4_seed45.png": 1,
+        "shot4_seed42.png": 2,
+        "shot4_seed41.png": 3,
+        "shot4_seed44.png": 4,
+        "shot4_seed43.png": 5
+      }
+    },
+    "shot7": {
+      "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "scores": {
+        "shot7_seed41.png": {
+          "clip": 0.3702,
+          "pickscore": 0.2118
+        },
+        "shot7_seed42.png": {
+          "clip": 0.3467,
+          "pickscore": 0.2184
+        },
+        "shot7_seed43.png": {
+          "clip": 0.3485,
+          "pickscore": 0.2051
+        },
+        "shot7_seed44.png": {
+          "clip": 0.3565,
+          "pickscore": 0.2082
+        },
+        "shot7_seed45.png": {
+          "clip": 0.3798,
+          "pickscore": 0.2146
+        }
+      },
+      "rank_clip": {
+        "shot7_seed45.png": 1,
+        "shot7_seed41.png": 2,
+        "shot7_seed44.png": 3,
+        "shot7_seed43.png": 4,
+        "shot7_seed42.png": 5
+      },
+      "rank_pickscore": {
+        "shot7_seed42.png": 1,
+        "shot7_seed45.png": 2,
+        "shot7_seed41.png": 3,
+        "shot7_seed44.png": 4,
+        "shot7_seed43.png": 5
+      }
+    }
+  },
+  "audio": {
+    "brief": "post-apocalyptic folk rock with male and female vocals, gritty clean singing, melancholic determined mood, acoustic guitar and drums",
+    "scores": {
+      "seed701": {
+        "clap": -0.0055
+      },
+      "seed702": {
+        "clap": 0.0061
+      },
+      "seed703": {
+        "clap": 0.0017
+      },
+      "seed704": {
+        "clap": 0.0114
+      }
+    },
+    "rank_clap": {
+      "seed704": 1,
+      "seed702": 2,
+      "seed703": 3,
+      "seed701": 4
+    }
+  },
+  "controls": {
+    "pickscore_deterministic": true
+  }
+}

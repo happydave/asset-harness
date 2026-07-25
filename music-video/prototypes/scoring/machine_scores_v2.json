@@ -1,0 +1,318 @@
+{
+  "images": {
+    "shot4": {
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "scores": {
+        "sanity_offbrief_seed41.png": {
+          "clip_centrecrop": 0.0741,
+          "clip_letterbox": 0.107,
+          "clip_multicrop": 0.0792,
+          "pickscore_centrecrop": 0.1241,
+          "pickscore_letterbox": 0.1295,
+          "pickscore_multicrop": 0.125
+        },
+        "shot4_seed41.png": {
+          "clip_centrecrop": 0.3856,
+          "clip_letterbox": 0.3313,
+          "clip_multicrop": 0.3678,
+          "pickscore_centrecrop": 0.1972,
+          "pickscore_letterbox": 0.1933,
+          "pickscore_multicrop": 0.1966
+        },
+        "shot4_seed42.png": {
+          "clip_centrecrop": 0.3691,
+          "clip_letterbox": 0.3506,
+          "clip_multicrop": 0.3445,
+          "pickscore_centrecrop": 0.2077,
+          "pickscore_letterbox": 0.1985,
+          "pickscore_multicrop": 0.2021
+        },
+        "shot4_seed43.png": {
+          "clip_centrecrop": 0.3638,
+          "clip_letterbox": 0.3428,
+          "clip_multicrop": 0.3581,
+          "pickscore_centrecrop": 0.1933,
+          "pickscore_letterbox": 0.1885,
+          "pickscore_multicrop": 0.193
+        },
+        "shot4_seed44.png": {
+          "clip_centrecrop": 0.3431,
+          "clip_letterbox": 0.359,
+          "clip_multicrop": 0.3387,
+          "pickscore_centrecrop": 0.1934,
+          "pickscore_letterbox": 0.189,
+          "pickscore_multicrop": 0.1914
+        },
+        "shot4_seed45.png": {
+          "clip_centrecrop": 0.3839,
+          "clip_letterbox": 0.3712,
+          "clip_multicrop": 0.3736,
+          "pickscore_centrecrop": 0.2091,
+          "pickscore_letterbox": 0.1966,
+          "pickscore_multicrop": 0.203
+        }
+      },
+      "rank_clip_centrecrop": {
+        "shot4_seed41.png": 1,
+        "shot4_seed45.png": 2,
+        "shot4_seed42.png": 3,
+        "shot4_seed43.png": 4,
+        "shot4_seed44.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      },
+      "rank_clip_letterbox": {
+        "shot4_seed45.png": 1,
+        "shot4_seed44.png": 2,
+        "shot4_seed42.png": 3,
+        "shot4_seed43.png": 4,
+        "shot4_seed41.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      },
+      "rank_clip_multicrop": {
+        "shot4_seed45.png": 1,
+        "shot4_seed41.png": 2,
+        "shot4_seed43.png": 3,
+        "shot4_seed42.png": 4,
+        "shot4_seed44.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      },
+      "rank_pickscore_centrecrop": {
+        "shot4_seed45.png": 1,
+        "shot4_seed42.png": 2,
+        "shot4_seed41.png": 3,
+        "shot4_seed44.png": 4,
+        "shot4_seed43.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      },
+      "rank_pickscore_letterbox": {
+        "shot4_seed42.png": 1,
+        "shot4_seed45.png": 2,
+        "shot4_seed41.png": 3,
+        "shot4_seed44.png": 4,
+        "shot4_seed43.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      },
+      "rank_pickscore_multicrop": {
+        "shot4_seed45.png": 1,
+        "shot4_seed42.png": 2,
+        "shot4_seed41.png": 3,
+        "shot4_seed43.png": 4,
+        "shot4_seed44.png": 5,
+        "sanity_offbrief_seed41.png": 6
+      }
+    },
+    "shot7": {
+      "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "scores": {
+        "shot7_seed41.png": {
+          "clip_centrecrop": 0.3691,
+          "clip_letterbox": 0.3714,
+          "clip_multicrop": 0.3652,
+          "pickscore_centrecrop": 0.2117,
+          "pickscore_letterbox": 0.2044,
+          "pickscore_multicrop": 0.2122
+        },
+        "shot7_seed42.png": {
+          "clip_centrecrop": 0.3467,
+          "clip_letterbox": 0.3569,
+          "clip_multicrop": 0.3423,
+          "pickscore_centrecrop": 0.218,
+          "pickscore_letterbox": 0.2027,
+          "pickscore_multicrop": 0.2121
+        },
+        "shot7_seed43.png": {
+          "clip_centrecrop": 0.3483,
+          "clip_letterbox": 0.3516,
+          "clip_multicrop": 0.348,
+          "pickscore_centrecrop": 0.2047,
+          "pickscore_letterbox": 0.1985,
+          "pickscore_multicrop": 0.2034
+        },
+        "shot7_seed44.png": {
+          "clip_centrecrop": 0.3573,
+          "clip_letterbox": 0.3827,
+          "clip_multicrop": 0.3531,
+          "pickscore_centrecrop": 0.2083,
+          "pickscore_letterbox": 0.2069,
+          "pickscore_multicrop": 0.2088
+        },
+        "shot7_seed45.png": {
+          "clip_centrecrop": 0.3796,
+          "clip_letterbox": 0.3877,
+          "clip_multicrop": 0.3821,
+          "pickscore_centrecrop": 0.2148,
+          "pickscore_letterbox": 0.2068,
+          "pickscore_multicrop": 0.2124
+        }
+      },
+      "rank_clip_centrecrop": {
+        "shot7_seed45.png": 1,
+        "shot7_seed41.png": 2,
+        "shot7_seed44.png": 3,
+        "shot7_seed43.png": 4,
+        "shot7_seed42.png": 5
+      },
+      "rank_clip_letterbox": {
+        "shot7_seed45.png": 1,
+        "shot7_seed44.png": 2,
+        "shot7_seed41.png": 3,
+        "shot7_seed42.png": 4,
+        "shot7_seed43.png": 5
+      },
+      "rank_clip_multicrop": {
+        "shot7_seed45.png": 1,
+        "shot7_seed41.png": 2,
+        "shot7_seed44.png": 3,
+        "shot7_seed43.png": 4,
+        "shot7_seed42.png": 5
+      },
+      "rank_pickscore_centrecrop": {
+        "shot7_seed42.png": 1,
+        "shot7_seed45.png": 2,
+        "shot7_seed41.png": 3,
+        "shot7_seed44.png": 4,
+        "shot7_seed43.png": 5
+      },
+      "rank_pickscore_letterbox": {
+        "shot7_seed44.png": 1,
+        "shot7_seed45.png": 2,
+        "shot7_seed41.png": 3,
+        "shot7_seed42.png": 4,
+        "shot7_seed43.png": 5
+      },
+      "rank_pickscore_multicrop": {
+        "shot7_seed45.png": 1,
+        "shot7_seed41.png": 2,
+        "shot7_seed42.png": 3,
+        "shot7_seed44.png": 4,
+        "shot7_seed43.png": 5
+      }
+    }
+  },
+  "audio": {
+    "brief": "post-apocalyptic folk rock with male and female vocals, gritty clean singing, melancholic determined mood, acoustic guitar and drums",
+    "aggregation": "mean of non-overlapping 10s windows",
+    "scores": {
+      "seed701": {
+        "clap_windows": [
+          0.00336,
+          0.00322,
+          -0.01083,
+          0.00242,
+          0.00614,
+          -0.00399,
+          0.00022,
+          0.00968
+        ],
+        "clap": 0.00128,
+        "clap_min": -0.01083,
+        "clap_max": 0.00968,
+        "audiobox": {
+          "CE": 7.5049,
+          "CU": 7.9371,
+          "PC": 6.4537,
+          "PQ": 8.4175
+        }
+      },
+      "seed702": {
+        "clap_windows": [
+          0.00422,
+          -0.00202,
+          0.00281,
+          0.00764,
+          0.00983,
+          0.00579,
+          0.00419,
+          0.00686
+        ],
+        "clap": 0.00492,
+        "clap_min": -0.00202,
+        "clap_max": 0.00983,
+        "audiobox": {
+          "CE": 6.8259,
+          "CU": 7.671,
+          "PC": 5.8837,
+          "PQ": 8.0073
+        }
+      },
+      "seed703": {
+        "clap_windows": [
+          0.00827,
+          0.00279,
+          0.00552,
+          0.00457,
+          0.00057,
+          0.00776,
+          0.00293,
+          0.00785
+        ],
+        "clap": 0.00503,
+        "clap_min": 0.00057,
+        "clap_max": 0.00827,
+        "audiobox": {
+          "CE": 7.0435,
+          "CU": 7.6795,
+          "PC": 6.174,
+          "PQ": 8.1584
+        }
+      },
+      "seed704": {
+        "clap_windows": [
+          0.01497,
+          0.00581,
+          0.01241,
+          0.0113,
+          -0.00039,
+          0.00903,
+          0.00303,
+          0.00675
+        ],
+        "clap": 0.00786,
+        "clap_min": -0.00039,
+        "clap_max": 0.01497,
+        "audiobox": {
+          "CE": 7.2299,
+          "CU": 7.7935,
+          "PC": 6.2812,
+          "PQ": 8.2567
+        }
+      }
+    },
+    "rank_clap": {
+      "seed704": 1,
+      "seed703": 2,
+      "seed702": 3,
+      "seed701": 4
+    },
+    "rank_audiobox_CE": {
+      "seed701": 1,
+      "seed704": 2,
+      "seed703": 3,
+      "seed702": 4
+    },
+    "rank_audiobox_CU": {
+      "seed701": 1,
+      "seed704": 2,
+      "seed703": 3,
+      "seed702": 4
+    },
+    "rank_audiobox_PC": {
+      "seed701": 1,
+      "seed704": 2,
+      "seed703": 3,
+      "seed702": 4
+    },
+    "rank_audiobox_PQ": {
+      "seed701": 1,
+      "seed704": 2,
+      "seed703": 3,
+      "seed702": 4
+    }
+  },
+  "controls": {
+    "clip_deterministic": true,
+    "pickscore_deterministic": true,
+    "clap_deterministic": true,
+    "audiobox_deterministic": true
+  }
+}
