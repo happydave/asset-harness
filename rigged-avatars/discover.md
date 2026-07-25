@@ -94,12 +94,37 @@ The dirtiest link in every AI *animation* chain is the motion corpus, not the me
   **non-commercial research/education/artistic only** — and explicitly bars using the data to train
   methods for commercial use. The MIT badge on the repo does not launder the weights. **Cross
   text-to-motion off entirely.**
-- **nvdiffrast is non-commercial and sits under the texture stages (Confirmed license; Hypothesis on
-  reach).** NVIDIA Source Code License = non-commercial research/evaluation only. It underpins the
-  **texture/PBR paint** stage of TRELLIS / TRELLIS.2 / Hunyuan3D. Reading (researcher opinion, not
-  legal advice): the escape hatch is that the **shape/geometry** stages don't need nvdiffrast — only
-  the paint stages do. **Generate geometry, texture in Blender.** Verify the import graph before
-  relying on it.
+- **nvdiffrast is non-commercial and sits under the texture stages (Confirmed license; Confirmed on
+  reach for TRELLIS v1 — import graph traced 2026-07-15).** NVIDIA Source Code License = non-commercial
+  research/evaluation only. It underpins the **texture/PBR paint** stage. The escape hatch —
+  **generate geometry, texture in our own clean lane** — is now **verified against the actual source**
+  of `microsoft/TRELLIS` (see [trellis2-clean track](../trellis2-clean/findings/2026-07-15-trellis-nvdiffrast-import-graph.md)):
+  - Only two files import nvdiffrast — `renderers/mesh_renderer.py` and `utils/postprocessing_utils.py`
+    — and both are reached **only** by the texture-bake/glb-export path (`postprocessing_utils.to_glb`,
+    imported solely by the `example*.py`/`app*.py` scripts) and by training. `Confirmed`.
+  - The pipeline (`trellis_image_to_3d.py`) and the geometry decoder (`representations/mesh/cube2mesh.py`
+    → FlexiCubes → `MeshExtractResult`) import **no** nvdiffrast. `renderers/__init__.py` is lazy
+    (`__getattr__`), so plain `import trellis` never pulls it. So `pipeline.run()` + export the raw
+    verts/faces (trimesh) is an nvdiffrast-free, NC-license-free geometry lane. `Confirmed`.
+  - **Residual NVIDIA touch-point, but license-clean:** the FlexiCubes decoder (vendored fork
+    `MaxtirError/FlexiCubes` @ `815e075`, **Apache-2.0**) has one import, `kaolin.utils.testing.check_tensor`,
+    used only inside `assert … throw=False` shape checks. **kaolin is Apache-2.0** (not the restricted
+    NC license), so this is a *portability* dep (kaolin is CUDA-only → still AMD-hostile / NVIDIA-GPU-bound,
+    matching the "run on the RTX 5070" conclusion), **not** a license taint — and it is a one-line stub
+    if ever needed. `Confirmed`.
+  - **Guardrail for the clean lane:** do not import `render_utils`/`postprocessing_utils` or touch
+    `MeshRenderer` — those unguarded-import nvdiffrast. Plain pipeline + mesh export is safe.
+  - **TRELLIS.2 & Hunyuan3D-2.1 traced 2026-07-15** ([finding](../trellis2-clean/findings/2026-07-15-trellis2-hunyuan-nvdiffrast-trace.md)):
+    - **TRELLIS.2** (`microsoft/TRELLIS.2`, 4B, **MIT**) — same story as v1 with one catch: the
+      geometry decoder transitively **import-requires** nvdiffrast because `o_voxel/__init__.py`
+      eagerly imports its `postprocess` (export) module. The mesh is built by o-voxel's `_C` CUDA
+      extension and never *calls* nvdiffrast, so a clean shape-only lane needs a **one-line patch**
+      (drop the eager `postprocess` import). `Confirmed`.
+    - **Hunyuan3D-2.1** (`Tencent-Hunyuan/Hunyuan3D-2.1`) — uses **no nvdiffrast at all** (Tencent's
+      own `custom_rasterizer`), **but the shape/texture split does not clean its license**: the whole
+      repo, geometry included, is under the **Tencent Hunyuan 3D 2.1 Community License** (territorial
+      EU/UK/SK exclusion extends to Outputs; MAU gate). For Hunyuan the gate is the license, not a
+      swappable sub-dependency — same license UltraShape 1.0 inherits (WI 937). `Confirmed`.
 
 ### Licensing per tool (Confirmed unless noted) — the deciding axis
 
@@ -113,7 +138,8 @@ The dirtiest link in every AI *animation* chain is the motion corpus, not the me
 | **AccuRIG 2.0** | rig | ✅ (Win) | ✅ likely (rig on *your* mesh; no facial bones on free; account required) |
 | **Cascadeur Indie** | anim | ✅ | ✅ if <$100k/yr revenue; you own the animation ($8–19/mo) |
 | **Hunyuan3D-2.1** | mesh | ✅ | ⚠️ Tencent community license; EU/UK/KR carve-out; LICENSE↔api_server conflict |
-| **TRELLIS / TRELLIS.2** | mesh | ✅ | ⚠️ shape-only; ❌ texture stage (nvdiffrast NC) |
+| **TRELLIS** (MIT) | mesh | ✅ | ⚠️ shape-only clean (verified); ❌ texture stage (nvdiffrast NC) |
+| **TRELLIS.2** (MIT, 4B) | mesh | ✅ | ⚠️ shape-only clean **after 1-line `o_voxel/__init__` patch**; ❌ texture stage (nvdiffrast NC) |
 | **Tripo (free)** | mesh | hosted | ❌ legally-incoherent "CC BY 4.0 but non-commercial" — avoid |
 | **Rodin / Hyper3D** | mesh | hosted | ⚠️ vague export/usage terms — must read ToS |
 | **Anything World / RigNet / text-to-motion** | rig/anim | mixed | ❌ murky / NC / poisoned corpus |
@@ -169,9 +195,11 @@ The dirtiest link in every AI *animation* chain is the motion corpus, not the me
 
 ### Hardware reality for local mesh gen (Confirmed / Supported)
 
-- **ROCm cards (gfx1151/gfx1201) are out** for local mesh gen — Hunyuan3D/TRELLIS depend on CUDA-only
-  custom extensions (`custom_rasterizer`, `diffoctreerast`, `nvdiffrast`). Runs on the **RTX 5070 or
-  nowhere**.
+- **ROCm cards (gfx1151/gfx1201) are out** for local mesh gen — both depend on CUDA-only custom
+  extensions, though the specific deps differ (verified 2026-07-15): **Hunyuan3D-2.1** uses its own
+  `custom_rasterizer` (not nvdiffrast); **TRELLIS** uses `nvdiffrast`; **TRELLIS.2** adds an o-voxel
+  `_C` CUDA extension (has an untested `IS_HIP_EXTENSION`/ROCm branch). Runs on the **RTX 5070 or
+  nowhere** in practice.
 - **12 GB is tight:** Hunyuan3D-2.1 = 10 GB shape / 21 GB texture / 29 GB both → **shape fits, paint
   doesn't** (coincides with the "texture in Blender" advice). RTX 5070 is Blackwell (sm_120) →
   budget an evening rebuilding custom extensions against CUDA 12.8+/newer PyTorch (Hypothesis, from
@@ -211,8 +239,10 @@ descendant pattern and the Blender **apply-scale-before-export** rule in whichev
 
 ## Open Questions (residual)
 
-- Does the shape-only stage of TRELLIS/Hunyuan truly avoid nvdiffrast? (Verify the import graph before
-  any local-mesh-gen prototype — only relevant if Meshy-free is rejected.)
+- ~~Does the shape-only stage of TRELLIS/Hunyuan truly avoid nvdiffrast? (Verify the import graph
+  before any local-mesh-gen prototype.)~~ **RESOLVED 2026-07-15 for TRELLIS v1: yes** — import graph
+  traced ([finding](../trellis2-clean/findings/2026-07-15-trellis-nvdiffrast-import-graph.md); summarized in the
+  Licensing section above). TRELLIS.2 and Hunyuan3D still need their own trace.
 - Tripo-free and Rodin terms are ambiguous → get written support confirmation before relying on
   either (both currently rejected in favour of Meshy-free, so non-blocking).
 - Exact `bevy_animation_graph` / `bevy_mod_inverse_kinematics` version compatibility with the Sounding
