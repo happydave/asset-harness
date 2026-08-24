@@ -4,6 +4,11 @@
 [viability reframe](2026-07-23-wan-on-ai2-viability-reframe.md) (time is not the gate; prefer fp8;
 the LoRA kills motion).
 
+> **RECIPE SUPERSEDED 2026-07-28** ([production sessions](2026-08-24-production-sessions.md)): delivery
+> uses **two-stage fp16 + both lightx2v LoRAs, 4 steps, cfg 1** (ai2's `wan2.2-test`), not the fp8
+> no-LoRA 20-step regime recommended here. This document's finding — that Wan produces coherent,
+> on-brief motion at 720p, and that the WI 1015 vortex was the LoRA in the wrong configuration — stands.
+
 ## Verdict: GO for a `video` hero-shot in WI 1004 — fp8, no-LoRA 20-step, 720p
 
 Two storytelling stills (Z-Image base, 1280×720, opaque) → fp8 Wan2.2 i2v (no-LoRA 20-step) produced

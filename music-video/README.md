@@ -51,7 +51,7 @@ rules, the gate each check runs at, and what a findings entry must record.
 | Candidates (3–5) | same graph, `batch_size` / seed sweep | — | `ai2` |
 | Lyric→time alignment | **Demucs** → **WhisperX** → reconcile *(default route)*; owner-tap as the floor | MIT / BSD-2-Clause | **workstation**, track-local `.venv`, CPU |
 | Stills | **Z-Image** (Turbo / Base / Z-Anime) | Apache-2.0 | `ai2` |
-| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` — **currently unusable**, see below |
+| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` — two-stage fp16, ~6–10 min/clip, see below |
 | Assembly | **ffmpeg** (concat / zoompan / xfade) | — | **workstation** |
 
 - **Generation is remote, assembly is local.** `ai2` has no ffmpeg — a constraint the `audio` track
@@ -66,34 +66,34 @@ rules, the gate each check runs at, and what a findings entry must record.
   3-minute song at ~5 s per clip is ~36 generations, and constant motion on every shot reads as noise
   — so this is the better edit as well as the cheaper one.
 
-### ⚠ Motion clips are blocked on `ai2` (fp8 → dequantisation fallback)
+### Motion clips work — two-stage fp16 (`wan2.2-test`)
 
-**Do not plan on Wan clips from `ai2` until this is fixed.** One 5-second clip measured at
-**45 m 24 s** against a ~97 s reference on comparable CUDA hardware — a ~28× gap. Sampling alone is
-**~2.8 min/step** on a resident model, so even fully pre-warmed a 4-step clip cannot beat ~11 min. Cause, stated by ComfyUI's own log:
+Wan i2v is usable on `ai2` at **~6–10 min/clip**, and clips have been delivered. Use
+`generate_clip.py --fp16`, which replicates ai2's saved `wan2.2-test` workflow: **both experts**, the
+schedule split 2/2 (high-noise steps 0→2 → low-noise 2→4), fp16 checkpoints, both `lightx2v_4steps`
+LoRAs, 4 steps, cfg 1, euler/simple, shift 5, 1280×720 × 33 f.
 
-```
-FP8 _scaled_mm failed: Float8_e4m3fn is only supported for ROCm 6.5 and above,
-falling back to dequantization
-```
+Full recipe, VRAM limits, and the clip-chaining technique for longer continuous shots:
+[`skills/prompting-wan-i2v/SKILL.md`](../skills/prompting-wan-i2v/SKILL.md) and
+[findings](findings/2026-08-24-production-sessions.md).
 
-**Update (WI 1013, 2026-07-22):** the wheel was upgraded to `torch 2.10.0+rocm7.0` and **fp8
-`_scaled_mm` now runs natively** (0 fallback warnings). But a clip still took **79 min** — because the
-real cost is **loading** the two 14 GB fp8 checkpoints (~36 min each), which the matmul fix does not
-touch. So the fallback was not the dominant cost, and **video from `ai2` is still impractical**. The
-concrete next lever is the **fp16 Wan checkpoints** (no fp8 weights to prepare at load). Detail:
-[findings](findings/2026-07-22-wan22-i2v-rocm-fp8.md) +
-[WI 1013](../../../tickets/docs/pending/1013-ai2-comfyui-torch-rocm65-fp8/code.md).
+**This reverses three earlier readings, each of which was correct about the configuration it tested:**
 
-Until then, shots are **stills plus Ken Burns only**.
+- *"fp8 falls back to dequantisation"* (WI 1002) — real, and fixed by the `torch 2.10.0+rocm7.0` wheel
+  swap in WI 1013.
+- *"loading the two 14 GB checkpoints dominates, so video is impractical"* (WIs 1013/1015) — that was
+  the fp8 **both-resident** path. Splitting the schedule 2/2 keeps only one model resident at a time,
+  so a clip pays **one swap, not one per sampling step**.
+- *"shots are stills plus Ken Burns only"* (WI 1004) — retired. The hybrid edit noted above is now a
+  deliberate choice rather than a hardware limit.
 
-**Two input rules for when i2v is re-attempted** — both learned from the one clip produced, and
-neither dependent on the ROCm fix:
+**Two input rules**, learned early and still true:
 
-- **Feed opaque stills only.** The test used an RGBA game sprite; the model spent its capacity
-  inventing a background. Composite a sprite onto a real background first.
-- **Expect title-card text hallucination** on centred-subject inputs (the clip grew the words
-  `PEONG` and `FROMT`). The stock negative prompt lists subtitles and did not prevent it.
+- **Feed opaque stills only.** An RGBA sprite makes the model spend its capacity inventing a
+  background. Composite onto a real background first.
+- **Expect title-card text hallucination** on centred-subject inputs (an early clip grew the words
+  `PEONG` and `FROMT`). The stock negative prompt lists subtitles and did not prevent it — and note
+  that at the production recipe's cfg 1, negatives are inert entirely.
 
 ### Wan2.2 is the only sanctioned video model
 

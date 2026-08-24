@@ -6,6 +6,12 @@
 > fp16 studied here (it spills), and the poor motion in the sample is the **4-step LoRA**, not Wan.
 > The measurements below stand; their *framing* is superseded.
 
+> **SUPERSEDED AGAIN 2026-07-28** ([production sessions](2026-08-24-production-sessions.md)): the
+> delivered recipe is **fp16 two-stage** after all — but with the sampler schedule split **2/2** across
+> the two experts, so only one 28 GB model is resident at a time (one swap per clip, not one per step).
+> That is the fit problem this document measured, solved by scheduling rather than by quantisation.
+> ~6–10 min/clip. The measurements below stand; the "fp16 is not a remedy" conclusion does not.
+
 **Date:** 2026-07-22 · **Box:** `ai2`, R9700 (gfx1201, 31.9 GiB), ComfyUI torch **2.10.0+rocm7.0**
 · **Sibling:** [`2026-07-22-wan22-i2v-rocm-fp8.md`](2026-07-22-wan22-i2v-rocm-fp8.md) (the fp8 run this
 challenges)

@@ -36,8 +36,12 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   (`--pid <id>` or `--filename <substr>`), for when a client exited before downloading.
 - **`run_batch.py`** — run a list of clip specs sequentially, each keyed on job state; one clip's
   failure is caught and the batch continues.
-- **`generate_clip.py`** — Wan2.2 i2v. **`generate_still.py`** — opaque Z-Image text-to-image.
-  **`generate_song.py`** — ACE-Step 1.5 song-with-lyrics. All three use `comfy_client`.
+- **`generate_clip.py`** — Wan2.2 i2v; use **`--fp16`** (two-stage, the delivered recipe).
+  **`generate_still.py`** — opaque Z-Image text-to-image. **`generate_song.py`** — ACE-Step 1.5
+  song-with-lyrics. All three use `comfy_client`.
+- **`generate_clip_single.py`** — an **abandoned** single-expert Wan variant, kept as a record of the
+  experiment. Do not use it for delivery; see its header and
+  [findings](../findings/2026-08-24-production-sessions.md).
 - **`timeline.py`** — the lyric timeline (JSON + LRC); every alignment route emits it.
 - **`manifest.py`** — the shot-list manifest schema (timeline → shots); the track's durable artifact.
   **`test_manifest.py`** — 17 checks (`python3 test_manifest.py`).
