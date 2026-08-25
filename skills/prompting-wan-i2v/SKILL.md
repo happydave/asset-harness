@@ -69,17 +69,32 @@ Consequences:
 
 ### Chaining clips into a longer continuous shot
 
-Proven on a 12 s skiff flight (lantern-crossing, 2026-07-29):
+Use **`chain_clip.py`** — it runs the whole loop and measures every seam:
 
-1. Generate clip 1 (97 f, 832×480).
-2. Extract its last frame; clean it with a **content-preserving** ffmpeg pass — `hqdn3d` light denoise
-   + moderate `unsharp` luma + slight contrast/saturation. It must sharpen **without moving content**.
-3. Generate clip 2 from the cleaned frame, prompt continuing the motion.
-4. Concat, with a short crossfade over the seam.
+```bash
+python chain_clip.py --image start.png --links 3 --out flight \
+  --width 1280 --height 720 --frames 97 \
+  --prompt "the skiff glides forward over the cloud sea, mist drifting past"
+```
 
-i2v reproduces its start frame at frame 0, so clip 2 opens on (approximately) clip 1's last frame and
-the seam is content-continuous. **Do not** use a low-denoise img2img to clean the frame — it restores
-more detail but shifts content, which breaks the seam.
+It generates a link, extracts and cleans its last frame, generates the next link from that frame,
+concats, and reports each seam's SSIM against the local adjacent-frame norm. Resumable: links already
+on disk are reused.
+
+**720p × 97 f works** (WI 1160) — the old 832×480 ceiling was an fp16 artifact, lifted by the move to
+fp8. Cost is ~11 min per 6 s link at 720p; 832×480 is cheaper and remains the driver default.
+
+The cleanup is a **content-preserving** ffmpeg pass (`unsharp`, plus optional `hqdn3d`) — it must sharpen
+**without moving content**. Two rules learned the hard way:
+
+- **Do not** use a low-denoise img2img or realifier to clean the frame. It restores more detail but
+  shifts content, which breaks the seam.
+- **Do not** apply a colour grade per seam. It compounds — a 3-link chain measured +9.6% saturation from
+  a per-seam `eq=…:saturation=1.05`. `chain_clip.py` leaves the grade off by default for this reason.
+
+i2v reproduces its start frame *approximately* (SSIM ~0.94, not 1.0), so the seam is content-continuous
+rather than pixel-continuous — no positional jump, a faint acuity lift. A short crossfade hides it if
+needed, but the shipped chains have used plain concat.
 
 ## The alternatives
 

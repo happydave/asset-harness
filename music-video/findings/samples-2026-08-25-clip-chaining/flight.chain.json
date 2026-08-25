@@ -1,0 +1,33 @@
+{
+  "output": "outputs/spike1160/flight.mp4",
+  "links": 3,
+  "reused_links": 3,
+  "link_frames": [
+    97,
+    97,
+    97
+  ],
+  "total_frames": 291,
+  "expected_frames": 291,
+  "resolution": "1280x720",
+  "crossfade": 0.0,
+  "cleanup_chain": "hqdn3d=1.5:1.5:3:3,unsharp=5:5:1.0:5:5:0.0,eq=contrast=1.05:saturation=1.05",
+  "seams": [
+    {
+      "seam": 1,
+      "at_frame": 97,
+      "seam_ssim": 0.9579,
+      "local_norm": 0.9577,
+      "gap": -0.0002,
+      "pass": true
+    },
+    {
+      "seam": 2,
+      "at_frame": 194,
+      "seam_ssim": 0.951,
+      "local_norm": 0.9762,
+      "gap": 0.0252,
+      "pass": true
+    }
+  ]
+}

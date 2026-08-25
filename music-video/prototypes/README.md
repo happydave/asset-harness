@@ -42,6 +42,9 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
 - **`generate_clip_single.py`** — an **abandoned** single-expert Wan variant, kept as a record of the
   experiment. Do not use it for delivery; see its header and
   [findings](../findings/2026-08-24-production-sessions.md).
+- **`chain_clip.py`** — chain N i2v links into one continuous shot: generate → clean the last frame →
+  generate from it → concat, then measure every seam against the local adjacent-frame norm. Resumable
+  at link granularity. **`test_chain.py`** — 17 checks (`python3 test_chain.py`), GPU-free.
 - **`timeline.py`** — the lyric timeline (JSON + LRC); every alignment route emits it.
 - **`manifest.py`** — the shot-list manifest schema (timeline → shots); the track's durable artifact.
   **`test_manifest.py`** — 17 checks (`python3 test_manifest.py`).
