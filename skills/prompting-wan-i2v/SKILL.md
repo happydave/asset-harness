@@ -23,16 +23,28 @@ that produced the delivered motion clips (2026-07-28, clamor-motion session).
 | Setting | Value |
 |---|---|
 | Stages | **both** — high-noise steps 0→2, latent handed to low-noise for 2→4 |
-| Checkpoints | **fp16** (`wan2.2_i2v_high/low_noise_14B_fp16`) |
+| Checkpoints | **fp8_scaled** (`wan2.2_i2v_high/low_noise_14B_fp8_scaled`) — the default, no flag needed |
 | LoRA | **both `lightx2v_4steps` LoRAs**, one per stage |
 | Steps / cfg | 4 / **1** |
 | Sampler / scheduler / shift | euler / simple / ModelSamplingSD3 **5** |
 | Resolution / frames | 1280×720, 33 f @ 16 fps (≈2.06 s) |
-| Cost | ~6–10 min/clip (fp16 loads dominate) |
+| Cost | **~127 s/clip** |
 | After render | interpolate the finished mp4 if it reads framey (`interpolate.py --fps 48`) |
 
+**Prerequisite: `ai2`'s ComfyUI must run with `--disable-mmap`.** Without it a single checkpoint load
+takes **35.8 min** instead of 6 s, and no dtype choice can rescue that (WI 1161). Check before a batch:
+
 ```bash
-python generate_clip.py --fp16 --image horde_boulevard.png --out clip_horde \
+ssh ai2 'systemctl show comfyui.service -p ExecStart | grep -o -- --disable-mmap'
+```
+
+It is supplied by `/etc/systemd/system/comfyui.service.d/disable-mmap-workaround.conf`; if that file is
+renamed `.disabled`, the flag is off. **Do not re-enable it unilaterally** — it is a shared service, and
+it was switched off once for host-RAM pressure. fp8 halves that pressure (~33 GB vs ~69 GB), which is
+part of why fp8 is the recipe.
+
+```bash
+python generate_clip.py --image horde_boulevard.png --out clip_horde \
   --prompt "<scene + gentle motion verbs — see 'Writing the prompt'>" \
   --width 1280 --height 720 --frames 33 --fps 16 --seed 301
 ```
@@ -42,8 +54,14 @@ split, and pulling one setting into a different configuration is how the earlier
 
 ### VRAM and length
 
-The 2/2 split is what makes this affordable: only **one 28 GB model is resident at a time** (one swap
-per clip, not one per sampling step), peaking ~33.5 of 34 GB. Consequences:
+Only **one stage is resident at a time** — ComfyUI evicts the high-noise expert before loading the
+low-noise one, at either dtype (WI 1161 measured this; the earlier guess that fp8 would keep both
+resident is wrong). That is fine, because with `--disable-mmap` a reload costs 6 s. What matters is
+that **fp8 fits without spilling** (20.0 of 32.6 GB, `loaded completely`) while **fp16 spills**
+(`loaded partially`, ~1.8 GB offloaded, 33–36 lowvram patches) — which costs sampling throughput as
+well as load time: the same two sampler steps take ~3 min under fp16 against 47 s under fp8.
+
+Consequences:
 
 - **Longer clips need lower resolution.** 6 s (97 f) **OOMs at 720p**; run 97 f at **832×480**.
 - Restart ComfyUI before a big Wan run for a clean VRAM slate, and again afterwards before any batch of
@@ -63,14 +81,18 @@ i2v reproduces its start frame at frame 0, so clip 2 opens on (approximately) cl
 the seam is content-continuous. **Do not** use a low-denoise img2img to clean the frame — it restores
 more detail but shifts content, which breaks the seam.
 
-## The alternative recipe — fp8, no-LoRA, 20-step
+## The alternatives
 
-From WIs 1018/1019, before the `wan2.2-test` config was adopted: fp8 checkpoints, `--no-lora`, 20 steps,
-euler/simple, cfg 3.5–5, shift 5, 81 f @ 16 fps, 1280×720 (fits fp8 with no spill). It produces coherent
-motion and **keeps negatives live** (see below), but costs **~52–79 min/clip**.
+**fp16 instead of fp8.** Same graph, `--fp16`. Delivered the July clips and is the higher-precision
+reference, but **3.0× slower** (384 s vs 127 s), spills to lowvram, and needs ~69 GB of host RAM against
+fp8's ~33 GB. fp8's cost is a marginal softness — slightly more haze, slightly less separation between
+figures, SSIM 0.939 against fp16 on a crowd shot. **Reach for fp16 when a shot is precision-sensitive**
+(a close subject where softness would read), not by default. Note the quality comparison was made on one
+scene-scale shot; for character close-ups it is provisional.
 
-Reach for it only if you specifically need cfg > 1. Otherwise the production recipe is both better
-validated and several times faster.
+**no-LoRA, 20-step.** From WIs 1018/1019, before the `wan2.2-test` config was adopted: `--no-lora`, 20
+steps, cfg 3.5–5, shift 5, 81 f. Coherent motion, and the only path that **keeps negatives live** (see
+below), but ~52–79 min/clip. Reach for it only if you specifically need cfg > 1.
 
 ## Writing the prompt
 

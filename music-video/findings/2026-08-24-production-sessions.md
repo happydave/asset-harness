@@ -28,6 +28,12 @@ clamor-motion cuts are also the only two that carry Wan motion clips.
 **This supersedes the recipe in `skills/prompting-wan-i2v/SKILL.md` as written at the time**, which was
 distilled from WI 1018/1019 before any motion clip had been cut for delivery.
 
+> **UPDATED 2026-08-25** ([WI 1161](2026-08-25-wan-fp8-vs-fp16-and-the-mmap-flag.md)): delivery has since
+> moved to **fp8** under this same 2/2 split — 3.0× faster (127 s vs 384 s), no lowvram spill, half the
+> host RAM, at the cost of a marginal softness. The `~6–10 min/clip` below was fp16 *and* depended on
+> `--disable-mmap` being on, which it was in July and was not between 08-05 and 08-25. Everything else
+> in this section stands.
+
 The working configuration is ai2's saved workflow at
 `/opt/comfyui/user/default/workflows/wan2.2-test.json`, replicated by `generate_clip.py --fp16` — the
 two-stage MoE run properly:
@@ -64,9 +70,11 @@ split across two experts, and fails when bolted onto a configuration it was not 
 camera-language claim comes from the single-stage runs, so treat it as a reported preference for the
 two-stage path rather than a tested result there.
 
-**Speed idea, untested:** two-stage with **fp8** checkpoints under the same 2/2 split — 14 GB each, both
-could stay resident, one swap and much faster loads. fp16 was used for fidelity to the known-good
-workflow. Filed as a work item.
+**Speed idea, since tested (WI 1161):** two-stage with **fp8** under the same 2/2 split is **3.0×
+faster** (127 s vs 384 s) and is now the delivered recipe — but *not* for the reason proposed here. Both
+stages do **not** stay resident: ComfyUI evicts between stages at either dtype. fp8 wins because it fits
+without spilling, where fp16 offloads ~1.8 GB and runs 33–36 lowvram patches. See
+[the spike findings](2026-08-25-wan-fp8-vs-fp16-and-the-mmap-flag.md).
 
 ## Clip chaining — continuous shots longer than one clip
 

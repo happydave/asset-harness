@@ -12,6 +12,12 @@
 > That is the fit problem this document measured, solved by scheduling rather than by quantisation.
 > ~6–10 min/clip. The measurements below stand; the "fp16 is not a remedy" conclusion does not.
 
+> **ROOT CAUSE CORRECTED 2026-08-25** ([WI 1161](2026-08-25-wan-fp8-vs-fp16-and-the-mmap-flag.md)): the
+> ~36 min-per-checkpoint load measured here was **not** fp8 weight preparation. It was the mmap
+> page-fault stall — the same root cause WI 1054 found behind the 341 s text-encoder hang. With
+> `--disable-mmap`, the identical 13.6 GB checkpoint loads in **6 s**. The load measurements below are
+> real; the mechanism they were attributed to is not.
+
 **Date:** 2026-07-22 · **Box:** `ai2`, R9700 (gfx1201, 31.9 GiB), ComfyUI torch **2.10.0+rocm7.0**
 · **Sibling:** [`2026-07-22-wan22-i2v-rocm-fp8.md`](2026-07-22-wan22-i2v-rocm-fp8.md) (the fp8 run this
 challenges)

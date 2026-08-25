@@ -51,7 +51,7 @@ rules, the gate each check runs at, and what a findings entry must record.
 | Candidates (3–5) | same graph, `batch_size` / seed sweep | — | `ai2` |
 | Lyric→time alignment | **Demucs** → **WhisperX** → reconcile *(default route)*; owner-tap as the floor | MIT / BSD-2-Clause | **workstation**, track-local `.venv`, CPU |
 | Stills | **Z-Image** (Turbo / Base / Z-Anime) | Apache-2.0 | `ai2` |
-| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` — two-stage fp16, ~6–10 min/clip, see below |
+| Motion clips | **Wan2.2 i2v 14B** | Apache-2.0 | `ai2` — two-stage **fp8**, **~127 s/clip**, see below |
 | Assembly | **ffmpeg** (concat / zoompan / xfade) | — | **workstation** |
 
 - **Generation is remote, assembly is local.** `ai2` has no ffmpeg — a constraint the `audio` track
@@ -66,12 +66,17 @@ rules, the gate each check runs at, and what a findings entry must record.
   3-minute song at ~5 s per clip is ~36 generations, and constant motion on every shot reads as noise
   — so this is the better edit as well as the cheaper one.
 
-### Motion clips work — two-stage fp16 (`wan2.2-test`)
+### Motion clips work — two-stage fp8 (`wan2.2-test`), ~127 s/clip
 
-Wan i2v is usable on `ai2` at **~6–10 min/clip**, and clips have been delivered. Use
-`generate_clip.py --fp16`, which replicates ai2's saved `wan2.2-test` workflow: **both experts**, the
-schedule split 2/2 (high-noise steps 0→2 → low-noise 2→4), fp16 checkpoints, both `lightx2v_4steps`
-LoRAs, 4 steps, cfg 1, euler/simple, shift 5, 1280×720 × 33 f.
+Wan i2v is usable on `ai2` at **~127 s/clip**. Use `generate_clip.py` (fp8 is the default), which
+replicates ai2's saved `wan2.2-test` workflow: **both experts**, the schedule split 2/2 (high-noise steps
+0→2 → low-noise 2→4), both `lightx2v_4steps` LoRAs, 4 steps, cfg 1, euler/simple, shift 5,
+1280×720 × 33 f. The July clips were cut at fp16, which is 3.0× slower and spills to lowvram; fp8 costs
+a marginal softness (WI 1161).
+
+**`ai2` must be running ComfyUI with `--disable-mmap`.** Without it, one checkpoint load takes 35.8 min
+instead of 6 s — that flag is worth ~360× on a load, against fp8-vs-fp16's 3×. It is a shared service:
+check it, don't change it unilaterally.
 
 Full recipe, VRAM limits, and the clip-chaining technique for longer continuous shots:
 [`skills/prompting-wan-i2v/SKILL.md`](../skills/prompting-wan-i2v/SKILL.md) and
@@ -81,9 +86,11 @@ Full recipe, VRAM limits, and the clip-chaining technique for longer continuous 
 
 - *"fp8 falls back to dequantisation"* (WI 1002) — real, and fixed by the `torch 2.10.0+rocm7.0` wheel
   swap in WI 1013.
-- *"loading the two 14 GB checkpoints dominates, so video is impractical"* (WIs 1013/1015) — that was
-  the fp8 **both-resident** path. Splitting the schedule 2/2 keeps only one model resident at a time,
-  so a clip pays **one swap, not one per sampling step**.
+- *"loading the two 14 GB checkpoints dominates, so video is impractical"* (WIs 1013/1015) — the
+  ~36 min-per-checkpoint load was the **mmap page-fault stall**, not fp8 weight preparation. With
+  `--disable-mmap` the same checkpoint loads in **6 s** (WI 1161). Note the 2/2 split does *not* keep
+  both stages resident, as was assumed for a while — ComfyUI evicts between stages at either dtype; the
+  reload is simply cheap.
 - *"shots are stills plus Ken Burns only"* (WI 1004) — retired. The hybrid edit noted above is now a
   deliberate choice rather than a hardware limit.
 

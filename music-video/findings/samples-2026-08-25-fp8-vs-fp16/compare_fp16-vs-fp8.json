@@ -1,0 +1,59 @@
+{
+  "a": {
+    "path": "../clamor-motion/clips/clip_horde.mp4",
+    "sha256": "fb7942076e6d783a",
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "16/1",
+        "nb_frames": "33"
+      }
+    ],
+    "format": {
+      "duration": "2.062500"
+    }
+  },
+  "b": {
+    "path": "clip_horde_fp8.mp4",
+    "sha256": "091e75399199f2b9",
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "16/1",
+        "nb_frames": "33"
+      }
+    ],
+    "format": {
+      "duration": "2.062500"
+    }
+  },
+  "byte_identical": false,
+  "frame_count": [
+    33,
+    33
+  ],
+  "ssim_per_frame": {
+    "min": 0.9198,
+    "mean": 0.939,
+    "max": 0.9825,
+    "n": 33
+  },
+  "ssim_first": 0.9825,
+  "ssim_last": 0.9198,
+  "motion_a": {
+    "scene_scores_n": 32,
+    "mean": 0.01581,
+    "max": 0.03677
+  },
+  "motion_b": {
+    "scene_scores_n": 32,
+    "mean": 0.01585,
+    "max": 0.03574
+  }
+}

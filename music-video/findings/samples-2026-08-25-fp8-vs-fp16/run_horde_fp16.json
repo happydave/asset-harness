@@ -1,0 +1,10 @@
+{
+  "dtype": "fp16",
+  "name": "horde",
+  "seed": 302,
+  "still": "tc_04_the_horde.png",
+  "elapsed_s": 391.7,
+  "output": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/spike1161/clip_horde_fp16.mp4",
+  "started_ai2": "2026-08-25T11:59:12-06:00",
+  "vram_samples": []
+}
