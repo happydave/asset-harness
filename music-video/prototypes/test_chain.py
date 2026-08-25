@@ -49,14 +49,20 @@ def main() -> int:
     vf = cc.cleanup_chain()
     check("cleanup chain contains no geometric filter",
           not any(g in vf for g in cc.GEOMETRIC), vf)
-    check("default cleanup chain includes the sharpen", cc.SHARPEN in vf, vf)
+    check("default cleanup chain EXCLUDES the sharpen (it compounds ~25%/seam)",
+          cc.SHARPEN not in vf, vf)
     check("default cleanup chain EXCLUDES the grade (it compounds across seams)",
           cc.GRADE not in vf, vf)
-    check("--grade restores the full July recipe",
-          cc.GRADE in cc.cleanup_chain(grade=True), cc.cleanup_chain(grade=True))
-    check("--no-denoise drops hqdn3d only",
-          cc.DENOISE not in cc.cleanup_chain(denoise=False)
-          and cc.SHARPEN in cc.cleanup_chain(denoise=False), cc.cleanup_chain(denoise=False))
+    check("--sharpen and --grade together restore the full July recipe",
+          cc.SHARPEN in cc.cleanup_chain(sharpen=True, grade=True)
+          and cc.GRADE in cc.cleanup_chain(sharpen=True, grade=True),
+          cc.cleanup_chain(sharpen=True, grade=True))
+    check("an empty cleanup chain is an explicit identity, not an empty string",
+          cc.cleanup_chain(denoise=False) == "null", cc.cleanup_chain(denoise=False))
+    check("--no-denoise drops hqdn3d and leaves the other filters alone",
+          cc.DENOISE not in cc.cleanup_chain(denoise=False, sharpen=True)
+          and cc.SHARPEN in cc.cleanup_chain(denoise=False, sharpen=True),
+          cc.cleanup_chain(denoise=False, sharpen=True))
 
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
@@ -115,8 +121,23 @@ def main() -> int:
         check("one report per seam", len(reports) == 2, str(reports))
         check("seams are located at the link boundaries",
               [r["at_frame"] for r in reports] == [20, 40], str(reports))
-        check("each report carries seam, norm, gap and a verdict",
-              all({"seam_ssim", "local_norm", "gap", "pass"} <= set(r) for r in reports), str(reports))
+        check("each report carries continuity, acuity and a combined verdict",
+              all({"seam_ssim", "local_norm", "gap", "ssim_pass",
+                   "acuity_before", "acuity_after", "acuity_step", "acuity_pass",
+                   "pass"} <= set(r) for r in reports), str(reports))
+
+        # The acuity gate must catch an over-sharpened seam that continuity alone passes — this is the
+        # WI 1173 defect the owner saw and the old gate missed.
+        sharp_b = d / "sharp_b.mp4"
+        subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(links[1]),
+                        "-vf", cc.SHARPEN, "-c:v", "libx264", "-crf", "20",
+                        "-pix_fmt", "yuv420p", str(sharp_b)], check=True)
+        oversharp = cc.concat([links[0], sharp_b], d / "oversharp.mp4")
+        osr = cc.seam_report(oversharp, [20, 20], d / "oswork")[0]
+        check("an over-sharpened seam FAILS the acuity gate",
+              not osr["acuity_pass"] and not osr["pass"], str(osr))
+        check("acuity step is reported as a positive percentage for over-sharpening",
+              osr["acuity_step"] > cc.ACUITY_TOLERANCE, str(osr))
 
         # A deliberately hard cut must FAIL the gate — the check that proves the gate can fail.
         cut_a = make_clip(d / "cut_a.mp4", n=20, seed=0)

@@ -1,0 +1,29 @@
+{
+  "output": "outputs/spike1160/flat.mp4",
+  "links": 2,
+  "reused_links": 0,
+  "link_frames": [
+    97,
+    97
+  ],
+  "total_frames": 194,
+  "expected_frames": 194,
+  "resolution": "832x480",
+  "crossfade": 0.0,
+  "cleanup_chain": "hqdn3d=1.5:1.5:3:3",
+  "seams": [
+    {
+      "seam": 1,
+      "at_frame": 97,
+      "seam_ssim": 0.9645,
+      "local_norm": 0.9677,
+      "gap": 0.0032,
+      "ssim_pass": true,
+      "acuity_before": 2.159,
+      "acuity_after": 2.018,
+      "acuity_step": -0.0656,
+      "acuity_pass": true,
+      "pass": true
+    }
+  ]
+}

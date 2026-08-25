@@ -84,13 +84,23 @@ on disk are reused.
 **720p × 97 f works** (WI 1160) — the old 832×480 ceiling was an fp16 artifact, lifted by the move to
 fp8. Cost is ~11 min per 6 s link at 720p; 832×480 is cheaper and remains the driver default.
 
-The cleanup is a **content-preserving** ffmpeg pass (`unsharp`, plus optional `hqdn3d`) — it must sharpen
-**without moving content**. Two rules learned the hard way:
+**Keep the cleanup as close to identity as possible.** Anything it does is applied *once per seam*, so
+it compounds down the chain. The default is a light `hqdn3d` and nothing else. Three rules, each learned
+from a chain that went wrong:
 
-- **Do not** use a low-denoise img2img or realifier to clean the frame. It restores more detail but
-  shifts content, which breaks the seam.
-- **Do not** apply a colour grade per seam. It compounds — a 3-link chain measured +9.6% saturation from
-  a per-seam `eq=…:saturation=1.05`. `chain_clip.py` leaves the grade off by default for this reason.
+- **Do not sharpen.** `unsharp` at the original recipe's strength raises a frame's acuity **+83%** in one
+  application; a 3-link chain stepped **+25% per seam** and ended **+71%** over its first link, which
+  reads as over-sharpened detail from the first seam onward. Off by default; `--sharpen` reproduces the
+  July recipe.
+- **Do not apply a colour grade.** Same failure — a per-seam `eq=…:saturation=1.05` drifted a 3-link
+  chain +9.6% saturation. Off by default; `--grade` restores it.
+- **Do not use a low-denoise img2img or realifier.** It restores more detail but *shifts content*, which
+  breaks the seam outright.
+
+`chain_clip.py` gates on this: each seam must hold both **continuity** (SSIM within 0.05 of the local
+adjacent-frame norm) and **acuity** (high-frequency energy within ±10% across the seam). The acuity check
+exists because continuity alone passed a visibly over-sharpened seam — SSIM is dominated by structure and
+motion, so a global crispness step barely registers.
 
 i2v reproduces its start frame *approximately* (SSIM ~0.94, not 1.0), so the seam is content-continuous
 rather than pixel-continuous — no positional jump, a faint acuity lift. A short crossfade hides it if

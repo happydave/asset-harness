@@ -29,6 +29,13 @@ import generate_clip as gc
 # (its temporal terms cannot apply); retained to match the original technique, droppable via
 # --no-denoise.
 DENOISE = "hqdn3d=1.5:1.5:3:3"
+
+# SHARPEN is OFF by default (WI 1173). Like GRADE it is applied once per seam and COMPOUNDS, and it is
+# by far the stronger offender: it raises a frame's acuity +83.5% in one application, and a measured
+# 3-link chain stepped +25% per seam (1.39 -> 1.74 -> 2.16), i.e. +71% edge energy end to end. The owner
+# saw it as over-sharpening at the first seam. It was carried over on the assumption that it compensated
+# for a soft extracted frame; that is unsupported — PNG extraction of a decoded frame is lossless, so
+# there is nothing to restore. Enable with --sharpen only to reproduce the July recipe.
 SHARPEN = "unsharp=5:5:1.0:5:5:0.0"
 
 # GRADE is OFF by default because it COMPOUNDS across seams. It is applied once per seam, so an N-link
@@ -41,16 +48,24 @@ GRADE = "eq=contrast=1.05:saturation=1.05"
 # proxy for "does not move content", not a proof — keep the chain short and readable.
 GEOMETRIC = ("scale", "crop", "rotate", "perspective", "minterpolate", "zoompan", "pad", "transpose")
 
-SEAM_TOLERANCE = 0.05   # max allowed drop below the local adjacent-frame SSIM mean
-SEAM_WINDOW = 8         # frames before the seam used to establish that local norm
+SEAM_TOLERANCE = 0.05    # max allowed drop below the local adjacent-frame SSIM mean
+SEAM_WINDOW = 8          # frames before the seam used to establish that local norm
+
+# Max allowed relative step in high-frequency energy across a seam. The SSIM gate alone passed a seam
+# the owner could see was over-sharpened (gap -0.0002, its best result) because SSIM is dominated by
+# structure and motion — a global acuity change barely registers. Within-link acuity varies by ~2%;
+# the defect measured +25%. (WI 1173)
+ACUITY_TOLERANCE = 0.10
 
 
 class ChainError(RuntimeError):
     pass
 
 
-def cleanup_chain(denoise: bool = True, grade: bool = False) -> str:
-    parts = ([DENOISE] if denoise else []) + [SHARPEN] + ([GRADE] if grade else [])
+def cleanup_chain(denoise: bool = True, grade: bool = False, sharpen: bool = False) -> str:
+    parts = ([DENOISE] if denoise else []) + ([SHARPEN] if sharpen else []) + ([GRADE] if grade else [])
+    if not parts:
+        return "null"        # explicit identity; ffmpeg needs a filter
     vf = ",".join(parts)
     for f in GEOMETRIC:
         if f in vf:
@@ -100,10 +115,25 @@ def last_frame(clip: Path, out: Path) -> Path:
     return out
 
 
-def clean_frame(src: Path, out: Path, *, denoise: bool = True, grade: bool = False) -> Path:
+def clean_frame(src: Path, out: Path, *, denoise: bool = True, grade: bool = False,
+                sharpen: bool = False) -> Path:
     _run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", str(src),
-          "-vf", cleanup_chain(denoise, grade), str(out)])
+          "-vf", cleanup_chain(denoise, grade, sharpen), str(out)])
     return out
+
+
+LAPLACIAN = ("0 -1 0 -1 4 -1 0 -1 0:" * 4).rstrip(":")
+
+
+def acuity(frame: Path) -> float:
+    """Mean high-frequency (edge) energy of a frame. Higher = crisper."""
+    out = _run(["ffmpeg", "-nostdin", "-v", "error", "-i", str(frame),
+                "-vf", f"format=gray,convolution='{LAPLACIAN}',signalstats,metadata=print:file=-",
+                "-frames:v", "1", "-f", "null", "-"])
+    for line in out.splitlines():
+        if "signalstats.YAVG" in line:
+            return float(line.strip().split("=")[1])
+    raise ChainError("could not parse acuity output")
 
 
 ALPHA_PIX_FMTS = ("rgba", "bgra", "argb", "abgr", "ya8", "ya16", "yuva", "gbrap", "pal8")
@@ -164,19 +194,31 @@ def seam_report(chained: Path, link_frames: list[int], workdir: Path) -> list[di
     reports, boundary = [], 0
     for idx, n in enumerate(link_frames[:-1]):
         boundary += n                                    # last frame of link `idx` is #boundary
-        window = [ssim(f(i), f(i + 1))
-                  for i in range(max(1, boundary - SEAM_WINDOW), boundary)]
+        lo = max(1, boundary - SEAM_WINDOW)
+        window = [ssim(f(i), f(i + 1)) for i in range(lo, boundary)]
         norm = sum(window) / len(window)
         seam = ssim(f(boundary), f(boundary + 1))
+
+        # Acuity continuity: does the next link start visibly crisper than this one ended?
+        acu_window = [acuity(f(i)) for i in range(lo, boundary + 1)]
+        acu_norm = sum(acu_window) / len(acu_window)
+        acu_after = acuity(f(boundary + 1))
+        acu_step = (acu_after - acu_norm) / acu_norm
+
         reports.append({"seam": idx + 1, "at_frame": boundary, "seam_ssim": round(seam, 4),
                         "local_norm": round(norm, 4), "gap": round(norm - seam, 4),
-                        "pass": (norm - seam) <= SEAM_TOLERANCE})
+                        "ssim_pass": (norm - seam) <= SEAM_TOLERANCE,
+                        "acuity_before": round(acu_norm, 3), "acuity_after": round(acu_after, 3),
+                        "acuity_step": round(acu_step, 4),
+                        "acuity_pass": abs(acu_step) <= ACUITY_TOLERANCE,
+                        "pass": (norm - seam) <= SEAM_TOLERANCE
+                                and abs(acu_step) <= ACUITY_TOLERANCE})
     return reports
 
 
 def build(server: str, image: Path, prompts: list[str], links: int, out_stem: Path, *,
           width: int, height: int, frames: int, fps: int, seed: int, crossfade: float,
-          denoise: bool, grade: bool = False) -> dict:
+          denoise: bool, grade: bool = False, sharpen: bool = False) -> dict:
     work = out_stem.parent / f"{out_stem.name}_links"
     work.mkdir(parents=True, exist_ok=True)
     assert_opaque_rgb(image)
@@ -205,7 +247,7 @@ def build(server: str, image: Path, prompts: list[str], links: int, out_stem: Pa
         if i < links - 1:                                # prepare the next link's start frame
             raw = work / f"seam{i + 1:02d}_raw.png"
             start = clean_frame(last_frame(link_path, raw), work / f"seam{i + 1:02d}_clean.png",
-                                denoise=denoise, grade=grade)
+                                denoise=denoise, grade=grade, sharpen=sharpen)
 
     final = out_stem.with_suffix(".mp4")
     concat(produced, final, crossfade=crossfade, fps=fps)
@@ -216,7 +258,7 @@ def build(server: str, image: Path, prompts: list[str], links: int, out_stem: Pa
             "link_frames": counts, "total_frames": total["frames"],
             "expected_frames": sum(counts) if crossfade <= 0 else None,
             "resolution": f"{total['width']}x{total['height']}", "crossfade": crossfade,
-            "cleanup_chain": cleanup_chain(denoise, grade), "seams": seams}
+            "cleanup_chain": cleanup_chain(denoise, grade, sharpen), "seams": seams}
 
 
 def check_mmap(server: str) -> None:
@@ -246,6 +288,9 @@ def main() -> int:
                     help="seconds of crossfade per seam (default 0 = plain concat)")
     ap.add_argument("--no-denoise", dest="denoise", action="store_false",
                     help="drop hqdn3d from the cleanup chain (measured inert on a single frame)")
+    ap.add_argument("--sharpen", action="store_true",
+                    help="add the July unsharp to the cleanup. OFF by default: it COMPOUNDS across "
+                         "seams (+83%% acuity per application; a 3-link chain measured +25%%/seam)")
     ap.add_argument("--grade", action="store_true",
                     help="add the July eq grade to the cleanup. OFF by default: it is applied once per "
                          "seam and COMPOUNDS (a 3-link chain measured +9.6%% saturation)")
@@ -254,14 +299,23 @@ def main() -> int:
     check_mmap(a.server)
     res = build(a.server, a.image, a.prompt, a.links, a.out, width=a.width, height=a.height,
                 frames=a.frames, fps=a.fps, seed=a.seed, crossfade=a.crossfade, denoise=a.denoise,
-                grade=a.grade)
+                grade=a.grade, sharpen=a.sharpen)
     a.out.with_suffix(".chain.json").write_text(json.dumps(res, indent=2))
     print(json.dumps(res, indent=2))
     bad = [s for s in res["seams"] if not s["pass"]]
     if bad:
-        print(f"\nSEAM GATE FAILED on {len(bad)} seam(s): "
-              + "; ".join(f"seam {s['seam']} at frame {s['at_frame']}: {s['seam_ssim']} vs local norm "
-                          f"{s['local_norm']} (gap {s['gap']} > {SEAM_TOLERANCE})" for s in bad),
+        def why(s: dict) -> str:
+            parts = []
+            if not s["ssim_pass"]:
+                parts.append(f"continuity {s['seam_ssim']} vs norm {s['local_norm']} "
+                             f"(gap {s['gap']} > {SEAM_TOLERANCE})")
+            if not s["acuity_pass"]:
+                parts.append(f"acuity step {s['acuity_step']:+.1%} "
+                             f"({s['acuity_before']} -> {s['acuity_after']}, "
+                             f"limit ±{ACUITY_TOLERANCE:.0%})")
+            return f"seam {s['seam']} at frame {s['at_frame']}: " + " and ".join(parts)
+
+        print(f"\nSEAM GATE FAILED on {len(bad)} seam(s): " + "; ".join(why(s) for s in bad),
               file=sys.stderr)
         return 1
     return 0

@@ -37,6 +37,26 @@ Re-probed under fp8 ([WI 1161](2026-08-25-wan-fp8-vs-fp16-and-the-mmap-flag.md))
 completes with no OOM**, both stages `loaded completely`, 791 s. Chaining now runs at delivery
 resolution; 832×480 remains the driver default for cheapness.
 
+## Update 2026-08-25 (WI 1173): the sharpen compounds too, and the gate missed it
+
+Owner review of the 3-link chain reported **over-sharpening at the 6 second mark** — the first seam.
+Measured: per-frame acuity runs **1.39 → 1.74 → 2.16 → 2.4** across the three links, a **+25% step at
+each seam** and **+71%** end to end. On the input side, one application of `unsharp=5:5:1.0` raises a
+frame's acuity **+83.5%**; `hqdn3d` alone is +3.4%.
+
+The sharpen was kept on the assumption that it compensated for a soft extracted frame. That is
+unsupported — PNG extraction of a decoded frame is lossless, so there is nothing to restore. **It is now
+off by default**, alongside the grade, leaving the cleanup close to identity.
+
+**The seam gate passed that seam** — gap −0.0002, its best result — because SSIM is dominated by
+structure and motion and barely registers a global acuity change. A second check now runs alongside it:
+**acuity continuity**, requiring high-frequency energy across a seam to stay within ±10% of the local
+norm. It fails the original chain on both seams (+23.1%, +26.0%) while continuity still passes them,
+which is exactly the discrimination that was missing.
+
+*Lesson worth carrying: a gate calibrated on one visible failure mode says nothing about the others. The
+owner's eye caught what two automated measures agreed was fine.*
+
 ## Two things the 2-link original could not have shown
 
 **A per-seam colour grade compounds.** The recovered cleanup ended in `eq=contrast=1.05:saturation=1.05`
