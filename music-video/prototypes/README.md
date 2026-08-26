@@ -55,7 +55,15 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
 - **`timeline.py`** — the lyric timeline (JSON + LRC); every alignment route emits it.
 - **`manifest.py`** — the shot-list manifest schema (timeline → shots); the track's durable artifact.
   Carries the optional `loop` block (length, crossfade, search, blend_at) that makes a loop cut a
-  re-render rather than a hand edit. **`test_manifest.py`** — 30 checks (`python3 test_manifest.py`).
+  re-render rather than a hand edit, and the optional **candidate layer** (WI 1175): per-shot and
+  song candidate records (asset/recipe/scores/verdict/provenance) plus pick records, validated
+  (chosen==asset, closed verdict set, the WI 1160 clip-next-to-its-own-still lint) while staying
+  invisible to the renderer. **`test_manifest.py`** — 49 checks (`python3 test_manifest.py`).
+- **`repick.py`** — the candidate layer's companion tool: `pick` promotes another *recorded*
+  candidate (never regenerates; updates asset, flips verdicts, appends the superseded pick to
+  history with the reason) and `audit` derives staleness (chosen candidates whose provenance no
+  longer matches current upstream choices; exit 1 when any exist, so drivers can gate on it).
+  **`test_repick.py`** — 26 checks (`python3 test_repick.py`).
 - **`render.py`** — the pure renderer: manifest + assets → mp4 (workstation ffmpeg). With a `loop`
   block it emits the loop cut **alongside** the full cut; the full cut is never replaced.
 - **`build_lobby.py`** — the WI 1004 skeleton driver (authors the manifest, gens assets, renders).

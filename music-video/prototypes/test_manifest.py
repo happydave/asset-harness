@@ -163,6 +163,157 @@ def main():
         back2 = M.from_json(M.to_json(m, manifest_dir=tmp))
         check("loop.blend_at round-trips", back2.loop.blend_at == "end", back2.loop)
 
+    # --- candidate layer (WI 1175) ---
+    with tempfile.TemporaryDirectory() as d:
+        tmp = Path(d)
+
+        # Byte-identity: a candidate-free manifest serializes EXACTLY as the pre-1175 code did
+        # (expected string captured from that code before this layer landed), so no shipped
+        # manifest churns on rewrite.
+        fix_shots = [
+            M.Shot(index=0, section="verse", lines=[{"index": 0, "text": "line 0"}], t_start=0.0,
+                   t_end=4.0, kind="kenburns", prompt="p0", asset="s0.png"),
+            M.Shot(index=1, section="chorus", lines=[{"index": 1, "text": "line 1"}], t_start=4.0,
+                   t_end=8.0, kind="still", prompt="p1", asset="s1.png"),
+        ]
+        fix = M.Manifest(audio="a.flac", duration=8.0, source_timeline="t.json", shots=fix_shots,
+                         loop=M.Loop(length=6.0))
+        expected = (
+            '{\n  "audio": "a.flac",\n  "duration": 8.0,\n  "source_timeline": "t.json",\n'
+            '  "shots": [\n    {\n      "index": 0,\n      "section": "verse",\n      "lines": [\n'
+            '        {\n          "index": 0,\n          "text": "line 0"\n        }\n      ],\n'
+            '      "t_start": 0.0,\n      "t_end": 4.0,\n      "kind": "kenburns",\n'
+            '      "prompt": "p0",\n      "asset": "s0.png",\n      "kb": {\n'
+            '        "zoom": "in",\n        "pan": "c"\n      }\n    },\n    {\n'
+            '      "index": 1,\n      "section": "chorus",\n      "lines": [\n        {\n'
+            '          "index": 1,\n          "text": "line 1"\n        }\n      ],\n'
+            '      "t_start": 4.0,\n      "t_end": 8.0,\n      "kind": "still",\n'
+            '      "prompt": "p1",\n      "asset": "s1.png",\n      "kb": {\n'
+            '        "zoom": "in",\n        "pan": "c"\n      }\n    }\n  ],\n  "notes": "",\n'
+            '  "loop": {\n    "length": 6.0,\n    "crossfade": 0.75,\n    "search": 0.0,\n'
+            '    "blend_at": "end"\n  }\n}\n')
+        check("candidate-free manifest serializes byte-identically to pre-1175 output",
+              M.to_json(fix) == expected)
+        check("pre-1175 JSON loads with an empty candidate layer",
+              M.from_json(expected).shots[0].candidates == []
+              and M.from_json(expected).shots[0].pick is None
+              and M.from_json(expected).song_pick is None)
+
+        def _with_candidates():
+            m = _good_manifest(tmp)
+            s0 = m.shots[0]
+            s0.candidates = [
+                M.Candidate(asset="shot0_bad.png", verdict="culled", culled_by="clipscore-floor",
+                            recipe={"seed": 3}, provenance={"prompt": s0.prompt,
+                                                            "lines": s0.lines}),
+                M.Candidate(asset="shot0_alt.png", verdict="survivor",
+                            recipe={"seed": 5}, scores={"pickscore": 0.41},
+                            provenance={"prompt": s0.prompt, "lines": s0.lines}),
+                M.Candidate(asset=s0.asset, verdict="chosen", recipe={"seed": 7},
+                            scores={"pickscore": 0.44},
+                            provenance={"prompt": s0.prompt, "lines": s0.lines}),
+            ]
+            s0.pick = M.Pick(picked_by="owner", reason="warmest light")
+            m.song_candidates = [
+                M.Candidate(asset=m.audio, verdict="chosen", recipe={"seed": 1},
+                            scores={"audiobox_ce": 7.1, "qc_flags": []},
+                            provenance={"lyrics": "v1"}),
+                M.Candidate(asset="song_alt.flac", verdict="passed-over", recipe={"seed": 2},
+                            scores={"audiobox_ce": 6.8, "qc_flags": []}),
+            ]
+            m.song_pick = M.Pick(picked_by="machine-auto")
+            m.scorer_versions = {"pickscore": "v2", "audiobox": "0.3"}
+            return m
+
+        mc = _with_candidates()
+        try:
+            M.validate(mc, manifest_dir=tmp)
+            print("  ok   candidate layer validates")
+        except M.ManifestError as e:
+            print(f"  FAIL candidate layer validates ({e})")
+            FAILS.append("candidate layer validates")
+        back = M.from_json(M.to_json(mc, manifest_dir=tmp))
+        check("candidate layer round-trips",
+              len(back.shots[0].candidates) == 3
+              and back.shots[0].candidates[0].culled_by == "clipscore-floor"
+              and back.shots[0].candidates[2].recipe == {"seed": 7}
+              and back.shots[0].pick.reason == "warmest light"
+              and back.song_pick.picked_by == "machine-auto"
+              and back.scorer_versions == {"pickscore": "v2", "audiobox": "0.3"})
+
+        def bad_cands(mutate):
+            mm = _with_candidates()
+            mutate(mm)
+            return lambda: M.validate(mm, manifest_dir=tmp)
+
+        def _set(mm, **kw):
+            for k, v in kw.items():
+                setattr(mm.shots[0].candidates[2], k, v)
+
+        raises("verdict outside the closed set rejected",
+               bad_cands(lambda mm: _set(mm, verdict="maybe")))
+        raises("culled without a gate name rejected",
+               bad_cands(lambda mm: _set(mm, verdict="culled", culled_by="")))
+        raises("culled_by on a non-culled candidate rejected",
+               bad_cands(lambda mm: mm.shots[0].candidates[1].__setattr__("culled_by", "gate")))
+        raises("chosen asset != shot asset rejected",
+               bad_cands(lambda mm: _set(mm, asset="somewhere_else.png")))
+        raises("two chosen in one set rejected",
+               bad_cands(lambda mm: mm.shots[0].candidates[1].__setattr__("verdict", "chosen")))
+        raises("a pick with zero chosen rejected",
+               bad_cands(lambda mm: _set(mm, verdict="survivor")))
+        raises("a chosen with no pick rejected",
+               bad_cands(lambda mm: setattr(mm.shots[0], "pick", None)))
+        raises("picked_by outside the closed set rejected",
+               bad_cands(lambda mm: mm.shots[0].pick.__setattr__("picked_by", "vibes")))
+        raises("duplicate candidate assets rejected",
+               bad_cands(lambda mm: mm.shots[0].candidates[1].__setattr__("asset", "shot0_bad.png")))
+        raises("song chosen != audio rejected",
+               bad_cands(lambda mm: mm.song_candidates[0].__setattr__("asset", "other.flac")))
+        raises("provenance.source_shot out of range rejected",
+               bad_cands(lambda mm: _set(mm, provenance={"source_shot": 99})))
+
+        # mid-stage: candidates recorded, no pick yet, no chosen -- must NOT be rejected
+        mid = _with_candidates()
+        mid.shots[0].candidates[2].verdict = "survivor"
+        mid.shots[0].pick = None
+        try:
+            M.validate(mid, manifest_dir=tmp)
+            print("  ok   pickless candidate set (mid-stage) passes")
+        except M.ManifestError as e:
+            print(f"  FAIL pickless candidate set (mid-stage) passes ({e})")
+            FAILS.append("pickless candidate set (mid-stage) passes")
+
+        # --- adjacency lint (WI 1160 rule): video shot next to its own source still ---
+        def _clip_at(idx, src_still):
+            mm = _good_manifest(tmp)
+            s = mm.shots[idx]
+            s.kind = "video"
+            (tmp / "clip.mp4").write_bytes(b"x")
+            s.asset = "clip.mp4"
+            s.candidates = [M.Candidate(asset="clip.mp4", verdict="chosen",
+                                        provenance={"source_shot": 0,
+                                                    "source_still": src_still})]
+            s.pick = M.Pick(picked_by="owner")
+            return mm
+
+        raises("video clip adjacent to its own source still rejected",
+               lambda: M.validate(_clip_at(1, "shot0.png"), manifest_dir=tmp))
+        try:
+            M.validate(_clip_at(2, "shot0.png"), manifest_dir=tmp)
+            print("  ok   non-adjacent source still passes the lint")
+        except M.ManifestError as e:
+            print(f"  FAIL non-adjacent source still passes the lint ({e})")
+            FAILS.append("non-adjacent source still passes the lint")
+        no_prov = _clip_at(1, "shot0.png")
+        no_prov.shots[1].candidates[0].provenance = {}
+        try:
+            M.validate(no_prov, manifest_dir=tmp)
+            print("  ok   lint skips a clip that recorded no source (evidence-driven)")
+        except M.ManifestError as e:
+            print(f"  FAIL lint skips a clip that recorded no source ({e})")
+            FAILS.append("lint skips a clip that recorded no source (evidence-driven)")
+
     print()
     if FAILS:
         print(f"FAILED {len(FAILS)}: {', '.join(FAILS)}")

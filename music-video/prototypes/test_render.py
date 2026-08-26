@@ -149,6 +149,37 @@ def main():
               rep2["shot_boundary_note"] is not None and "2.0s" in rep2["shot_boundary_note"],
               str(rep2["shot_boundary_note"]))
 
+    # --- the candidate layer (WI 1175) is invisible to the renderer ---
+    # Same manifest with and without a full candidate layer must produce identical decoded frames
+    # (framemd5 -- codec bytes are encoder-dependent; decoded frames are the deterministic form of
+    # "byte-identical behavior").
+    with tempfile.TemporaryDirectory() as d:
+        tmp = Path(d)
+        dur = 4.0
+        plain = _tiny_manifest(tmp, dur)
+        R.render(plain, tmp, tmp / "plain.mp4", tmp / "work_plain")
+        layered = _tiny_manifest(tmp, dur)
+        for s in layered.shots:
+            s.candidates = [
+                M.Candidate(asset=s.asset, verdict="chosen", recipe={"seed": s.index},
+                            provenance={"prompt": s.prompt, "lines": s.lines}),
+                M.Candidate(asset=f"unused{s.index}.png", verdict="culled", culled_by="gate"),
+            ]
+            s.pick = M.Pick(picked_by="machine-provisional")
+        layered.song_candidates = [M.Candidate(asset="song.flac", verdict="chosen")]
+        layered.song_pick = M.Pick(picked_by="machine-auto")
+        layered.scorer_versions = {"pickscore": "v2"}
+        R.render(layered, tmp, tmp / "layered.mp4", tmp / "work_layered")
+
+        def framemd5(p):
+            out = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-i", str(p),
+                                  "-f", "framemd5", "-"], check=True, capture_output=True,
+                                 text=True)
+            return [ln for ln in out.stdout.splitlines() if not ln.startswith("#")]
+
+        check("candidate layer renders to identical decoded frames",
+              framemd5(tmp / "plain.mp4") == framemd5(tmp / "layered.mp4"))
+
     print()
     if FAILS:
         print(f"FAILED {len(FAILS)}: {', '.join(FAILS)}")

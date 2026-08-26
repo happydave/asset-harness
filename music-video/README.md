@@ -125,8 +125,13 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
     this**, so the shot list cannot tell which produced it. Validates at emit time.
   - [`manifest.py`](prototypes/manifest.py) — the **shot-list manifest** schema (the track's durable
     artifact): timeline → 8 shots, each `{lines, t_start/t_end, kind, prompt, asset, kb}`; validates a
-    contiguous partition + asset existence at emit, plus the optional `loop` block.
-    [`test_manifest.py`](prototypes/test_manifest.py) (30 checks).
+    contiguous partition + asset existence at emit, plus the optional `loop` block and the optional
+    **candidate layer** (WI 1175, the promotion substrate): per-shot and song candidate/pick records
+    with verdict + provenance, so a finished manifest answers *what else was tried, who chose, and
+    why*. [`test_manifest.py`](prototypes/test_manifest.py) (49 checks).
+  - [`repick.py`](prototypes/repick.py) — change a pick **within the recorded candidates** (no
+    regeneration, override recorded to pick history) and audit staleness: records whose provenance no
+    longer matches current upstream choices. [`test_repick.py`](prototypes/test_repick.py) (26 checks).
   - [`render.py`](prototypes/render.py) — the **pure renderer**: manifest + assets → mp4 (zoompan Ken
     Burns with the pre-upscale fix, xfade chain, audio mux, web encode). No creative decisions live
     here — the whole edit is a function of the manifest. A manifest carrying a `loop` block also gets
