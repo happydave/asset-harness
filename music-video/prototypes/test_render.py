@@ -136,6 +136,8 @@ def main():
               abs(R._probe_video_duration(loop_out) - 3.0) <= 1.0 / R.FPS,
               str(R._probe_video_duration(loop_out)))
         rep = json.loads((tmp / "cut_loop.loop.json").read_text())
+        check("the report records where the dissolve was placed",
+              rep["blend_at"] == "end", str(rep.get("blend_at")))
         check("a loop point clear of the shot dissolves carries no note",
               rep["shot_boundary_note"] is None, str(rep["shot_boundary_note"]))
 

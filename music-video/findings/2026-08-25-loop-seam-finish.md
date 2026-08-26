@@ -24,15 +24,16 @@ Verified frame-exactly on a grey-ramp source whose frame `N` is a uniform grey o
 
 ## The delivered lobby loop
 
-`outputs/lobby/clamor_lobby_loop.mp4` — **56.0 s, 1280×720, 5.1 MB**, emitted by the same
-`render.py` run that produces the 75 s cut.
+`outputs/lobby/clamor_lobby_loop.mp4` — **56.0 s, 1280×720, 5.2 MB**, emitted by the same
+`render.py` run that produces the 75 s cut. The dissolve sits at the **end** of the file (WI 1181, below),
+so a single pass opens on clean material.
 
 | | |
 |---|---|
 | Loop length | **56.0 s** (authored 56.616 s = the chorus-2 downbeat; the 2 s backwards search moved it 0.616 s earlier) |
-| Video join | SSIM 0.945 vs keyframe-boundary norm 0.9395 — gap **−0.0055** |
-| Audio join | step 1294 vs local maximum 2888 — **0.45×**, i.e. a *smaller* step than ordinary music motion |
-| Level across the join | RMS 8059 → 4782 (1.69×) |
+| Video join | SSIM 0.911 vs keyframe-boundary norm 0.955 — gap **0.0445** (0.963 / 0.012 when re-encoded at crf 16, so most of that gap is bit allocation in the dissolve, not discontinuity) |
+| Audio join | step 221 vs local maximum 1241 — **0.18×**, i.e. a far smaller step than ordinary music motion |
+| Level across the dissolve | RMS 7693 → 1684 (**4.57×**) — see the correction below |
 | Codec padding | **0 samples** |
 | Cost | ~7 s wall, ffmpeg only, on top of the 38 s full render |
 
@@ -100,3 +101,34 @@ python3 loop_finish.py cut.mp4 --length 56.616 --crossfade 0.75 --search 2.0 --a
 
 38 checks in [`prototypes/test_loop.py`](../prototypes/test_loop.py) (`python3 test_loop.py`, GPU-free,
 ~9 s), plus 11 added to `test_manifest.py` and 5 to `test_render.py`.
+
+## Update 2026-08-25 (WI 1181): the dissolve moved to the end, and one figure was wrong
+
+Owner watched the loop, confirmed **the repeat is clean**, and noticed that the cut "adds a second from
+the end to the beginning" — under the original arrangement the file *opened* mid-dissolve, on material a
+first-time viewer had not seen. Asked whether that second could move to the end.
+
+It can, for free. The wrap produces a **cycle**, and rotating a cycle gives the same cycle: `blend_at`
+now chooses where the dissolve sits, and **`end` is the default**. A single pass opens on clean material
+and closes by dissolving back toward its own opening; on repeat the two arrangements are identical.
+
+**The discretisation is the whole trick.** A crossfade's weights run `0 → (N−1)/N`, so its first frame is
+pure outgoing and its last still carries `1/N` of it. Under `start` that impure frame sits harmlessly
+inside the file; a naive rotation would park it on the **final** frame — exactly where the loop join is
+both measured and seen. So `end` does not reuse `xfade`: it blends with explicit weights running
+`1/N → 1`, putting the exact frame at the boundary and the impure one at the *start* of the dissolve,
+where a 1/22 ghost is invisible. Verified on the grey ramp: the file ends on frame 21 and opens on frame
+22 — exactly adjacent, no ghost.
+
+**Correction — the level step across the join is 4.4×, not the 1.69× first reported.** The old window
+started at the file boundary and therefore lay *inside the crossfade*, so it measured the dissolve
+rather than the music. Measuring pure material either side of the dissolve gives **7693 → 1684 (4.57×,
+~13 dB)** on the delivered loop, and 4.39× on the arrangement the owner accepted. The step was always
+there — the measurement was hiding it. The level bound moved with it: **8×**, now calibrated against an
+owner-accepted loop (4.4×) and a plain trim (100×+) instead of being the invented 2× it started as. A
+crossfade *bridges* a level step; it cannot remove one, and the tests now say so — wrapping a source
+whose loud end meets its own near-silent start still fails the level check, correctly.
+
+**One residual, measured not guessed.** The `end` arrangement's join scores 0.911 at crf 26 against 0.963
+at crf 16: the final frame sits at the end of a fast dissolve, where the encoder spends fewest bits. The
+content is continuous; the number is bit allocation. Left at crf 26 to match the full cut.

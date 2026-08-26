@@ -59,7 +59,7 @@ MIDCYCLE_HZ = 1320.25 / 6.0
 def grey_ramp_source(dst: Path, seconds: int = 10, ramp_audio: bool = False,
                      freq: float = 220.0) -> Path:
     """Frame N is a uniform grey of value N mod 250; audio is a sine, optionally ramping in level."""
-    vol = "t/%d" % seconds if ramp_audio else "0.5"
+    vol = "pow(t/%d\\,2)" % seconds if ramp_audio else "0.5"
     run(["ffmpeg", "-nostdin", "-v", "error", "-y",
          "-f", "lavfi", "-i", f"nullsrc=s=320x180:r={FPS}:d={seconds}",
          "-f", "lavfi", "-i", f"sine=frequency={freq}:sample_rate=44100:duration={seconds}",
@@ -131,10 +131,11 @@ def main() -> int:
         check("a fractional length is quantised to whole frames",
               frac["frames"] == 181 and abs(frac["length"] - 181 / FPS) < 1e-4, str(frac))
 
-        print("wrap composition (grey-ramp fixture)")
+        print("wrap composition, blend at the start (grey-ramp fixture)")
         src = grey_ramp_source(tmp / "src.mp4")
         out = tmp / "src_loop.mp4"
-        report = lf.finish(src, out, length=6.0, crossfade=0.5, workdir=tmp / "work")
+        report = lf.finish(src, out, length=6.0, crossfade=0.5, blend_at="start",
+                           workdir=tmp / "work")
         check("output is exactly length x fps frames", report["video"]["frames"] == 180,
               str(report["video"]["frames"]))
         check("output frame 0 is the tail's first frame, at full weight",
@@ -186,9 +187,14 @@ def main() -> int:
         a = lf.audio_join(trimmed, 6.0, tmp / "work_trim")
         check("a hard trim FAILS the video join gate", not v["pass"], str(v))
         check("a hard trim FAILS the audio level gate", not a["level_pass"], str(a))
+        # Wrapping does NOT rescue this one, and should not claim to: a crossfade bridges a level step,
+        # it cannot remove it. The loud end of this source still lands on its near-silent start.
         wrapped = lf.finish(ramp, tmp / "ramp_loop.mp4", length=6.0, crossfade=0.5,
-                            workdir=tmp / "work_ramp")
-        check("the same source WRAPPED passes both", wrapped["pass"] is True, str(wrapped))
+                            blend_at="start", workdir=tmp / "work_ramp")
+        check("wrapping does not rescue a genuine level mismatch",
+              not wrapped["audio"]["level_pass"], str(wrapped["audio"]))
+        check("but it does fix the discontinuity the trim had",
+              wrapped["audio"]["discontinuity_pass"], str(wrapped["audio"]))
 
         # The level control above cuts into near-silence, which the discontinuity check cannot see
         # (both ends land near a zero crossing). This one isolates it: constant level, trimmed at the
@@ -201,9 +207,40 @@ def main() -> int:
         check("the discontinuity failure is decisive, not marginal",
               ma["discontinuity_ratio"] > 10, str(ma["discontinuity_ratio"]))
         mid_wrap = lf.finish(mid, tmp / "mid_loop.mp4", length=6.0, crossfade=0.5,
-                             workdir=tmp / "work_midw")
+                             blend_at="start", workdir=tmp / "work_midw")
         check("the same mid-cycle source WRAPPED passes the discontinuity gate",
               mid_wrap["audio"]["discontinuity_pass"], str(mid_wrap["audio"]))
+
+        print("blend at the end (WI 1181)")
+        # `start` opens mid-dissolve on material from the end of the cut; `end` opens clean. Both are
+        # the same cycle, so both must loop — only the single pass differs.
+        end_out = tmp / "src_end.mp4"
+        end_rep = lf.finish(src, end_out, length=6.0, crossfade=0.5, blend_at="end",
+                            workdir=tmp / "work_end")
+        xf = 15                                             # 0.5 s at 30 fps
+        check("end is the default arrangement",
+              lf.finish.__kwdefaults__["blend_at"] == "end" and lf.BLEND_AT[0] == "end")
+        check("the end arrangement is still exactly the loop length",
+              end_rep["video"]["frames"] == 180, str(end_rep["video"]["frames"]))
+        check("a single pass opens on clean material, not on the end of the cut",
+              abs(luma(end_out, 0) - luma(src, xf)) <= GREY_TOL,
+              f"{luma(end_out, 0)} vs src[{xf}]={luma(src, xf)}")
+        check("the last frame is EXACTLY the frame before the opening one",
+              abs(luma(end_out, 179) - luma(src, xf - 1)) <= GREY_TOL,
+              f"{luma(end_out, 179)} vs src[{xf - 1}]={luma(src, xf - 1)} — a naive rotation would "
+              f"leave a ghost of the outgoing shot here")
+        check("the dissolve now sits at the end of the file",
+              abs(luma(end_out, 164) - luma(src, 179)) <= GREY_TOL
+              and not abs(luma(end_out, 165) - luma(src, 180)) <= GREY_TOL,
+              f"mid ends {luma(end_out, 164)}, blend starts {luma(end_out, 165)}")
+        check("outside the dissolve the two arrangements are one cycle, rotated",
+              all(abs(luma(end_out, i) - luma(out, (i + xf) % 180)) <= GREY_TOL
+                  for i in (0, 40, 100, 164)),
+              "sampled frames 0/40/100/164")
+        check("the end arrangement passes both join gates", end_rep["pass"] is True, str(end_rep))
+        raises("an unknown blend_at is refused",
+               lambda: lf.finish(src, tmp / "no.mp4", length=6.0, crossfade=0.5, blend_at="middle"),
+               want="blend_at must be one of")
 
         print("the webm sibling")
         # Tiny (160x90) so the VP9 encode costs ~1 s. 4.0 s x 48 kHz = 192 000 samples, which is NOT a

@@ -55,12 +55,13 @@ LOCAL_MS = 50.0
 # ratio is what to look at; the bound only has to separate those two populations.
 DISCONTINUITY_TOLERANCE = 2.0
 
-# Level continuity across the join. This is a COARSE SANITY BOUND, not a calibrated threshold — no
-# prior measurement exists for it. Its job is to catch loud-material-cutting-into-silence (what a plain
-# trim of this song does), not to discriminate fine cases. The measured ratio is reported so it can be
-# tightened later with data.
+# Level continuity across the dissolve, measured on PURE material either side of it (a window that
+# overlaps the crossfade measures the crossfade, not the music). Now calibrated rather than invented:
+# the owner-accepted lobby loop steps 4.4x (~13 dB) — a crossfade bridges a step, it cannot remove one —
+# while a plain trim of the same kind of material measures 100x+. 8x sits between them with margin on
+# both sides. The measured ratio is always reported; the bound only has to separate those populations.
 LEVEL_MS = 100.0
-LEVEL_TOLERANCE = 2.0                   # factor, i.e. +-6 dB
+LEVEL_TOLERANCE = 8.0                   # factor, i.e. ~18 dB
 
 # --- loop-point search -----------------------------------------------------------------------------
 # The search matches a short-time RMS envelope, so it aligns rhythm and dynamics — bar phase — and is
@@ -68,6 +69,11 @@ LEVEL_TOLERANCE = 2.0                   # factor, i.e. +-6 dB
 ENVELOPE_RATE = 8000                    # Hz, mono, for envelope analysis only
 ENVELOPE_HOP = 0.010                    # seconds per envelope frame
 MATCH_MIN = 0.5                         # seconds of envelope compared, at least
+
+
+# Where the wrap's dissolve sits in the file. The two arrangements are rotations of one cycle and loop
+# identically; `end` opens a single pass on clean material instead of mid-dissolve (WI 1181).
+BLEND_AT = ("end", "start")
 
 
 class LoopError(RuntimeError):
@@ -198,20 +204,64 @@ WEBM_ARGS = ["-c:v", "libvpx-vp9", "-crf", "32", "-b:v", "0", "-row-mt", "1", "-
 
 
 def wrap(src: Path, out: Path, length: float, crossfade: float, *, audio: Path | None = None,
-         curve: str = "tri", encoder: list[str] | None = None) -> Path:
-    """Write the T-second loop cut: source[T, T+x) crossfaded onto source[0, x), then source[x, T)."""
+         curve: str = "tri", encoder: list[str] | None = None, blend_at: str = "end",
+         fps: float | None = None) -> Path:
+    """Write the T-second loop cut. `blend_at` says where in the file the dissolve sits.
+
+    Both arrangements are the SAME CYCLE — one is a rotation of the other by `crossfade` — so they loop
+    identically. What differs is a single pass:
+
+      start : out = [blend(src[T,T+x) over src[0,x))] + src[x,T)
+              The file opens mid-dissolve, on material from the end of the cut that a first-time viewer
+              has not seen yet.
+      end   : out = src[x,T) + [blend(src[T,T+x) over src[0,x))]
+              The file opens on clean material `x` into the cut and ends by dissolving back toward its
+              own opening. Default, because it is better on a single pass and identical on repeat.
+
+    The discretisation matters and is why `end` does not simply reuse `xfade`: a crossfade's weights run
+    0 -> (N-1)/N, so its FIRST frame is pure outgoing and its LAST frame still carries 1/N of it. Under
+    `start` that impure frame sits harmlessly inside the file; a naive rotation would park it on the
+    file's final frame — exactly where the loop join is measured and seen. `end` therefore blends with
+    explicit weights running 1/N -> 1, which puts the exact frame at the boundary and the impure one at
+    the start of the dissolve, where a 1/N ghost is invisible.
+    """
+    if blend_at not in BLEND_AT:
+        raise LoopError(f"blend_at must be one of {BLEND_AT}, got {blend_at!r}")
+    fps = fps or probe_fps(src)
+    n = max(1, int(round(crossfade * fps)))      # blend frames
+    xf = n / fps                                 # crossfade quantised to whole frames
     asrc = audio or src
-    inputs = ["-ss", f"{length:.6f}", "-t", f"{crossfade:.6f}", "-i", str(src),
-              "-ss", "0", "-t", f"{length:.6f}", "-i", str(src)]
-    if audio is None:
-        av, ah = "[0:a]", "[1:a]"
-    else:
-        inputs += ["-ss", f"{length:.6f}", "-t", f"{crossfade:.6f}", "-i", str(asrc),
-                   "-ss", "0", "-t", f"{length:.6f}", "-i", str(asrc)]
-        av, ah = "[2:a]", "[3:a]"
-    graph = (f"[0:v][1:v]xfade=transition=fade:duration={crossfade:.6f}:offset=0[v];"
-             f"{av}{ah}acrossfade=d={crossfade:.6f}:c1={curve}:c2={curve}[a]")
     out.parent.mkdir(parents=True, exist_ok=True)
+
+    if blend_at == "start":
+        inputs = ["-ss", f"{length:.6f}", "-t", f"{xf:.6f}", "-i", str(src),
+                  "-ss", "0", "-t", f"{length:.6f}", "-i", str(src)]
+        av, ah = "[0:a]", "[1:a]"
+        if audio is not None:
+            inputs += ["-ss", f"{length:.6f}", "-t", f"{xf:.6f}", "-i", str(asrc),
+                       "-ss", "0", "-t", f"{length:.6f}", "-i", str(asrc)]
+            av, ah = "[2:a]", "[3:a]"
+        graph = (f"[0:v][1:v]xfade=transition=fade:duration={xf:.6f}:offset=0[v];"
+                 f"{av}{ah}acrossfade=d={xf:.6f}:c1={curve}:c2={curve}[a]")
+    else:
+        mid = length - xf
+        inputs = ["-ss", f"{xf:.6f}", "-t", f"{mid:.6f}", "-i", str(src),        # 0 mid
+                  "-ss", f"{length:.6f}", "-t", f"{xf:.6f}", "-i", str(src),     # 1 tail
+                  "-ss", "0", "-t", f"{xf:.6f}", "-i", str(src)]                 # 2 head start
+        am, av, ah = "[0:a]", "[1:a]", "[2:a]"
+        if audio is not None:
+            inputs += ["-ss", f"{xf:.6f}", "-t", f"{mid:.6f}", "-i", str(asrc),
+                       "-ss", f"{length:.6f}", "-t", f"{xf:.6f}", "-i", str(asrc),
+                       "-ss", "0", "-t", f"{xf:.6f}", "-i", str(asrc)]
+            am, av, ah = "[3:a]", "[4:a]", "[5:a]"
+        # Weights N/n. `blend`'s N counts from 1 (measured), so the first blend frame carries 1/n of the
+        # incoming material and the LAST one is exactly it -- see the docstring for why that matters.
+        expr = f"A*(1-min(1\\,N/{n}))+B*min(1\\,N/{n})"
+        graph = (f"[1:v][2:v]blend=all_expr='{expr}'[b];"
+                 f"[0:v][b]concat=n=2:v=1:a=0[v];"
+                 f"{av}{ah}acrossfade=d={xf:.6f}:c1={curve}:c2={curve}[ba];"
+                 f"{am}[ba]concat=n=2:v=0:a=1[a]")
+
     _run(["ffmpeg", "-nostdin", "-v", "error", "-y", *inputs, "-filter_complex", graph,
           "-map", "[v]", "-map", "[a]", *(encoder or MP4_ARGS), str(out)])
     return out
@@ -279,12 +329,23 @@ def video_join(out: Path, workdir: Path) -> dict:
                     or (kf_gap is not None and kf_gap <= SEAM_TOLERANCE)}
 
 
-def audio_join(out: Path, length: float, workdir: Path) -> dict:
-    """Discontinuity and level continuity across the join, plus the codec's own padding.
+def audio_join(out: Path, length: float, workdir: Path, *, crossfade: float = 0.0,
+               blend_at: str = "end") -> dict:
+    """Discontinuity and level continuity, plus the codec's own padding.
 
     Measured over the decoded stream TRUNCATED to the intended sample count. An mp4's decoded audio
     carries trailing codec padding — digital silence — so measuring to the decoded end would compare the
     first sample against a zero and report a large jump for every correctly-built loop.
+
+    The two checks look at different places, on purpose:
+
+    * **Discontinuity** at the file boundary, where a click would be — the last intended sample against
+      the first.
+    * **Level across the DISSOLVE**, using pure material on each side. Inside the dissolve the signal is
+      a mixture of both ends, so a window that overlaps it measures the crossfade rather than the music:
+      on the lobby cut that inflated the reported step by ~40 %. Where the dissolve sits depends on
+      `blend_at`, so both are needed to place the windows. With `crossfade = 0` the windows collapse to
+      the file boundary (the old behaviour), which is what a caller measuring a plain trim wants.
     """
     workdir.mkdir(parents=True, exist_ok=True)
     rate = audio_rate(out)
@@ -302,8 +363,16 @@ def audio_join(out: Path, length: float, workdir: Path) -> dict:
         max((abs(samples[i + 1] - samples[i]) for i in range(0, w)), default=0))
 
     lw = int(round(LEVEL_MS / 1000.0 * rate))
-    before = rms(samples, intended - lw, intended)
-    after = rms(samples, 0, lw)
+    xs = int(round(crossfade * rate))
+    if xs and blend_at == "end":          # dissolve occupies the last `crossfade` of the file
+        before = rms(samples, max(0, intended - xs - lw), intended - xs)
+        after = rms(samples, 0, lw)
+    elif xs:                              # `start`: dissolve occupies the first `crossfade`
+        before = rms(samples, intended - lw, intended)
+        after = rms(samples, xs, xs + lw)
+    else:
+        before = rms(samples, intended - lw, intended)
+        after = rms(samples, 0, lw)
     ratio = (max(before, after) + 1e-9) / (min(before, after) + 1e-9)
     disc_ratio = join_delta / (local + 1e-9)
     return {"sample_rate": rate, "intended_samples": intended,
@@ -312,13 +381,16 @@ def audio_join(out: Path, length: float, workdir: Path) -> dict:
             "discontinuity_ratio": round(disc_ratio, 2),
             "discontinuity_pass": disc_ratio <= DISCONTINUITY_TOLERANCE,
             "rms_before": round(before, 1), "rms_after": round(after, 1),
+            "level_window": "either side of the dissolve" if xs else "either side of the join",
             "level_ratio": round(ratio, 3), "level_pass": ratio <= LEVEL_TOLERANCE}
 
 
 def finish(src: Path, out: Path, *, length: float, crossfade: float, search: float = 0.0,
            audio: Path | None = None, curve: str = "tri", webm: bool = False,
-           workdir: Path | None = None) -> dict:
+           blend_at: str = "end", workdir: Path | None = None) -> dict:
     """Choose the loop length, build the wrap, and measure both joins. Returns the report."""
+    if blend_at not in BLEND_AT:
+        raise LoopError(f"blend_at must be one of {BLEND_AT}, got {blend_at!r}")
     if not has_audio(src):
         raise LoopError(f"{src} has no audio stream; the wrap is defined on both streams")
     duration = probe_duration(src)
@@ -342,15 +414,25 @@ def finish(src: Path, out: Path, *, length: float, crossfade: float, search: flo
                   "envelope_distance": None, "authored_distance": None, "match_window_s": None}
     t = chosen["length"]
 
-    wrap(src, out, t, crossfade, audio=audio, curve=curve)
+    wrap(src, out, t, crossfade, audio=audio, curve=curve, blend_at=blend_at, fps=fps)
     report = {"output": str(out), "source": str(src), "source_duration": round(duration, 3),
               "requested_length": length, "search": search, "crossfade": crossfade, "curve": curve,
-              "fps": fps, "chosen": chosen,
-              "video": video_join(out, work), "audio": audio_join(out, t, work), "webm": None}
+              "blend_at": blend_at, "fps": fps, "chosen": chosen,
+              "video": video_join(out, work),
+              "audio": audio_join(out, t, work, crossfade=crossfade, blend_at=blend_at),
+              "webm": None}
+    # The wrap must produce exactly the loop length in frames. A concat of two trimmed pieces (the
+    # `end` arrangement) is where an off-by-one would appear, so check rather than assume.
+    if report["video"]["frames"] != chosen["frames"]:
+        raise LoopError(f"loop cut has {report['video']['frames']} frames, expected "
+                        f"{chosen['frames']} ({t}s at {fps} fps)")
     if webm:
         alt = out.with_suffix(".webm")
-        wrap(src, alt, t, crossfade, audio=audio, curve=curve, encoder=WEBM_ARGS)
-        report["webm"] = {"output": str(alt), "audio": audio_join(alt, t, work)}
+        wrap(src, alt, t, crossfade, audio=audio, curve=curve, encoder=WEBM_ARGS,
+             blend_at=blend_at, fps=fps)
+        report["webm"] = {"output": str(alt),
+                          "audio": audio_join(alt, t, work, crossfade=crossfade,
+                                              blend_at=blend_at)}
     v, a = report["video"], report["audio"]
     report["pass"] = bool(v["pass"] and a["discontinuity_pass"] and a["level_pass"])
     return report
@@ -370,6 +452,9 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=None, help="output mp4 (default: <src>_loop.mp4)")
     ap.add_argument("--curve", default="tri", choices=["tri", "qsin", "esin", "hsin", "log", "par"],
                     help="fade curve; tri (linear) suits the similar material the search selects")
+    ap.add_argument("--blend-at", default="end", choices=list(BLEND_AT),
+                    help="where the wrap's dissolve sits: end (default -- a single pass opens clean) "
+                         "or start. The two are rotations of one cycle and loop identically")
     ap.add_argument("--webm", action="store_true",
                     help="also emit a VP9/Opus sibling — the container that can be sample-gapless, "
                          "for the case where mp4's ~8 ms of AAC padding is audible")
@@ -378,7 +463,8 @@ def main() -> int:
 
     out = a.out or a.src.with_name(f"{a.src.stem}_loop.mp4")
     report = finish(a.src, out, length=a.length, crossfade=a.crossfade, search=a.search,
-                    audio=a.audio, curve=a.curve, webm=a.webm, workdir=a.workdir)
+                    audio=a.audio, curve=a.curve, webm=a.webm, blend_at=a.blend_at,
+                    workdir=a.workdir)
     out.with_suffix(".loop.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
     if not report["pass"]:

@@ -17,7 +17,8 @@ Per shot (the fields WI 1004 fixed by contact with a real edit):
   * kb       -- Ken-Burns move for still/kenburns shots: {zoom: in|out|none, pan: c|l|r|u|d}; ignored
                 for `video`
 
-An optional `loop` block (length, crossfade, search) says how to finish the cut into a seamless loop —
+An optional `loop` block (length, crossfade, search, blend_at) says how to finish the cut into a
+seamless loop —
 see `loop_finish.py`. It is absent from a manifest for a standalone cut, and every manifest written
 before it existed loads unchanged.
 
@@ -63,12 +64,15 @@ class Loop:
     `length` is the authored loop point in seconds — a section start, a lyric onset, whatever the author
     chose. `crossfade` is the wrap blend. `search` lets the loop finish refine `length` BACKWARDS by up
     to that many seconds to land on better-matching material; 0 uses the authored length exactly. The
-    mechanism is `loop_finish.py`; these three numbers are the creative decision, which is why they live
-    here and not there.
+    `blend_at` says where the wrap's dissolve sits: `end` (default) opens a single pass on clean
+    material and closes by dissolving back toward it; `start` opens mid-dissolve. The two are rotations
+    of one cycle and loop identically (WI 1181). The mechanism is `loop_finish.py`; these four values are
+    the creative decision, which is why they live here and not there.
     """
     length: float
     crossfade: float = 0.75
     search: float = 0.0
+    blend_at: str = "end"
 
 
 @dataclass
@@ -154,6 +158,8 @@ def validate(m: Manifest, *, manifest_dir: Path | None = None) -> None:
         if lp.crossfade >= lp.length - lp.search:
             raise ManifestError(f"loop.crossfade {lp.crossfade} is not shorter than the shortest "
                                 f"candidate length {lp.length - lp.search}")
+        if lp.blend_at not in ("start", "end"):
+            raise ManifestError(f"loop.blend_at must be 'start' or 'end', got {lp.blend_at!r}")
         if lp.length + lp.crossfade > m.duration + EPS:
             raise ManifestError(f"loop needs {lp.length + lp.crossfade}s of material but the cut is "
                                 f"{m.duration}s")

@@ -192,6 +192,7 @@
   "loop": {
     "length": 56.616,
     "crossfade": 0.75,
-    "search": 2.0
+    "search": 2.0,
+    "blend_at": "end"
   }
 }

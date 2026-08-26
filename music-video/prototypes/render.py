@@ -215,7 +215,8 @@ def _loop_cut(man: M.Manifest, out: Path, audio: Path, workdir: Path) -> Path:
     """
     loop_out = out.with_name(f"{out.stem}_loop{out.suffix}")
     report = LF.finish(out, loop_out, length=man.loop.length, crossfade=man.loop.crossfade,
-                       search=man.loop.search, audio=audio, workdir=workdir / "loop")
+                       search=man.loop.search, audio=audio, blend_at=man.loop.blend_at,
+                       workdir=workdir / "loop")
     # A loop point inside a shot's dissolve makes the wrap a blend over a blend -- not an error, but the
     # author should know it happened rather than wonder why the wrap looks soft.
     chosen = report["chosen"]["length"]

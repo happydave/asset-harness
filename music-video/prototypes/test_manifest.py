@@ -158,6 +158,10 @@ def main():
         raises("loop.crossfade >= shortest candidate rejected",
                bad_loop(length=20.0, crossfade=3.0, search=18.0))
         raises("loop longer than the cut rejected", bad_loop(length=29.9, crossfade=0.75))
+        check("loop.blend_at defaults to end", M.Loop(length=20.0).blend_at == "end")
+        raises("bad loop.blend_at rejected", bad_loop(length=20.0, blend_at="middle"))
+        back2 = M.from_json(M.to_json(m, manifest_dir=tmp))
+        check("loop.blend_at round-trips", back2.loop.blend_at == "end", back2.loop)
 
     print()
     if FAILS:

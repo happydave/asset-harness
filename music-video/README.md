@@ -126,14 +126,15 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
   - [`manifest.py`](prototypes/manifest.py) — the **shot-list manifest** schema (the track's durable
     artifact): timeline → 8 shots, each `{lines, t_start/t_end, kind, prompt, asset, kb}`; validates a
     contiguous partition + asset existence at emit, plus the optional `loop` block.
-    [`test_manifest.py`](prototypes/test_manifest.py) (28 checks).
+    [`test_manifest.py`](prototypes/test_manifest.py) (30 checks).
   - [`render.py`](prototypes/render.py) — the **pure renderer**: manifest + assets → mp4 (zoompan Ken
     Burns with the pre-upscale fix, xfade chain, audio mux, web encode). No creative decisions live
     here — the whole edit is a function of the manifest. A manifest carrying a `loop` block also gets
     the loop cut, alongside the full one.
   - [`loop_finish.py`](prototypes/loop_finish.py) — the **loop-seam finish**: wrap-crossfade a cut so
     its end-to-start join is adjacent source material, then measure both joins and the codec padding.
-    [`test_loop.py`](prototypes/test_loop.py) (38 checks).
+    The dissolve sits at the end by default, so a single pass opens clean and the repeat is unchanged.
+    [`test_loop.py`](prototypes/test_loop.py) (49 checks).
   - [`build_lobby.py`](prototypes/build_lobby.py) — the WI 1004 skeleton driver: authors the 8-shot
     manifest, generates missing stills on `ai2`, interpolates the hero clip, emits the manifest.
   - [`generate_still.py`](prototypes/generate_still.py) — opaque Z-Image text-to-image stills.
@@ -167,6 +168,7 @@ python3 -m venv .venv && .venv/bin/pip install demucs whisperx
 | ~~1003~~ | ~~SPIKE — custom ComfyUI node exposing ACE-Step lyric timestamps~~ | **done — no node.** The feature is real & cross-attention-derived, but the port dropped the whole alignment subsystem and our XL checkpoint lacks its layer config; post-hoc stays the sole route ([findings](findings/2026-07-23-acestep-native-lyric-timing.md)) |
 | ~~1004~~ | ~~Walking skeleton — 60 s Clamor lobby loop, end to end~~ | **done — pipeline runs end to end.** manifest → pure renderer → 75 s / 7.1 MB lobby loop; `manifest.py` + `render.py` are the reusable core ([findings](findings/2026-07-24-lobby-skeleton.md)). Owner `[human]` review closed 2026-08-24; the loop-seam finish is [WI 1159](../../../tickets/docs/pending/1159-ah-music-video-loop-seam-finish/workitem.md), **done 2026-08-25** |
 | ~~1159~~ | ~~Loop-seam finish for videos intended to loop~~ | **done** — `loop_finish.py` + a manifest `loop` block; the lobby cut now also renders a 56.0 s seamless loop, gates measured ([findings](findings/2026-08-25-loop-seam-finish.md)) |
+| ~~1181~~ | ~~Put the wrap's dissolve at the end~~ | **done** — owner feedback on 1159: the dissolve now sits at the end, so a single pass opens clean; the repeat is the same cycle. Also corrected the level measurement (the old window lay inside the crossfade) |
 
 Detail lives in [`tickets/docs/pending/`](../../../tickets/docs/pending/) and in the
 [project backlog](../../../tickets/docs/projects/asset-harness/project.md).
