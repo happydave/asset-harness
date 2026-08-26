@@ -130,6 +130,35 @@ def main():
         m.shots[0].kb = {"zoom": "sideways", "pan": "c"}
         raises("bad kb.zoom rejected", lambda: M.validate(m, manifest_dir=tmp))
 
+        # --- loop block (WI 1159) ---
+        check("loop is absent by default", _good_manifest(tmp).loop is None)
+        m = _good_manifest(tmp)
+        m.loop = M.Loop(length=20.0, crossfade=0.75, search=2.0)
+        try:
+            M.validate(m, manifest_dir=tmp)
+            print("  ok   valid loop block passes")
+        except M.ManifestError as e:
+            print(f"  FAIL valid loop block passes ({e})")
+            FAILS.append("valid loop block passes")
+        back = M.from_json(M.to_json(m, manifest_dir=tmp))
+        check("loop block round-trips", back.loop is not None and back.loop.length == 20.0
+              and back.loop.crossfade == 0.75 and back.loop.search == 2.0, back.loop)
+        no_loop = M.from_json(M.to_json(_good_manifest(tmp), manifest_dir=tmp))
+        check("a manifest written without a loop block still loads", no_loop.loop is None)
+
+        def bad_loop(**kw):
+            mm = _good_manifest(tmp)
+            mm.loop = M.Loop(**kw)
+            return lambda: M.validate(mm, manifest_dir=tmp)
+
+        raises("loop.length must be positive", bad_loop(length=0.0))
+        raises("loop.crossfade must be positive", bad_loop(length=20.0, crossfade=0.0))
+        raises("loop.search must not be negative", bad_loop(length=20.0, search=-1.0))
+        raises("loop.search past the start rejected", bad_loop(length=20.0, search=20.0))
+        raises("loop.crossfade >= shortest candidate rejected",
+               bad_loop(length=20.0, crossfade=3.0, search=18.0))
+        raises("loop longer than the cut rejected", bad_loop(length=29.9, crossfade=0.75))
+
     print()
     if FAILS:
         print(f"FAILED {len(FAILS)}: {', '.join(FAILS)}")

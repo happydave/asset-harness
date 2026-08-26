@@ -39,6 +39,13 @@ SONG = OUT / "clamor_hold_the_line_seed701.flac"
 TIMELINE = OUT / "clamor_hold_the_line_seed701_posthoc.timeline.json"
 VETTED = HERE.parent / "findings" / "samples-2026-07-23-wan-quality"
 
+# WI 1159 -- the lobby wants a LOOP, not a standalone cut. Authored loop point: 56.616 s, the chorus-2
+# downbeat (timeline line 12) and shot 6's boundary, so the cut runs intro-verse-chorus-verse and wraps
+# back to the intro, comfortably inside the <=60 s the lobby asks for. The 2 s backwards search refines
+# it onto better-matching material -- backwards only, because moving later would cut into the chorus
+# that begins there. The mechanism is loop_finish.py; these three numbers are the creative decision.
+LOOP = M.Loop(length=56.616, crossfade=0.75, search=2.0)
+
 STYLE = ("painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against "
          "cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated "
          "palette, moody atmospheric")
@@ -141,8 +148,10 @@ def main() -> None:
         audio=song_rel, duration=tl.duration,
         source_timeline=TIMELINE.name,
         shots=shots,
+        loop=LOOP,
         notes=("WI 1004 walking skeleton; 8 shots x 2 lyric lines; hero video on chorus shot 2 "
-               "(WI 1018 clip, interpolated); stills reuse 2 vetted WI 1018 frames + 5 Z-Image base."))
+               "(WI 1018 clip, interpolated); stills reuse 2 vetted WI 1018 frames + 5 Z-Image base. "
+               "WI 1159 loop block: the render emits clamor_lobby_loop.mp4 alongside the 75 s cut."))
     out = BUILD / "clamor_lobby.manifest.json"
     M.write(man, out)
     print(f"-> {out}  ({len(shots)} shots, {tl.duration:.1f}s)")

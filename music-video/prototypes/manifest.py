@@ -17,6 +17,10 @@ Per shot (the fields WI 1004 fixed by contact with a real edit):
   * kb       -- Ken-Burns move for still/kenburns shots: {zoom: in|out|none, pan: c|l|r|u|d}; ignored
                 for `video`
 
+An optional `loop` block (length, crossfade, search) says how to finish the cut into a seamless loop —
+see `loop_finish.py`. It is absent from a manifest for a standalone cut, and every manifest written
+before it existed loads unchanged.
+
 Shots partition the song with no gaps or overlaps: shot 0 starts at 0, each shot's t_end is the next
 shot's t_start, and the last shot's t_end is the song duration. A gap would render as black; validation
 refuses it.
@@ -53,12 +57,28 @@ class Shot:
 
 
 @dataclass
+class Loop:
+    """How to finish this cut into a seamless loop (WI 1159); absent means "no loop cut".
+
+    `length` is the authored loop point in seconds — a section start, a lyric onset, whatever the author
+    chose. `crossfade` is the wrap blend. `search` lets the loop finish refine `length` BACKWARDS by up
+    to that many seconds to land on better-matching material; 0 uses the authored length exactly. The
+    mechanism is `loop_finish.py`; these three numbers are the creative decision, which is why they live
+    here and not there.
+    """
+    length: float
+    crossfade: float = 0.75
+    search: float = 0.0
+
+
+@dataclass
 class Manifest:
     audio: str
     duration: float
     source_timeline: str
     shots: list[Shot] = field(default_factory=list)
     notes: str = ""
+    loop: Loop | None = None
 
 
 class ManifestError(ValueError):
@@ -120,6 +140,23 @@ def validate(m: Manifest, *, manifest_dir: Path | None = None) -> None:
         raise ManifestError("manifest has no audio")
     if manifest_dir is not None and not (manifest_dir / m.audio).resolve().is_file():
         raise ManifestError(f"audio not found: {(manifest_dir / m.audio).resolve()}")
+    if m.loop is not None:
+        lp = m.loop
+        if lp.length <= 0:
+            raise ManifestError(f"loop.length must be positive, got {lp.length}")
+        if lp.crossfade <= 0:
+            raise ManifestError(f"loop.crossfade must be positive, got {lp.crossfade}")
+        if lp.search < 0:
+            raise ManifestError(f"loop.search must not be negative, got {lp.search}")
+        if lp.search >= lp.length:
+            raise ManifestError(f"loop.search {lp.search} >= loop.length {lp.length}: the search "
+                                f"window runs past the start of the cut")
+        if lp.crossfade >= lp.length - lp.search:
+            raise ManifestError(f"loop.crossfade {lp.crossfade} is not shorter than the shortest "
+                                f"candidate length {lp.length - lp.search}")
+        if lp.length + lp.crossfade > m.duration + EPS:
+            raise ManifestError(f"loop needs {lp.length + lp.crossfade}s of material but the cut is "
+                                f"{m.duration}s")
     prev_end = 0.0
     for i, s in enumerate(m.shots):
         if s.index != i:
@@ -154,8 +191,10 @@ def to_json(m: Manifest, *, manifest_dir: Path | None = None) -> str:
 def from_json(text: str) -> Manifest:
     d = json.loads(text)
     shots = [Shot(**s) for s in d["shots"]]
+    loop = Loop(**d["loop"]) if d.get("loop") else None
     return Manifest(audio=d["audio"], duration=d["duration"],
-                    source_timeline=d["source_timeline"], shots=shots, notes=d.get("notes", ""))
+                    source_timeline=d["source_timeline"], shots=shots, notes=d.get("notes", ""),
+                    loop=loop)
 
 
 def write(m: Manifest, path: Path) -> Path:

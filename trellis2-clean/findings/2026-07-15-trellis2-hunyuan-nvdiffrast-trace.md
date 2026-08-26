@@ -50,7 +50,7 @@ the whole repo (geometry included) is under the Tencent Hunyuan 3D 2.1 Community
   CUDA/torch for the diffusion, but no custom rasterizer extension).
 - **License is repo-wide and is the real gate.** Top-level LICENSE = **TENCENT HUNYUAN 3D 2.1
   COMMUNITY LICENSE AGREEMENT** — the same territorial (EU/UK/South Korea excluded, extends to
-  Outputs) + 1M-MAU-gate license quoted verbatim in the [UltraShape finding](../../../tickets/docs/projects/asset-studio/research/web-research-ultrashape.md).
+  Outputs) + 1M-MAU-gate license quoted verbatim in the [UltraShape finding](../../../../tickets/docs/projects/asset-studio/research/web-research-ultrashape.md).
   It blankets **both** shape and texture, so generating *geometry only* does not escape it — unlike
   TRELLIS, where the license is MIT and only the optional nvdiffrast paint stage is restricted.
   (Inconsistency worth flagging, consistent with the known Hunyuan pattern: `custom_rasterizer/setup.py`'s

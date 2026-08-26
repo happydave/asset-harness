@@ -105,3 +105,16 @@ What the gated pipeline should add over this skeleton, in priority order:
 - Owner watches `clamor_lobby.mp4` (muted and with sound) and rules on 1–4 above.
 - If GO: a normal `Plan` for the gated pipeline (this skeleton is the reference), not an extension here.
 - WI 1004 delivered the manifest schema + the pure renderer; both are reusable as-is.
+
+## Update 2026-08-25 (WI 1159): recommendation 1 is built, and its consumer moved
+
+**The loop-seam finish exists** — [`loop_finish.py`](../prototypes/loop_finish.py) plus a `loop` block
+in the manifest, so the same render now emits a **56.0 s seamless loop** beside this 75 s cut. The wrap
+crossfades the material at the loop point onto the head, which makes the join adjacent source material
+rather than two unrelated ends. Figures and the two gate corrections are in
+[2026-08-25-loop-seam-finish.md](2026-08-25-loop-seam-finish.md).
+
+**The `go:embed` framing above is stale.** Clamor was rewritten in TypeScript: the repo contains zero
+`.go` files and no reference to a lobby video at all. The size line ("well under the `go:embed` budget")
+should be read as "small enough to serve as a web asset", and *nothing currently consumes this
+artifact* — wiring it into the lobby is a Clamor-side task, not a music-video one.

@@ -44,11 +44,18 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   [findings](../findings/2026-08-24-production-sessions.md).
 - **`chain_clip.py`** — chain N i2v links into one continuous shot: generate → clean the last frame →
   generate from it → concat, then measure every seam against the local adjacent-frame norm. Resumable
-  at link granularity. **`test_chain.py`** — 17 checks (`python3 test_chain.py`), GPU-free.
+  at link granularity. **`test_chain.py`** — 20 checks (`python3 test_chain.py`), GPU-free.
+- **`loop_finish.py`** — wrap-crossfade a rendered cut into a seamless loop: `out[0,x)` is the material
+  from the loop point fading out under the head fading in, so the join is *adjacent source material*
+  rather than two unrelated ends. Measures both joins (video against the local **and** the
+  keyframe-boundary norm, audio for discontinuity and level) and reports the codec padding.
+  **`test_loop.py`** — 38 checks (`python3 test_loop.py`), GPU-free.
 - **`timeline.py`** — the lyric timeline (JSON + LRC); every alignment route emits it.
 - **`manifest.py`** — the shot-list manifest schema (timeline → shots); the track's durable artifact.
-  **`test_manifest.py`** — 17 checks (`python3 test_manifest.py`).
-- **`render.py`** — the pure renderer: manifest + assets → lobby-loop mp4 (workstation ffmpeg).
+  Carries the optional `loop` block (length, crossfade, search) that makes a loop cut a re-render rather
+  than a hand edit. **`test_manifest.py`** — 28 checks (`python3 test_manifest.py`).
+- **`render.py`** — the pure renderer: manifest + assets → mp4 (workstation ffmpeg). With a `loop`
+  block it emits the loop cut **alongside** the full cut; the full cut is never replaced.
 - **`build_lobby.py`** — the WI 1004 skeleton driver (authors the manifest, gens assets, renders).
 - **`interpolate.py`** — workstation ffmpeg `minterpolate` fps raise (WI 1019 smoothness fix).
 

@@ -17,16 +17,21 @@ GPL-ffmpeg-bundling wrappers are avoided by policy -- WI 1004 traps):
      each xfade start exactly on its lyric boundary and keeps the assembled video's total equal to the
      song duration (see _assemble).
   2. xfade-chain the segments, mux the ORIGINAL song audio, encode web mp4 (h264/yuv420p + aac,
-     +faststart), trimmed to the audio length.
+     +faststart), trimmed to the audio length;
+  3. if the manifest carries a `loop` block, wrap-crossfade a seamless loop cut ALONGSIDE the full cut
+     (`<stem>_loop.mp4`, see `loop_finish.py`). The full cut is never replaced -- it is the standalone
+     deliverable; the loop is the one that plays on repeat behind a lobby.
 
 Stdlib + ffmpeg only.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 from pathlib import Path
 
+import loop_finish as LF
 import manifest as M
 
 FPS = 30
@@ -191,11 +196,48 @@ def render(man: M.Manifest, manifest_dir: Path, out: Path, workdir: Path) -> Pat
         # whole chain (WI 1004 B-1). Catch it here, at its source, not three stages downstream.
         _assert_duration(seg, seg_dur, f"shot {s.index} segment ({s.kind})")
         segments.append(seg)
-    _assemble(segments, boundaries, (manifest_dir / man.audio).resolve(), man.duration, out)
+    audio = (manifest_dir / man.audio).resolve()
+    _assemble(segments, boundaries, audio, man.duration, out)
     # Guard: the muxed VIDEO STREAM must reach the song duration -- a container-duration check would be
     # fooled by an audio-padded-but-short video (the visible B-1 symptom).
     _assert_duration(out, man.duration, "assembled video stream", tol=3.0 / FPS, video_stream=True)
+    if man.loop is not None:
+        _loop_cut(man, out, audio, workdir)
     return out
+
+
+def _loop_cut(man: M.Manifest, out: Path, audio: Path, workdir: Path) -> Path:
+    """Write the seamless loop cut ALONGSIDE the full cut (WI 1159).
+
+    The loop is an additional artifact, never a replacement: the full-length cut is the website's
+    deliverable and is already published. Audio comes from the original song rather than the assembled
+    mp4's aac track, so the loop pays only one lossy generation.
+    """
+    loop_out = out.with_name(f"{out.stem}_loop{out.suffix}")
+    report = LF.finish(out, loop_out, length=man.loop.length, crossfade=man.loop.crossfade,
+                       search=man.loop.search, audio=audio, workdir=workdir / "loop")
+    # A loop point inside a shot's dissolve makes the wrap a blend over a blend -- not an error, but the
+    # author should know it happened rather than wonder why the wrap looks soft.
+    chosen = report["chosen"]["length"]
+    near = [s.t_start for s in man.shots[1:] if abs(s.t_start - chosen) <= XFADE]
+    report["shot_boundary_note"] = (
+        f"loop point {chosen}s falls within the {XFADE}s dissolve at shot boundary {near[0]}s: "
+        f"the wrap blends over a blend" if near else None)
+    loop_out.with_suffix(".loop.json").write_text(json.dumps(report, indent=2) + "\n")
+    if report["shot_boundary_note"]:
+        print(f"   note: {report['shot_boundary_note']}")
+    if not report["pass"]:
+        raise RenderError(f"loop cut {loop_out} failed its join gates: "
+                          f"video {report['video']}, audio {report['audio']}")
+    v = report["video"]
+    # Name the norm the pass came from: the local-adjacent gap alone reads as near-failure on a cut
+    # whose first frame is a keyframe, which is exactly why the keyframe norm exists.
+    vgap = (f"video gap {v['gap']} vs local norm" if v["gap"] <= LF.SEAM_TOLERANCE
+            else f"video gap {v['keyframe_gap']} vs keyframe norm")
+    print(f"-> {loop_out}  (loop {report['chosen']['length']}s, {vgap}, "
+          f"audio {report['audio']['discontinuity_ratio']}x local, "
+          f"codec padding {report['audio']['codec_padding_ms']} ms)")
+    return loop_out
 
 
 def main() -> None:
