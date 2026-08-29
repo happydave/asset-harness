@@ -1,0 +1,249 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "a",
+  "mode": "pointwise",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "shot4",
+      "brief": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed41.png",
+        "shot4_seed44.png"
+      ],
+      "images": [
+        "sanity_offbrief_seed41.png",
+        "shot4_seed41.png",
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "sanity_offbrief_seed41.png",
+              "score": 0,
+              "raw": "REASON: This is a tropical beach scene, completely contradicting the post-apocalyptic zombie-survival brief.\nSCORE: 0"
+            },
+            {
+              "image": "shot4_seed41.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, painterly style, and a menacing shadow in a ruined setting.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed45.png",
+              "score": 88,
+              "raw": "REASON: It nails the painterly, atmospheric mood with strong chiaroscuro lighting and a menacing shadow, though the flare\u2019s red glow is slightly muted against the cool palette.\nSCORE: 88"
+            },
+            {
+              "image": "shot4_seed42.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, painterly style, and a menacing shadow in a ruined setting.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed43.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, tense composition, and painterly detail while keeping the mood moody and atmospheric.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed44.png",
+              "score": 92,
+              "raw": "REASON: It perfectly captures the brief\u2019s moody, painterly atmosphere with dramatic lighting, a menacing shadow, and rich detail, though the second survivor is partially obscured.\nSCORE: 92"
+            }
+          ],
+          "ranking": [
+            "shot4_seed41.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png",
+            "shot4_seed45.png",
+            "sanity_offbrief_seed41.png"
+          ],
+          "ties": 2,
+          "presented": [
+            "sanity_offbrief_seed41.png",
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "scores": [
+            {
+              "image": "sanity_offbrief_seed41.png",
+              "score": 0,
+              "raw": "REASON: This is a tropical beach scene, completely contradicting the post-apocalyptic, zombie-survival theme and mood of the brief.\nSCORE: 0"
+            },
+            {
+              "image": "shot4_seed41.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, painterly style, and a menacing shadow in a ruined setting.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed45.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with a menacing shadow, dramatic flare, and painterly RPG aesthetic.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed42.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, painterly style, and a menacing shadow in a ruined setting.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed43.png",
+              "score": 98,
+              "raw": "REASON: It perfectly executes the brief with dramatic lighting, tense composition, and painterly detail while keeping the mood moody and atmospheric.\nSCORE: 98"
+            },
+            {
+              "image": "shot4_seed44.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with a menacing shadow, burning flare, and painterly RPG aesthetic.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png",
+            "sanity_offbrief_seed41.png"
+          ],
+          "ties": 4,
+          "presented": [
+            "sanity_offbrief_seed41.png",
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "shot7",
+      "brief": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot7_seed44.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed41.png",
+        "shot7_seed45.png"
+      ],
+      "images": [
+        "shot7_seed45.png",
+        "shot7_seed41.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "shot7_seed45.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate amid ruined cityscape.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed41.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with clear silhouetted survivors heading toward a glowing safe haven.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed43.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate in a desolate, painterly wasteland.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed42.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with strong silhouettes, warm glow against cool ruins, and cinematic scale.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed44.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate amid a desolate, painterly ruin.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ],
+          "ties": 4,
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "scores": [
+            {
+              "image": "shot7_seed45.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate amid ruined cityscape.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed41.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with clear silhouetted survivors heading toward a glowing safe haven.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed43.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate in a desolate, painterly wasteland.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed42.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with strong silhouettes, warm glow against cool shadows, and a painterly, cinematic apocalypse aesthetic.\nSCORE: 98"
+            },
+            {
+              "image": "shot7_seed44.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s mood, composition, and lighting with silhouetted survivors moving toward a glowing gate against a desaturated ruin.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ],
+          "ties": 4,
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ]
+        }
+      ]
+    }
+  ]
+}

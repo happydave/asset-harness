@@ -1,0 +1,168 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "a",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "shot4",
+      "brief": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed41.png",
+        "shot4_seed44.png"
+      ],
+      "images": [
+        "sanity_offbrief_seed41.png",
+        "shot4_seed41.png",
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 4 best fulfills the brief with a clear, dramatic composition featuring two survivors, a burning red flare casting volumetric light, and a menacing shadow in the broken stairwell, all rendered in a painterly, cinematic style with strong contrast between warm and cool tones, while Candidate 1 is entirely unrelated, depicting a tropical beach scene.\nRANKING: 4,3,2,5,6,1",
+          "presented": [
+            "sanity_offbrief_seed41.png",
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ],
+          "ranking": [
+            "shot4_seed42.png",
+            "shot4_seed45.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png",
+            "sanity_offbrief_seed41.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 4 best fulfills the brief with a clear, dramatic composition featuring two survivors, a burning red flare casting volumetric light, and a menacing shadow in the broken stairwell, all rendered in a painterly, cinematic style with strong contrast between warm and cool tones, while Candidate 1 is entirely unrelated, depicting a tropical beach scene.\nRANKING: 4,3,2,5,6,1",
+          "presented": [
+            "sanity_offbrief_seed41.png",
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ],
+          "ranking": [
+            "shot4_seed42.png",
+            "shot4_seed45.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png",
+            "sanity_offbrief_seed41.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1 excels with a dynamic high-angle composition, dramatic volumetric lighting from the flare and lantern, and a menacing shadow that dominates the broken stairwell, perfectly capturing the brief\u2019s tense, cinematic atmosphere, while Candidate 6 is entirely unrelated, depicting a tropical beach scene with no thematic or visual connection to the post-apocalyptic brief.\nRANKING: 1,3,2,4,5,6",
+          "presented": [
+            "shot4_seed44.png",
+            "shot4_seed43.png",
+            "shot4_seed42.png",
+            "shot4_seed45.png",
+            "shot4_seed41.png",
+            "sanity_offbrief_seed41.png"
+          ],
+          "ranking": [
+            "shot4_seed44.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed45.png",
+            "shot4_seed41.png",
+            "sanity_offbrief_seed41.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "shot7",
+      "brief": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot7_seed44.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed41.png",
+        "shot7_seed45.png"
+      ],
+      "images": [
+        "shot7_seed45.png",
+        "shot7_seed41.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 2 best balances dramatic volumetric lighting, clear composition, and emotional resonance with the glowing gate as a focal point, while Candidate 5 suffers from a cluttered foreground and less defined survivors, weakening the narrative clarity.\nRANKING: 2,4,1,3,5",
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ],
+          "ranking": [
+            "shot7_seed41.png",
+            "shot7_seed42.png",
+            "shot7_seed45.png",
+            "shot7_seed43.png",
+            "shot7_seed44.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 2 best balances dramatic volumetric lighting, clear composition, and emotional resonance with the glowing gate as a focal point, while Candidate 5 suffers from a cluttered foreground and less defined survivors, weakening the narrative clarity.\nRANKING: 2,4,1,3,5",
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ],
+          "ranking": [
+            "shot7_seed41.png",
+            "shot7_seed42.png",
+            "shot7_seed45.png",
+            "shot7_seed43.png",
+            "shot7_seed44.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 2 best balances dramatic volumetric lighting, a clear path to the glowing gate, and strong composition, while Candidate 5 suffers from overly bright sun and less defined survivors, weakening the mood and clarity.\nRANKING: 2,4,1,3,5",
+          "presented": [
+            "shot7_seed44.png",
+            "shot7_seed42.png",
+            "shot7_seed43.png",
+            "shot7_seed41.png",
+            "shot7_seed45.png"
+          ],
+          "ranking": [
+            "shot7_seed42.png",
+            "shot7_seed41.png",
+            "shot7_seed44.png",
+            "shot7_seed43.png",
+            "shot7_seed45.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "a",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "shot4",
+      "brief": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed41.png",
+        "shot4_seed44.png"
+      ],
+      "images": [
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed41.png",
+        "shot4_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 1\u2019s balanced composition, clear threat framing, and painterly lighting best embody the brief\u2019s cinematic tension and atmospheric depth.\nRANKING: 1,2,4,3,5",
+          "presented": [
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed41.png",
+            "shot4_seed44.png"
+          ],
+          "ranking": [
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1\u2019s dynamic composition and painterly style best embody the brief\u2019s cinematic, atmospheric, and tense mood.\nRANKING: 1,2,3,4,5",
+          "presented": [
+            "shot4_seed44.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed42.png",
+            "shot4_seed45.png"
+          ],
+          "ranking": [
+            "shot4_seed44.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed42.png",
+            "shot4_seed45.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "shot7",
+      "brief": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot7_seed44.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed41.png",
+        "shot7_seed45.png"
+      ],
+      "images": [
+        "shot7_seed44.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed41.png",
+        "shot7_seed45.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 1\u2019s strongest composition and atmospheric lighting best embody the brief\u2019s cinematic, painterly, and hopeful tone.\nRANKING: 1,4,5,2,3",
+          "presented": [
+            "shot7_seed44.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed41.png",
+            "shot7_seed45.png"
+          ],
+          "ranking": [
+            "shot7_seed44.png",
+            "shot7_seed41.png",
+            "shot7_seed45.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1\u2019s strongest composition and lighting perfectly embody the brief\u2019s cinematic, painterly, and emotionally resonant vision.\nRANKING: 1,2,3,4,5",
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed42.png",
+            "shot7_seed43.png",
+            "shot7_seed44.png"
+          ],
+          "ranking": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed42.png",
+            "shot7_seed43.png",
+            "shot7_seed44.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    }
+  ]
+}

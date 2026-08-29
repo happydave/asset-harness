@@ -1,0 +1,349 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "b",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "hero",
+      "brief": "a very wide establishing shot of a small ranch homestead at dusk on a vast open plain, warm lit windows and a single porch lantern holding light against the deep blue-black land and sky, first stars, distant low hills, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "hero_s202.png",
+      "images": [
+        "hero_s101.png",
+        "hero_s303.png",
+        "hero_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 2 best captures the cinematic, moody atmosphere with rich color grading, balanced composition, and clear volumetric lighting, while Candidate 3 feels too flat and distant, and Candidate 1 lacks the warmth and detail in the foreground.  \nRANKING: 2,1,3",
+          "presented": [
+            "hero_s101.png",
+            "hero_s303.png",
+            "hero_s202.png"
+          ],
+          "ranking": [
+            "hero_s303.png",
+            "hero_s101.png",
+            "hero_s202.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 2 best captures the cinematic, moody atmosphere with balanced composition, rich detail, and a strong contrast between the warm lantern light and the deep blue-black dusk, while Candidate 3 feels too distant and lacks the intimate, inviting glow emphasized in the brief.  \nRANKING: 2,1,3",
+          "presented": [
+            "hero_s101.png",
+            "hero_s303.png",
+            "hero_s202.png"
+          ],
+          "ranking": [
+            "hero_s303.png",
+            "hero_s101.png",
+            "hero_s202.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 2 best captures the cinematic, moody atmosphere with rich detail, balanced composition, and a strong contrast between the warm lantern light and deep blue dusk, while Candidate 3 feels too dark and isolated, losing the \"vast open plain\" sense and introducing a distracting, ambiguous figure near the house.  \nRANKING: 2,1,3",
+          "presented": [
+            "hero_s202.png",
+            "hero_s303.png",
+            "hero_s101.png"
+          ],
+          "ranking": [
+            "hero_s303.png",
+            "hero_s202.png",
+            "hero_s101.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "lab",
+      "brief": "a night workshop interior, a wheeled garden robot chassis partly assembled on a workbench under a single warm work lamp, neat tools and an oscilloscope glow, deep blue shadow beyond the lamplight, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "lab_s101.png",
+      "images": [
+        "lab_s303.png",
+        "lab_s101.png",
+        "lab_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s cinematic, moody atmosphere with rich detail, volumetric haze, and a compelling composition centered on the partly assembled robot chassis under warm lantern light, while Candidates 1 and 3 introduce distracting elements (a fully assembled robot and a silhouetted figure, respectively) that deviate from the focus on the assembly process.  \nRANKING: 2,1,3",
+          "presented": [
+            "lab_s303.png",
+            "lab_s101.png",
+            "lab_s202.png"
+          ],
+          "ranking": [
+            "lab_s101.png",
+            "lab_s303.png",
+            "lab_s202.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s cinematic, moody atmosphere with rich lighting, volumetric haze, and a focused, methodical composition centered on the robot chassis, while Candidate 1 is too clean and lacks depth, and Candidate 3 introduces a distracting human figure that shifts focus from the workshop\u2019s technical essence.  \nRANKING: 2,3,1",
+          "presented": [
+            "lab_s303.png",
+            "lab_s101.png",
+            "lab_s202.png"
+          ],
+          "ranking": [
+            "lab_s101.png",
+            "lab_s202.png",
+            "lab_s303.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s moody, cinematic atmosphere with rich detail, balanced lighting, and a clear focus on the partly assembled robot chassis under warm lantern light, while Candidate 3 feels too clean and lacks atmospheric haze and depth, and Candidate 1 introduces a distracting human figure that shifts focus from the robot and tools.  \nRANKING: 2,3,1",
+          "presented": [
+            "lab_s202.png",
+            "lab_s101.png",
+            "lab_s303.png"
+          ],
+          "ranking": [
+            "lab_s101.png",
+            "lab_s303.png",
+            "lab_s202.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "ranch",
+      "brief": "a homestead pantry at dusk, wooden shelves of glass jars of preserved and freeze-dried food glowing warm in lantern light, braided herbs hanging, deep blue evening light through a small window, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ranch_s303.png",
+      "images": [
+        "ranch_s101.png",
+        "ranch_s303.png",
+        "ranch_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 1 best captures the brief\u2019s cinematic mood with strong contrast between warm lantern light and deep blue dusk, clear composition, and rich detail, while Candidate 3 feels overly cluttered and less atmospheric due to excessive glowing jars and a distracting moonlit window, and Candidate 2, though atmospheric, lacks the visual focus and depth of the others.\nRANKING: 1,2,3",
+          "presented": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ],
+          "ranking": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 1 best captures the brief\u2019s cinematic mood with strong contrast between warm lantern light and deep blue dusk, clear composition, and rich detail, while Candidate 3 feels overly cluttered and less atmospheric due to excessive glowing jars and a distracting moonlit window, and Candidate 2, though atmospheric, lacks the visual focus and depth of the others.\nRANKING: 1,2,3",
+          "presented": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ],
+          "ranking": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1 best captures the cinematic, moody atmosphere with strong contrast between the warm lantern glow and deep blue dusk, rich detail, and a clear, balanced composition that immediately conveys the homestead pantry concept, while Candidate 3 feels more cramped and less atmospheric, and Candidate 2 lacks the dramatic lighting and visual impact.\nRANKING: 1,3,2",
+          "presented": [
+            "ranch_s202.png",
+            "ranch_s303.png",
+            "ranch_s101.png"
+          ],
+          "ranking": [
+            "ranch_s202.png",
+            "ranch_s101.png",
+            "ranch_s303.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "ai",
+      "brief": "a quiet dark study at night, a warm glowing computer terminal on a wooden desk beside a mug of tea and an open notebook of sketches, companionable and calm, deep blue shadow around the desk lamp pool, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ai_s101.png",
+      "images": [
+        "ai_s202.png",
+        "ai_s303.png",
+        "ai_s101.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s cinematic, moody atmosphere with a clear, balanced composition and a coherent \"computer terminal\" (reimagined as a retro device with a lamp), while Candidate 3\u2019s TV-laptop hybrid is distracting and less faithful to the requested \"computer terminal\" concept.  \nRANKING: 2,1,3",
+          "presented": [
+            "ai_s202.png",
+            "ai_s303.png",
+            "ai_s101.png"
+          ],
+          "ranking": [
+            "ai_s303.png",
+            "ai_s202.png",
+            "ai_s101.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s cinematic, moody atmosphere with a clear, balanced composition and a coherent \"computer terminal\" (reimagined as a retro device with a lamp), while Candidate 3\u2019s TV-laptop hybrid is distracting and less faithful to the requested \"computer terminal\" concept.  \nRANKING: 2,1,3",
+          "presented": [
+            "ai_s202.png",
+            "ai_s303.png",
+            "ai_s101.png"
+          ],
+          "ranking": [
+            "ai_s303.png",
+            "ai_s202.png",
+            "ai_s101.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1 best captures the cinematic, moody atmosphere with a clear, balanced composition and a coherent \"computer terminal\" (retro monitor) that aligns with the brief, while Candidates 2 and 3 feature ambiguous or non-computer devices (like a heater or toaster) that misrepresent the core element of a glowing terminal.\nRANKING: 1,2,3",
+          "presented": [
+            "ai_s101.png",
+            "ai_s303.png",
+            "ai_s202.png"
+          ],
+          "ranking": [
+            "ai_s101.png",
+            "ai_s303.png",
+            "ai_s202.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "readiness",
+      "brief": "an organized storm room by lamplight, a well-packed field medical kit open on a table, labeled water containers and a hand-crank radio on shelves, calm competence, warm lamp against deep blue dark, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "readiness_s101.png",
+      "images": [
+        "readiness_s202.png",
+        "readiness_s101.png",
+        "readiness_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s calm, methodical mood with strong composition, clear focus on the medical kit, balanced lighting, and rich atmospheric detail, while Candidates 1 and 3 suffer from cluttered foregrounds or less cohesive lighting and object placement.  \nRANKING: 2,3,1",
+          "presented": [
+            "readiness_s202.png",
+            "readiness_s101.png",
+            "readiness_s303.png"
+          ],
+          "ranking": [
+            "readiness_s101.png",
+            "readiness_s303.png",
+            "readiness_s202.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 2 best captures the brief\u2019s calm, methodical mood with strong composition, clear focus on the medical kit, balanced lighting, and rich atmospheric detail, while Candidates 1 and 3 suffer from cluttered foregrounds or less cohesive lighting and object placement.  \nRANKING: 2,3,1",
+          "presented": [
+            "readiness_s202.png",
+            "readiness_s101.png",
+            "readiness_s303.png"
+          ],
+          "ranking": [
+            "readiness_s101.png",
+            "readiness_s303.png",
+            "readiness_s202.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1 best captures the brief\u2019s cinematic, moody atmosphere with a strong focal point on the lantern and medical kit, balanced composition, and clear, readable details, while Candidate 3 feels cluttered and less organized, undermining the \"calm competence\" mood.  \nRANKING: 1,2,3",
+          "presented": [
+            "readiness_s303.png",
+            "readiness_s101.png",
+            "readiness_s202.png"
+          ],
+          "ranking": [
+            "readiness_s303.png",
+            "readiness_s101.png",
+            "readiness_s202.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    },
+    {
+      "group": "games",
+      "brief": "a worn wooden table by lamplight with hand-carved game pieces and dice mid-game and two enamel mugs, warm amber lamp pool against deep blue shadow, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "games_s101.png",
+      "images": [
+        "games_s202.png",
+        "games_s101.png",
+        "games_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "raw": "REASON: Candidate 1 best captures the brief\u2019s moody, cinematic atmosphere with a strong central light source, clear composition, and rich detail, while Candidate 3 introduces distracting elements like scattered papers and leaves that disrupt the focused, intimate game scene.  \nRANKING: 1,3,2",
+          "presented": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ],
+          "ranking": [
+            "games_s202.png",
+            "games_s303.png",
+            "games_s101.png"
+          ]
+        },
+        {
+          "kind": "forward",
+          "run": 1,
+          "raw": "REASON: Candidate 1 best captures the brief\u2019s moody, cinematic atmosphere with a strong central light source, clear composition, and rich detail, while Candidate 3 introduces distracting elements like scattered papers and leaves that disrupt the focused, intimate game scene.  \nRANKING: 1,3,2",
+          "presented": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ],
+          "ranking": [
+            "games_s202.png",
+            "games_s303.png",
+            "games_s101.png"
+          ]
+        },
+        {
+          "raw": "REASON: Candidate 1 best captures the cinematic, moody atmosphere with a strong focal point from the lantern, richly detailed game board, and balanced composition, while Candidate 3 feels cluttered and lacks a clear visual hierarchy, and Candidate 2 is overly symmetrical and less atmospheric.\nRANKING: 1,3,2",
+          "presented": [
+            "games_s303.png",
+            "games_s101.png",
+            "games_s202.png"
+          ],
+          "ranking": [
+            "games_s303.png",
+            "games_s202.png",
+            "games_s101.png"
+          ],
+          "kind": "reversed"
+        }
+      ]
+    }
+  ]
+}

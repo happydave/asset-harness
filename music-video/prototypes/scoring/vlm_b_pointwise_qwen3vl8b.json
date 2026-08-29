@@ -1,0 +1,278 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "b",
+  "mode": "pointwise",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "hero",
+      "brief": "a very wide establishing shot of a small ranch homestead at dusk on a vast open plain, warm lit windows and a single porch lantern holding light against the deep blue-black land and sky, first stars, distant low hills, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "hero_s202.png",
+      "images": [
+        "hero_s101.png",
+        "hero_s303.png",
+        "hero_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "hero_s101.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic dusk atmosphere with warm interior light contrasting against the deep blue-black landscape and distant hills.\nSCORE: 98"
+            },
+            {
+              "image": "hero_s303.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s cinematic, moody atmosphere with warm interior light contrasting against the deep twilight sky and vast plain.\nSCORE: 98"
+            },
+            {
+              "image": "hero_s202.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic ranch homestead at dusk with warm lights against a deep blue sky, rich detail, and calm atmosphere as requested.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "hero_s101.png",
+            "hero_s303.png",
+            "hero_s202.png"
+          ],
+          "ties": 2,
+          "presented": [
+            "hero_s101.png",
+            "hero_s303.png",
+            "hero_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "lab",
+      "brief": "a night workshop interior, a wheeled garden robot chassis partly assembled on a workbench under a single warm work lamp, neat tools and an oscilloscope glow, deep blue shadow beyond the lamplight, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "lab_s101.png",
+      "images": [
+        "lab_s303.png",
+        "lab_s101.png",
+        "lab_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "lab_s303.png",
+              "score": 95,
+              "raw": "REASON: It perfectly captures the moody, cinematic workshop scene with warm lamplight against deep blue shadows and richly detailed tech elements.\nSCORE: 95"
+            },
+            {
+              "image": "lab_s101.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic workshop scene with warm lantern light against deep blue shadows, rich details, and a calm, methodical atmosphere.\nSCORE: 98"
+            },
+            {
+              "image": "lab_s202.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic workshop scene with warm lamplight against deep blue dusk, rich details, and a calm, curious atmosphere as requested.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "lab_s101.png",
+            "lab_s202.png",
+            "lab_s303.png"
+          ],
+          "ties": 1,
+          "presented": [
+            "lab_s303.png",
+            "lab_s101.png",
+            "lab_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "ranch",
+      "brief": "a homestead pantry at dusk, wooden shelves of glass jars of preserved and freeze-dried food glowing warm in lantern light, braided herbs hanging, deep blue evening light through a small window, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ranch_s303.png",
+      "images": [
+        "ranch_s101.png",
+        "ranch_s303.png",
+        "ranch_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "ranch_s101.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic pantry at dusk with warm lantern light against deep blue, rich details, and calm atmosphere as requested.\nSCORE: 98"
+            },
+            {
+              "image": "ranch_s303.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s moody, cinematic atmosphere with warm lantern light contrasting deep blue dusk, rich details, and calm composition.\nSCORE: 98"
+            },
+            {
+              "image": "ranch_s202.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the brief\u2019s moody, cinematic atmosphere with warm lantern light against deep blue dusk, rich details, and a calm, curated composition.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ],
+          "ties": 2,
+          "presented": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "ai",
+      "brief": "a quiet dark study at night, a warm glowing computer terminal on a wooden desk beside a mug of tea and an open notebook of sketches, companionable and calm, deep blue shadow around the desk lamp pool, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ai_s101.png",
+      "images": [
+        "ai_s202.png",
+        "ai_s303.png",
+        "ai_s101.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "ai_s202.png",
+              "score": 60,
+              "raw": "REASON: The image captures the moody, cinematic atmosphere and warm light against deep blue shadows but misrepresents the terminal as a toaster, breaking core narrative intent.\nSCORE: 60"
+            },
+            {
+              "image": "ai_s303.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic warmth against deep blue night with clear, calm composition and no distracting flaws.\nSCORE: 98"
+            },
+            {
+              "image": "ai_s101.png",
+              "score": 95,
+              "raw": "REASON: It perfectly captures the moody, cinematic atmosphere with warm lantern light against deep blue dusk, rich details, and calm composition.\nSCORE: 95"
+            }
+          ],
+          "ranking": [
+            "ai_s303.png",
+            "ai_s101.png",
+            "ai_s202.png"
+          ],
+          "ties": 0,
+          "presented": [
+            "ai_s202.png",
+            "ai_s303.png",
+            "ai_s101.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "readiness",
+      "brief": "an organized storm room by lamplight, a well-packed field medical kit open on a table, labeled water containers and a hand-crank radio on shelves, calm competence, warm lamp against deep blue dark, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "readiness_s101.png",
+      "images": [
+        "readiness_s202.png",
+        "readiness_s101.png",
+        "readiness_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "readiness_s202.png",
+              "score": 95,
+              "raw": "REASON: It perfectly captures the brief\u2019s moody, cinematic atmosphere with warm lantern light against deep blue dusk, richly detailed gear, and calm competence.\nSCORE: 95"
+            },
+            {
+              "image": "readiness_s101.png",
+              "score": 98,
+              "raw": "REASON: It perfectly embodies the brief\u2019s moody, cinematic atmosphere with warm lantern light against deep blue dusk, richly detailed gear, and calm competence.\nSCORE: 98"
+            },
+            {
+              "image": "readiness_s303.png",
+              "score": 95,
+              "raw": "REASON: It perfectly captures the brief\u2019s moody, cinematic atmosphere with warm lantern light against deep blue dusk, richly detailed gear, and calm competence.\nSCORE: 95"
+            }
+          ],
+          "ranking": [
+            "readiness_s101.png",
+            "readiness_s202.png",
+            "readiness_s303.png"
+          ],
+          "ties": 1,
+          "presented": [
+            "readiness_s202.png",
+            "readiness_s101.png",
+            "readiness_s303.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "games",
+      "brief": "a worn wooden table by lamplight with hand-carved game pieces and dice mid-game and two enamel mugs, warm amber lamp pool against deep blue shadow, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "games_s101.png",
+      "images": [
+        "games_s202.png",
+        "games_s101.png",
+        "games_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "forward",
+          "run": 0,
+          "scores": [
+            {
+              "image": "games_s202.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic atmosphere with warm lantern light against deep blue shadows, rich details, and a calm, immersive composition.\nSCORE: 98"
+            },
+            {
+              "image": "games_s101.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic atmosphere with warm lantern light against deep blue dusk, rich details, and a calm, immersive composition.\nSCORE: 98"
+            },
+            {
+              "image": "games_s303.png",
+              "score": 98,
+              "raw": "REASON: It perfectly captures the moody, cinematic atmosphere with warm lantern light against deep blue shadows, rich details, and a calm, immersive composition.\nSCORE: 98"
+            }
+          ],
+          "ranking": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ],
+          "ties": 2,
+          "presented": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ]
+        }
+      ]
+    }
+  ]
+}

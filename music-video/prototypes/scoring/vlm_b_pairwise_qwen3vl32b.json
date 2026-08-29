@@ -1,0 +1,440 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "b",
+  "mode": "pairwise",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "hero",
+      "brief": "a very wide establishing shot of a small ranch homestead at dusk on a vast open plain, warm lit windows and a single porch lantern holding light against the deep blue-black land and sky, first stars, distant low hills, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "hero_s202.png",
+      "images": [
+        "hero_s101.png",
+        "hero_s303.png",
+        "hero_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "hero_s101.png": 0,
+            "hero_s303.png": 2,
+            "hero_s202.png": 1
+          },
+          "ranking": [
+            "hero_s303.png",
+            "hero_s202.png",
+            "hero_s101.png"
+          ],
+          "pairs": 3,
+          "order_flips": 0,
+          "flip_rate": 0.0,
+          "matches": [
+            {
+              "left": "hero_s101.png",
+              "right": "hero_s303.png",
+              "winner": "hero_s303.png",
+              "raw": "REASON: Image 2 better captures the cinematic, moody atmosphere with richer color grading, more defined volumetric haze, and a stronger sense of depth and scale, while Image 1 feels flatter and less immersive despite its strong lighting.  \nWINNER: 2"
+            },
+            {
+              "left": "hero_s303.png",
+              "right": "hero_s101.png",
+              "winner": "hero_s303.png",
+              "raw": "REASON: Image 1 better captures the cinematic, wide establishing shot with balanced composition, rich atmospheric lighting, and a clear focal point, while Image 2 feels more isolated and less expansive, with a slightly unnatural fog and a distracting animal near the porch.  \nWINNER: 1"
+            },
+            {
+              "left": "hero_s101.png",
+              "right": "hero_s202.png",
+              "winner": "hero_s202.png",
+              "raw": "REASON: Image 2 better captures the cinematic, moody atmosphere with stronger volumetric lighting and a more balanced composition, while Image 1\u2019s foreground is overly dark and lacks the rich atmospheric haze and warm glow described in the brief.  \nWINNER: 2"
+            },
+            {
+              "left": "hero_s202.png",
+              "right": "hero_s101.png",
+              "winner": "hero_s202.png",
+              "raw": "REASON: Image 1 delivers a more balanced, cinematic composition with a stronger sense of vastness and atmospheric depth, while Image 2 feels slightly cramped and less immersive due to the closer framing and uneven lighting on the house.  \nWINNER: 1"
+            },
+            {
+              "left": "hero_s303.png",
+              "right": "hero_s202.png",
+              "winner": "hero_s303.png",
+              "raw": "REASON: Image 1 offers richer atmospheric detail, a more defined homestead with visible porch lantern and warm window glows, and a stronger sense of depth with foreground elements and distant hills, while Image 2 is flatter and less detailed, with a less distinct lantern and weaker volumetric lighting.  \nWINNER: 1"
+            },
+            {
+              "left": "hero_s202.png",
+              "right": "hero_s303.png",
+              "winner": "hero_s303.png",
+              "raw": "REASON: Image 2 offers richer atmospheric detail, more pronounced volumetric lighting, and a stronger sense of depth with visible fencing and terrain, while Image 1 feels flatter and less immersive despite its clean composition.  \nWINNER: 2"
+            }
+          ],
+          "presented": [
+            "hero_s101.png",
+            "hero_s303.png",
+            "hero_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "lab",
+      "brief": "a night workshop interior, a wheeled garden robot chassis partly assembled on a workbench under a single warm work lamp, neat tools and an oscilloscope glow, deep blue shadow beyond the lamplight, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "lab_s101.png",
+      "images": [
+        "lab_s303.png",
+        "lab_s101.png",
+        "lab_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "lab_s303.png": 0,
+            "lab_s101.png": 2,
+            "lab_s202.png": 1
+          },
+          "ranking": [
+            "lab_s101.png",
+            "lab_s202.png",
+            "lab_s303.png"
+          ],
+          "pairs": 3,
+          "order_flips": 0,
+          "flip_rate": 0.0,
+          "matches": [
+            {
+              "left": "lab_s303.png",
+              "right": "lab_s101.png",
+              "winner": "lab_s101.png",
+              "raw": "REASON: Image 2 better captures the \"partly assembled\" chassis and cinematic moody atmosphere with richer volumetric haze and a more authentic lantern glow, while Image 1 presents a fully assembled robot, misaligning with the brief\u2019s focus on assembly.  \nWINNER: 2"
+            },
+            {
+              "left": "lab_s101.png",
+              "right": "lab_s303.png",
+              "winner": "lab_s101.png",
+              "raw": "REASON: Image 1 better captures the brief\u2019s moody, cinematic atmosphere with rich detail, volumetric haze, and a compelling interplay of warm amber light against deep blue shadows, while Image 2 feels flatter and less immersive with a more generic workshop setup and less atmospheric depth.  \nWINNER: 1"
+            },
+            {
+              "left": "lab_s303.png",
+              "right": "lab_s202.png",
+              "winner": "lab_s202.png",
+              "raw": "REASON: Image 2 better captures the \"partly assembled\" robot chassis and the \"calm curious methodical mood\" with a silhouetted figure, while Image 1 presents a fully assembled robot, misaligning with the brief\u2019s focus on assembly and workshop process.  \nWINNER: 2"
+            },
+            {
+              "left": "lab_s202.png",
+              "right": "lab_s303.png",
+              "winner": "lab_s202.png",
+              "raw": "REASON: Image 1 better captures the brief\u2019s cinematic mood and atmospheric depth with a compelling silhouette figure, rich volumetric haze, and a more dynamic composition, while Image 2 feels more sterile and lacks the human element and environmental storytelling.  \nWINNER: 1"
+            },
+            {
+              "left": "lab_s101.png",
+              "right": "lab_s202.png",
+              "winner": "lab_s101.png",
+              "raw": "REASON: Image 1 excels in atmospheric lighting and composition, with a clear focus on the robot chassis under warm lamplight, while Image 2 introduces a distracting, ambiguous figure and a less cohesive scene that dilutes the moody, methodical workshop focus.  \nWINNER: 1"
+            },
+            {
+              "left": "lab_s202.png",
+              "right": "lab_s101.png",
+              "winner": "lab_s101.png",
+              "raw": "REASON: Image 2 better centers the robot chassis as the focal point with tighter composition, clearer tool arrangement, and more authentic lantern lighting, while Image 1 introduces a distracting, ambiguous figure and less coherent background.  \nWINNER: 2"
+            }
+          ],
+          "presented": [
+            "lab_s303.png",
+            "lab_s101.png",
+            "lab_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "ranch",
+      "brief": "a homestead pantry at dusk, wooden shelves of glass jars of preserved and freeze-dried food glowing warm in lantern light, braided herbs hanging, deep blue evening light through a small window, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ranch_s303.png",
+      "images": [
+        "ranch_s101.png",
+        "ranch_s303.png",
+        "ranch_s202.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "ranch_s101.png": 1.0,
+            "ranch_s303.png": 1.0,
+            "ranch_s202.png": 1.0
+          },
+          "ranking": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ],
+          "pairs": 3,
+          "order_flips": 3,
+          "flip_rate": 1.0,
+          "matches": [
+            {
+              "left": "ranch_s101.png",
+              "right": "ranch_s303.png",
+              "winner": "ranch_s101.png",
+              "raw": "REASON: Image 1 offers a more focused, intimate composition with stronger contrast between the warm lantern glow and deep blue dusk, while Image 2\u2019s wider view dilutes the mood with a cluttered foreground and less defined lighting.  \nWINNER: 1"
+            },
+            {
+              "left": "ranch_s303.png",
+              "right": "ranch_s101.png",
+              "winner": "ranch_s303.png",
+              "raw": "REASON: Image 1 excels in composition and atmospheric lighting, with a strong focal point on the lantern and a balanced, cinematic depth that clearly conveys the brief\u2019s mood and details, while Image 2 feels slightly cluttered and less cohesive, with uneven lighting and a less defined visual hierarchy.  \nWINNER: 1"
+            },
+            {
+              "left": "ranch_s101.png",
+              "right": "ranch_s202.png",
+              "winner": "ranch_s101.png",
+              "raw": "REASON: Image 1 excels in focused composition and lighting, with a clear lantern-centric glow and richly detailed jars that read instantly, while Image 2\u2019s wider perspective dilutes the intimate mood and introduces distracting background elements.  \nWINNER: 1"
+            },
+            {
+              "left": "ranch_s202.png",
+              "right": "ranch_s101.png",
+              "winner": "ranch_s202.png",
+              "raw": "REASON: Image 1 offers a more balanced composition with a clear focal point, richer atmospheric depth, and stronger contrast between the warm lantern light and the deep blue dusk, while Image 2 feels slightly cramped and less cinematic due to tighter framing and reduced environmental context.  \nWINNER: 1"
+            },
+            {
+              "left": "ranch_s303.png",
+              "right": "ranch_s202.png",
+              "winner": "ranch_s303.png",
+              "raw": "REASON: Image 1 excels in composition and atmospheric lighting, with a strong focal point on the lantern and a balanced, cinematic depth that enhances the moody, calm mood, while Image 2 feels slightly cluttered and less focused, with the moonlit window distracting from the pantry\u2019s intimate glow.  \nWINNER: 1"
+            },
+            {
+              "left": "ranch_s202.png",
+              "right": "ranch_s303.png",
+              "winner": "ranch_s202.png",
+              "raw": "REASON: Image 1 delivers a more immersive, cinematic composition with stronger contrast between the warm lantern glow and deep blue dusk, while Image 2 feels more static and less atmospheric due to a flatter lighting setup and less dynamic framing.  \nWINNER: 1"
+            }
+          ],
+          "presented": [
+            "ranch_s101.png",
+            "ranch_s303.png",
+            "ranch_s202.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "ai",
+      "brief": "a quiet dark study at night, a warm glowing computer terminal on a wooden desk beside a mug of tea and an open notebook of sketches, companionable and calm, deep blue shadow around the desk lamp pool, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "ai_s101.png",
+      "images": [
+        "ai_s202.png",
+        "ai_s303.png",
+        "ai_s101.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "ai_s202.png": 0,
+            "ai_s303.png": 1.5,
+            "ai_s101.png": 1.5
+          },
+          "ranking": [
+            "ai_s303.png",
+            "ai_s101.png",
+            "ai_s202.png"
+          ],
+          "pairs": 3,
+          "order_flips": 1,
+          "flip_rate": 0.333,
+          "matches": [
+            {
+              "left": "ai_s202.png",
+              "right": "ai_s303.png",
+              "winner": "ai_s303.png",
+              "raw": "REASON: Image 2 better fulfills the brief with a clearer, more focused composition, authentic sketchbook content, and a cohesive cinematic atmosphere, while Image 1 includes a confusing, out-of-place toaster-like object that breaks immersion.  \nWINNER: 2"
+            },
+            {
+              "left": "ai_s303.png",
+              "right": "ai_s202.png",
+              "winner": "ai_s303.png",
+              "raw": "REASON: Image 1 presents a cleaner, more focused composition with a clear focal point on the lamp, mug, and sketchbook, while Image 2 introduces visual clutter with scattered papers and an awkwardly positioned lamp arm that disrupts the calm, methodical mood.  \nWINNER: 1"
+            },
+            {
+              "left": "ai_s202.png",
+              "right": "ai_s101.png",
+              "winner": "ai_s101.png",
+              "raw": "REASON: Image 2 better fulfills the brief with a more accurate \"computer terminal\" (laptop with glowing screen) and stronger atmospheric depth, while Image 1 misrepresents the terminal as a toaster-like device, breaking the intended concept.  \nWINNER: 2"
+            },
+            {
+              "left": "ai_s101.png",
+              "right": "ai_s202.png",
+              "winner": "ai_s101.png",
+              "raw": "REASON: Image 1 better fulfills the brief with a clear, cinematic composition featuring a glowing terminal, warm amber light, and rich atmospheric depth, while Image 2 misrepresents the terminal as a toaster-like device, breaking the intended concept.  \nWINNER: 1"
+            },
+            {
+              "left": "ai_s303.png",
+              "right": "ai_s101.png",
+              "winner": "ai_s303.png",
+              "raw": "REASON: Image 1 better captures the brief\u2019s \"warm glowing computer terminal\" with a clear, modern terminal-lamp hybrid, while Image 2\u2019s retro TV-laptop hybrid is conceptually ambiguous and less aligned with the requested \"computer terminal\" and \"cinematic concept art\" mood.  \nWINNER: 1"
+            },
+            {
+              "left": "ai_s101.png",
+              "right": "ai_s303.png",
+              "winner": "ai_s101.png",
+              "raw": "REASON: Image 1 better fulfills the brief with a clear, cinematic composition featuring a glowing terminal, warm amber light, and deep blue shadows, while Image 2 replaces the terminal with a heater, breaking the core concept and reducing thematic coherence.  \nWINNER: 1"
+            }
+          ],
+          "presented": [
+            "ai_s202.png",
+            "ai_s303.png",
+            "ai_s101.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "readiness",
+      "brief": "an organized storm room by lamplight, a well-packed field medical kit open on a table, labeled water containers and a hand-crank radio on shelves, calm competence, warm lamp against deep blue dark, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "readiness_s101.png",
+      "images": [
+        "readiness_s202.png",
+        "readiness_s101.png",
+        "readiness_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "readiness_s202.png": 0,
+            "readiness_s101.png": 1.5,
+            "readiness_s303.png": 1.5
+          },
+          "ranking": [
+            "readiness_s101.png",
+            "readiness_s303.png",
+            "readiness_s202.png"
+          ],
+          "pairs": 3,
+          "order_flips": 1,
+          "flip_rate": 0.333,
+          "matches": [
+            {
+              "left": "readiness_s202.png",
+              "right": "readiness_s101.png",
+              "winner": "readiness_s101.png",
+              "raw": "REASON: Image 2 better centers the open medical kit as the focal point, with clearer labeling and more balanced composition, while Image 1\u2019s cluttered foreground and less defined kit reduce clarity and visual hierarchy.  \nWINNER: 2"
+            },
+            {
+              "left": "readiness_s101.png",
+              "right": "readiness_s202.png",
+              "winner": "readiness_s101.png",
+              "raw": "REASON: Image 1 better fulfills the brief with a clearer, more organized composition, stronger focal point on the open medical kit, and more balanced lighting that enhances the calm, methodical mood, while Image 2 feels cluttered and less cohesive with a less distinct central subject.  \nWINNER: 1"
+            },
+            {
+              "left": "readiness_s202.png",
+              "right": "readiness_s303.png",
+              "winner": "readiness_s303.png",
+              "raw": "REASON: Image 2 better centers the lantern as the primary light source with a clearer, more focused composition, while Image 1 has a more cluttered foreground and less coherent arrangement of objects, reducing immediate readability.  \nWINNER: 2"
+            },
+            {
+              "left": "readiness_s303.png",
+              "right": "readiness_s202.png",
+              "winner": "readiness_s303.png",
+              "raw": "REASON: Image 1 better fulfills the brief with a clearer, more focused composition centered on the open medical kit and warm lantern light, while Image 2 feels cluttered and less methodical, with distracting foreground items and less coherent organization.  \nWINNER: 1"
+            },
+            {
+              "left": "readiness_s101.png",
+              "right": "readiness_s303.png",
+              "winner": "readiness_s101.png",
+              "raw": "REASON: Image 1 better balances composition and lighting, with a stronger focal point on the open medical kit and more dynamic use of warm lamplight against deep blue shadows, while Image 2 feels slightly cluttered and the lantern\u2019s glow is less impactful.  \nWINNER: 1"
+            },
+            {
+              "left": "readiness_s303.png",
+              "right": "readiness_s101.png",
+              "winner": "readiness_s303.png",
+              "raw": "REASON: Image 1 excels in atmospheric lighting and composition, with a strong focal point on the lantern and medical kit, while Image 2 feels cluttered and less cohesive, with competing light sources and a less defined mood.  \nWINNER: 1"
+            }
+          ],
+          "presented": [
+            "readiness_s202.png",
+            "readiness_s101.png",
+            "readiness_s303.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "games",
+      "brief": "a worn wooden table by lamplight with hand-carved game pieces and dice mid-game and two enamel mugs, warm amber lamp pool against deep blue shadow, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+      "use_case": "a section cover image on a personal website with a dark 'after dark' theme, seen at the top of that section",
+      "owner_pick": "games_s101.png",
+      "images": [
+        "games_s202.png",
+        "games_s101.png",
+        "games_s303.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "games_s202.png": 1.0,
+            "games_s101.png": 1.0,
+            "games_s303.png": 1.0
+          },
+          "ranking": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ],
+          "pairs": 3,
+          "order_flips": 3,
+          "flip_rate": 1.0,
+          "matches": [
+            {
+              "left": "games_s202.png",
+              "right": "games_s101.png",
+              "winner": "games_s202.png",
+              "raw": "REASON: Image 1 has a stronger focal point with a single lantern casting a dramatic, cinematic glow, while Image 2\u2019s dual lanterns create visual clutter and dilute the mood; Image 1 also better conveys the \"mid-game\" narrative with more dynamic piece placement.  \nWINNER: 1"
+            },
+            {
+              "left": "games_s101.png",
+              "right": "games_s202.png",
+              "winner": "games_s101.png",
+              "raw": "REASON: Image 1 presents a clearer, more balanced composition with a well-defined game board and symmetrical lighting, while Image 2 feels cluttered and less cohesive, with scattered pieces and a less distinct focal point.  \nWINNER: 1"
+            },
+            {
+              "left": "games_s202.png",
+              "right": "games_s303.png",
+              "winner": "games_s202.png",
+              "raw": "REASON: Image 1 better balances composition and lighting, with a clear focal point on the lantern and game pieces, while Image 2 introduces distracting elements like scattered leaves and an overly complex board that disrupt the moody, methodical atmosphere.  \nWINNER: 1"
+            },
+            {
+              "left": "games_s303.png",
+              "right": "games_s202.png",
+              "winner": "games_s303.png",
+              "raw": "REASON: Image 1 better captures the cinematic, moody atmosphere with a stronger focal point, richer detail in the game board and pieces, and more dynamic lighting that enhances the \"mid-game\" narrative, while Image 2 feels flatter and less immersive with a more scattered composition.  \nWINNER: 1"
+            },
+            {
+              "left": "games_s101.png",
+              "right": "games_s303.png",
+              "winner": "games_s101.png",
+              "raw": "REASON: Image 1 presents a more balanced, symmetrical composition with clear, readable game elements and consistent lighting, while Image 2\u2019s dominant lantern and cluttered foreground distract from the central game, reducing clarity and focus.  \nWINNER: 1"
+            },
+            {
+              "left": "games_s303.png",
+              "right": "games_s101.png",
+              "winner": "games_s303.png",
+              "raw": "REASON: Image 1 features a single dominant lantern creating a stronger focal point and more cinematic lighting, while Image 2\u2019s multiple light sources dilute the mood and create visual clutter, reducing atmospheric cohesion.  \nWINNER: 1"
+            }
+          ],
+          "presented": [
+            "games_s202.png",
+            "games_s101.png",
+            "games_s303.png"
+          ]
+        }
+      ]
+    }
+  ]
+}

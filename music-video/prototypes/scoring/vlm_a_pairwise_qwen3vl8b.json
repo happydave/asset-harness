@@ -1,0 +1,412 @@
+{
+  "server": "http://127.0.0.1:18080",
+  "corpus": "a",
+  "mode": "pairwise",
+  "seed": 1179,
+  "groups": [
+    {
+      "group": "shot4",
+      "brief": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed41.png",
+        "shot4_seed44.png"
+      ],
+      "images": [
+        "sanity_offbrief_seed41.png",
+        "shot4_seed41.png",
+        "shot4_seed45.png",
+        "shot4_seed42.png",
+        "shot4_seed43.png",
+        "shot4_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "sanity_offbrief_seed41.png": 0,
+            "shot4_seed41.png": 3.0,
+            "shot4_seed45.png": 2.5,
+            "shot4_seed42.png": 4.0,
+            "shot4_seed43.png": 3.0,
+            "shot4_seed44.png": 2.5
+          },
+          "ranking": [
+            "shot4_seed42.png",
+            "shot4_seed41.png",
+            "shot4_seed43.png",
+            "shot4_seed45.png",
+            "shot4_seed44.png",
+            "sanity_offbrief_seed41.png"
+          ],
+          "pairs": 15,
+          "order_flips": 8,
+          "flip_rate": 0.533,
+          "matches": [
+            {
+              "left": "sanity_offbrief_seed41.png",
+              "right": "shot4_seed41.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 2 perfectly embodies the post-apocalyptic, tense, painterly RPG concept with dramatic lighting and a menacing shadow, while Image 1 is a bright tropical beach scene completely unrelated to the brief.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed41.png",
+              "right": "sanity_offbrief_seed41.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 1 fulfills the post-apocalyptic, tense, painterly brief with dramatic lighting and a menacing shadow, while Image 2 is a bright tropical beach scene completely unrelated to the theme.\nWINNER: 1"
+            },
+            {
+              "left": "sanity_offbrief_seed41.png",
+              "right": "shot4_seed45.png",
+              "winner": "shot4_seed45.png",
+              "raw": "REASON: Image 2 fulfills the brief with moody, dramatic lighting, survivors, a looming threat, and painterly RPG art, while Image 1 is a bright beach scene completely unrelated.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed45.png",
+              "right": "sanity_offbrief_seed41.png",
+              "winner": "shot4_seed45.png",
+              "raw": "REASON: Image 1 fulfills the post-apocalyptic, tense, painterly brief with dramatic lighting and a looming threat, while Image 2 is a bright beach scene completely unrelated to the theme.\nWINNER: 1"
+            },
+            {
+              "left": "sanity_offbrief_seed41.png",
+              "right": "shot4_seed42.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 2 perfectly embodies the post-apocalyptic, tense, painterly RPG concept with dramatic lighting and a menacing shadow, while Image 1 is a bright tropical beach scene completely unrelated to the brief.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed42.png",
+              "right": "sanity_offbrief_seed41.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 1 fulfills the post-apocalyptic, tense, painterly brief with dramatic lighting and a menacing shadow, while Image 2 is a bright tropical beach scene completely unrelated to the theme.\nWINNER: 1"
+            },
+            {
+              "left": "sanity_offbrief_seed41.png",
+              "right": "shot4_seed43.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 2 fulfills the brief with moody, dramatic lighting, survivors, a looming shadow, and ruined setting, while Image 1 is a bright beach scene completely unrelated.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed43.png",
+              "right": "sanity_offbrief_seed41.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 1 fulfills the post-apocalyptic, tense, painterly brief with dramatic lighting and a menacing shadow, while Image 2 is a bright beach scene completely unrelated and visually contradictory.\nWINNER: 1"
+            },
+            {
+              "left": "sanity_offbrief_seed41.png",
+              "right": "shot4_seed44.png",
+              "winner": "shot4_seed44.png",
+              "raw": "REASON: Image 2 fulfills the brief with moody, dramatic lighting, survivors, a menacing shadow, and ruined architecture, while Image 1 is a bright tropical beach scene completely unrelated.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed44.png",
+              "right": "sanity_offbrief_seed41.png",
+              "winner": "shot4_seed44.png",
+              "raw": "REASON: Image 1 fulfills the post-apocalyptic, tense, painterly brief with dramatic lighting and a menacing shadow, while Image 2 is a bright beach scene completely unrelated and visually contradictory.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed41.png",
+              "right": "shot4_seed45.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 1\u2019s composition better integrates the flare\u2019s light with the looming shadow and environment, creating a more cohesive and immersive tension.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed45.png",
+              "right": "shot4_seed41.png",
+              "winner": "shot4_seed45.png",
+              "raw": "REASON: Image 1\u2019s dramatic chiaroscuro and clear threat silhouette better fulfill the brief\u2019s painterly, atmospheric, and tense requirements.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed41.png",
+              "right": "shot4_seed42.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 1\u2019s composition better frames the threat and flare\u2019s dramatic light, while Image 2\u2019s shadow is visually overwhelming and less integrated.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed42.png",
+              "right": "shot4_seed41.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 1\u2019s stronger composition, clearer threat framing, and more dramatic volumetric lighting better serve the brief\u2019s cinematic and painterly demands.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed41.png",
+              "right": "shot4_seed43.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 1\u2019s stronger composition and clearer threat from the stairwell better serve the brief\u2019s tension and painterly cinematic style.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed43.png",
+              "right": "shot4_seed41.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 1\u2019s composition better balances the flare\u2019s dramatic light, the looming shadow, and the two survivors within the ruined space, creating stronger visual tension and narrative clarity.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed41.png",
+              "right": "shot4_seed44.png",
+              "winner": "shot4_seed41.png",
+              "raw": "REASON: Image 1\u2019s clear composition, balanced lighting, and visible survivors with a distinct menacing shadow better fulfill the brief\u2019s cinematic and atmospheric demands.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed44.png",
+              "right": "shot4_seed41.png",
+              "winner": "shot4_seed44.png",
+              "raw": "REASON: Image 1\u2019s stronger chiaroscuro, more painterly style, and tighter focus on the flare\u2019s dramatic light against the looming shadow better serve the brief\u2019s cinematic, moody, and atmospheric demands.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed45.png",
+              "right": "shot4_seed42.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 2\u2019s composition better frames the threat and flare\u2019s dramatic light against the ruined archway, creating stronger visual tension and narrative clarity.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed42.png",
+              "right": "shot4_seed45.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 1\u2019s stronger composition, clearer threat framing, and more effective use of volumetric light and desaturated palette make it more cinematic and thematically resonant.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed45.png",
+              "right": "shot4_seed43.png",
+              "winner": "shot4_seed45.png",
+              "raw": "REASON: Image 1\u2019s dynamic composition and clearer threat framing better serve the lyric-driven tension and painterly RPG aesthetic.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed43.png",
+              "right": "shot4_seed45.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 1\u2019s composition better isolates the threat and uses the flare\u2019s smoke as a dynamic visual anchor, while Image 2\u2019s lighting feels flat and the threat is less menacing.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed45.png",
+              "right": "shot4_seed44.png",
+              "winner": "shot4_seed45.png",
+              "raw": "REASON: Image 1\u2019s clear composition, two distinct survivors, and a menacing figure in a broken stairwell better fulfill the brief\u2019s narrative and visual requirements.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed44.png",
+              "right": "shot4_seed45.png",
+              "winner": "shot4_seed44.png",
+              "raw": "REASON: Image 1\u2019s stronger chiaroscuro, more painterly texture, and more dramatic shadow looming in the stairwell better embody the brief\u2019s moody, cinematic, and tense atmosphere.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed42.png",
+              "right": "shot4_seed43.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 1\u2019s dynamic composition and stronger volumetric lighting from the flare better emphasize the looming threat and painterly drama required for a lyric-driven music video.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed43.png",
+              "right": "shot4_seed42.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 1\u2019s composition better balances the survivors, flare, and looming threat with richer environmental storytelling and more nuanced lighting contrast.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed42.png",
+              "right": "shot4_seed44.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 1\u2019s clear composition, balanced lighting, and unambiguous threat deliver the brief\u2019s tension and painterly drama more effectively than Image 2\u2019s chaotic framing and ambiguous threat.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed44.png",
+              "right": "shot4_seed42.png",
+              "winner": "shot4_seed42.png",
+              "raw": "REASON: Image 2\u2019s clearer composition, two distinct survivors, and more impactful red flare light against the shadowed stairwell better fulfill the brief\u2019s emotional and visual stakes.\nWINNER: 2"
+            },
+            {
+              "left": "shot4_seed43.png",
+              "right": "shot4_seed44.png",
+              "winner": "shot4_seed43.png",
+              "raw": "REASON: Image 1 clearly depicts two survivors with a burning flare and a menacing shadow in a ruined building, fulfilling the brief with strong composition and lighting; Image 2 lacks visible survivors and has a more abstract, less grounded composition.\nWINNER: 1"
+            },
+            {
+              "left": "shot4_seed44.png",
+              "right": "shot4_seed43.png",
+              "winner": "shot4_seed44.png",
+              "raw": "REASON: Image 1\u2019s dynamic low-angle composition and stronger volumetric flare light better convey immediate tension and painterly drama against the brief\u2019s atmospheric demands.\nWINNER: 1"
+            }
+          ],
+          "presented": [
+            "sanity_offbrief_seed41.png",
+            "shot4_seed41.png",
+            "shot4_seed45.png",
+            "shot4_seed42.png",
+            "shot4_seed43.png",
+            "shot4_seed44.png"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "shot7",
+      "brief": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "use_case": "a shot in a lyric-driven music video for a post-apocalyptic zombie-survival game, shown full-screen for a few seconds behind sung lyrics",
+      "owner_order": [
+        "shot7_seed44.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed41.png",
+        "shot7_seed45.png"
+      ],
+      "images": [
+        "shot7_seed45.png",
+        "shot7_seed41.png",
+        "shot7_seed43.png",
+        "shot7_seed42.png",
+        "shot7_seed44.png"
+      ],
+      "runs": [
+        {
+          "kind": "pairwise",
+          "wins": {
+            "shot7_seed45.png": 2.5,
+            "shot7_seed41.png": 3.0,
+            "shot7_seed43.png": 1.5,
+            "shot7_seed42.png": 2.5,
+            "shot7_seed44.png": 0.5
+          },
+          "ranking": [
+            "shot7_seed41.png",
+            "shot7_seed45.png",
+            "shot7_seed42.png",
+            "shot7_seed43.png",
+            "shot7_seed44.png"
+          ],
+          "pairs": 10,
+          "order_flips": 6,
+          "flip_rate": 0.6,
+          "matches": [
+            {
+              "left": "shot7_seed45.png",
+              "right": "shot7_seed41.png",
+              "winner": "shot7_seed45.png",
+              "raw": "REASON: Image 1\u2019s stronger silhouettes, more dramatic volumetric dawn light, and clearer narrative focus on the survivors approaching the glowing gate make it more emotionally resonant and visually cohesive with the brief.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed41.png",
+              "right": "shot7_seed45.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow through the gate and clearer silhouette composition better convey hope against desolation as requested.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed45.png",
+              "right": "shot7_seed43.png",
+              "winner": "shot7_seed45.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn light and clearer silhouette composition better convey hope and cinematic drama against the desaturated ruins.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed43.png",
+              "right": "shot7_seed45.png",
+              "winner": "shot7_seed43.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow and more cohesive painterly style better convey hope against desolation, while Image 2\u2019s harsher lighting and less atmospheric depth feel more like a gritty photo than concept art.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed45.png",
+              "right": "shot7_seed42.png",
+              "winner": "shot7_seed45.png",
+              "raw": "REASON: Image 1\u2019s stronger silhouette composition and warmer, more direct dawn glow better convey hope and cinematic drama against the desaturated ruins.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed42.png",
+              "right": "shot7_seed45.png",
+              "winner": "shot7_seed42.png",
+              "raw": "REASON: Image 1\u2019s grand, glowing colony gate and volumetric dawn light more powerfully embody the brief\u2019s \u201chope and resolution\u201d and cinematic scale.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed45.png",
+              "right": "shot7_seed44.png",
+              "winner": "shot7_seed45.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn light and clearer silhouette composition better convey hope and cinematic drama against the desaturated ruins.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed44.png",
+              "right": "shot7_seed45.png",
+              "winner": "shot7_seed45.png",
+              "raw": "REASON: Image 2\u2019s stronger backlighting and more defined lantern glow better emphasize hope against the desolation, while Image 1\u2019s diffuse light feels less cinematic and emotionally resonant.\nWINNER: 2"
+            },
+            {
+              "left": "shot7_seed41.png",
+              "right": "shot7_seed43.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow, clearer survivor silhouettes, and more dramatic leading lines better convey hope and cinematic scale against the desolation.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed43.png",
+              "right": "shot7_seed41.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 2\u2019s stronger composition and clearer narrative focus on the group moving toward the glowing gate make it more impactful for a lyric-driven video.\nWINNER: 2"
+            },
+            {
+              "left": "shot7_seed41.png",
+              "right": "shot7_seed42.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 1\u2019s stronger compositional hierarchy and more convincing volumetric dawn light better convey hope and resolution against the desolation.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed42.png",
+              "right": "shot7_seed41.png",
+              "winner": "shot7_seed42.png",
+              "raw": "REASON: Image 1\u2019s grand, symmetrical composition and glowing fortress gate better embody the brief\u2019s epic scale and hopeful resolution than Image 2\u2019s more fragmented, less defined horizon.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed41.png",
+              "right": "shot7_seed44.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow, clearer silhouetted survivors, and more defined fortified gate better embody the brief\u2019s cinematic hope and painterly detail.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed44.png",
+              "right": "shot7_seed41.png",
+              "winner": "shot7_seed41.png",
+              "raw": "REASON: Image 2\u2019s stronger compositional balance, clearer focal point, and more effective use of warm light against cool shadows better convey hope and cinematic drama.\nWINNER: 2"
+            },
+            {
+              "left": "shot7_seed43.png",
+              "right": "shot7_seed42.png",
+              "winner": "shot7_seed43.png",
+              "raw": "REASON: Image 1\u2019s stronger compositional hierarchy and more evocative warm-cool contrast better convey hope against desolation as per the brief.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed42.png",
+              "right": "shot7_seed43.png",
+              "winner": "shot7_seed42.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow and clearer, more dramatic silhouette composition better convey hope and cinematic scale against the ruins.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed43.png",
+              "right": "shot7_seed44.png",
+              "winner": "shot7_seed43.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow and clearer silhouetted survivors against the glowing gate better convey hope and cinematic drama.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed44.png",
+              "right": "shot7_seed43.png",
+              "winner": "shot7_seed44.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow and more dramatic silhouette composition better convey hope against desolation per the brief.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed42.png",
+              "right": "shot7_seed44.png",
+              "winner": "shot7_seed42.png",
+              "raw": "REASON: Image 1\u2019s stronger volumetric dawn glow and clearer silhouette composition better convey hope against desolation per the brief.\nWINNER: 1"
+            },
+            {
+              "left": "shot7_seed44.png",
+              "right": "shot7_seed42.png",
+              "winner": "shot7_seed42.png",
+              "raw": "REASON: Image 2\u2019s stronger central composition and more dramatic volumetric light better convey hope and resolution against the desolation.\nWINNER: 2"
+            }
+          ],
+          "presented": [
+            "shot7_seed45.png",
+            "shot7_seed41.png",
+            "shot7_seed43.png",
+            "shot7_seed42.png",
+            "shot7_seed44.png"
+          ]
+        }
+      ]
+    }
+  ]
+}

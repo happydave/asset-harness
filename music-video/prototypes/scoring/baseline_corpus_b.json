@@ -1,0 +1,169 @@
+{
+  "hero": {
+    "prompt": "a very wide establishing shot of a small ranch homestead at dusk on a vast open plain, warm lit windows and a single porch lantern holding light against the deep blue-black land and sky, first stars, distant low hills, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "hero_s101.png": {
+        "clip_letterbox": 0.3858,
+        "pickscore_letterbox": 0.2091
+      },
+      "hero_s202.png": {
+        "clip_letterbox": 0.3449,
+        "pickscore_letterbox": 0.2085
+      },
+      "hero_s303.png": {
+        "clip_letterbox": 0.3725,
+        "pickscore_letterbox": 0.2106
+      }
+    },
+    "order_clip_letterbox": [
+      "hero_s101.png",
+      "hero_s303.png",
+      "hero_s202.png"
+    ],
+    "order_pickscore_letterbox": [
+      "hero_s303.png",
+      "hero_s101.png",
+      "hero_s202.png"
+    ]
+  },
+  "lab": {
+    "prompt": "a night workshop interior, a wheeled garden robot chassis partly assembled on a workbench under a single warm work lamp, neat tools and an oscilloscope glow, deep blue shadow beyond the lamplight, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "lab_s101.png": {
+        "clip_letterbox": 0.3324,
+        "pickscore_letterbox": 0.1865
+      },
+      "lab_s202.png": {
+        "clip_letterbox": 0.3403,
+        "pickscore_letterbox": 0.1852
+      },
+      "lab_s303.png": {
+        "clip_letterbox": 0.3281,
+        "pickscore_letterbox": 0.1738
+      }
+    },
+    "order_clip_letterbox": [
+      "lab_s202.png",
+      "lab_s101.png",
+      "lab_s303.png"
+    ],
+    "order_pickscore_letterbox": [
+      "lab_s101.png",
+      "lab_s202.png",
+      "lab_s303.png"
+    ]
+  },
+  "ranch": {
+    "prompt": "a homestead pantry at dusk, wooden shelves of glass jars of preserved and freeze-dried food glowing warm in lantern light, braided herbs hanging, deep blue evening light through a small window, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "ranch_s101.png": {
+        "clip_letterbox": 0.3903,
+        "pickscore_letterbox": 0.2097
+      },
+      "ranch_s202.png": {
+        "clip_letterbox": 0.3906,
+        "pickscore_letterbox": 0.2063
+      },
+      "ranch_s303.png": {
+        "clip_letterbox": 0.3881,
+        "pickscore_letterbox": 0.2152
+      }
+    },
+    "order_clip_letterbox": [
+      "ranch_s202.png",
+      "ranch_s101.png",
+      "ranch_s303.png"
+    ],
+    "order_pickscore_letterbox": [
+      "ranch_s303.png",
+      "ranch_s101.png",
+      "ranch_s202.png"
+    ]
+  },
+  "ai": {
+    "prompt": "a quiet dark study at night, a warm glowing computer terminal on a wooden desk beside a mug of tea and an open notebook of sketches, companionable and calm, deep blue shadow around the desk lamp pool, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "ai_s101.png": {
+        "clip_letterbox": 0.3159,
+        "pickscore_letterbox": 0.1999
+      },
+      "ai_s202.png": {
+        "clip_letterbox": 0.3488,
+        "pickscore_letterbox": 0.1976
+      },
+      "ai_s303.png": {
+        "clip_letterbox": 0.3476,
+        "pickscore_letterbox": 0.194
+      }
+    },
+    "order_clip_letterbox": [
+      "ai_s202.png",
+      "ai_s303.png",
+      "ai_s101.png"
+    ],
+    "order_pickscore_letterbox": [
+      "ai_s101.png",
+      "ai_s202.png",
+      "ai_s303.png"
+    ]
+  },
+  "readiness": {
+    "prompt": "an organized storm room by lamplight, a well-packed field medical kit open on a table, labeled water containers and a hand-crank radio on shelves, calm competence, warm lamp against deep blue dark, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "readiness_s101.png": {
+        "clip_letterbox": 0.3644,
+        "pickscore_letterbox": 0.1986
+      },
+      "readiness_s202.png": {
+        "clip_letterbox": 0.3477,
+        "pickscore_letterbox": 0.1998
+      },
+      "readiness_s303.png": {
+        "clip_letterbox": 0.3358,
+        "pickscore_letterbox": 0.2024
+      }
+    },
+    "order_clip_letterbox": [
+      "readiness_s101.png",
+      "readiness_s202.png",
+      "readiness_s303.png"
+    ],
+    "order_pickscore_letterbox": [
+      "readiness_s303.png",
+      "readiness_s202.png",
+      "readiness_s101.png"
+    ]
+  },
+  "games": {
+    "prompt": "a worn wooden table by lamplight with hand-carved game pieces and dice mid-game and two enamel mugs, warm amber lamp pool against deep blue shadow, cinematic concept art, warm lantern amber light held against deep blue-black dusk, volumetric haze, calm curious methodical mood, richly detailed, moody atmospheric",
+    "scores": {
+      "games_s101.png": {
+        "clip_letterbox": 0.4062,
+        "pickscore_letterbox": 0.1788
+      },
+      "games_s202.png": {
+        "clip_letterbox": 0.3891,
+        "pickscore_letterbox": 0.1807
+      },
+      "games_s303.png": {
+        "clip_letterbox": 0.363,
+        "pickscore_letterbox": 0.1776
+      }
+    },
+    "order_clip_letterbox": [
+      "games_s101.png",
+      "games_s202.png",
+      "games_s303.png"
+    ],
+    "order_pickscore_letterbox": [
+      "games_s202.png",
+      "games_s101.png",
+      "games_s303.png"
+    ]
+  },
+  "_control": {
+    "rescored": "ai_s101.png",
+    "pickscore_letterbox": 0.1999,
+    "deterministic": true
+  }
+}
