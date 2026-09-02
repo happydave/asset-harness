@@ -12,14 +12,13 @@ Graph transcribed from the shipped ComfyUI "Image to Video (Wan 2.2)" blueprint.
   KSamplerAdvanced(high, steps 0..k)  -> KSamplerAdvanced(low, steps k..N) -> VAEDecode(wan_2.1_vae)
   -> CreateVideo(16 fps) -> SaveVideo
 
-Two regimes, both shipped in the blueprint:
+Two regimes, both shipped in the blueprint. The defaults build the validated production recipe
+(ai2's saved `wan2.2-test` workflow): both experts split 2/2, both lightx2v LoRAs, 4 steps, cfg 1,
+fp8_scaled checkpoints, 1280x720 x 33 frames @ 16 fps, ~127 s per clip.
 
-  --lora    4-step lightx2v distillation LoRAs, 4 steps, cfg 1   (fast; the blueprint's own note:
-            "will result in the loss of video dynamics, but it will reduce the generation time")
-  --no-lora plain fp8_scaled, 20 steps, cfg 3.5                  (slow; full motion)
-
-The blueprint's embedded benchmark (RTX 4090D 24GB, 640x640): ~536s without the LoRA, ~97s first /
-~71s subsequent with it. Those are CUDA figures; measuring the ROCm gfx1201 numbers is the point.
+  (default) 4-step lightx2v distillation LoRAs, 4 steps, cfg 1, fp8_scaled   (the recipe)
+  --no-lora plain checkpoints, 20 steps, cfg 3.5                              (slow; negatives act)
+  --fp16    fp16 checkpoints: 3x slower, spills to lowvram; for precision-sensitive shots only
 
 LICENCE CHAIN (the repo rule is that an output's effective licence is the MOST RESTRICTIVE link, so
 the LoRAs count, not just the base model):
@@ -65,8 +64,7 @@ def build_graph(image_name: str, prompt: str, *, width: int, height: int, frames
                 sampler: str = "euler", scheduler: str = "simple", shift: float = 5.0) -> dict:
     """Two model branches (high-noise, low-noise), optionally each through its speed LoRA.
 
-    `high_unet`/`low_unet` default to the fp8_scaled checkpoints; WI 1015 passes the fp16 pair to
-    measure whether skipping fp8 weight-prep removes the ~36-min-per-checkpoint load cost.
+    `high_unet`/`low_unet` default to the fp8_scaled checkpoints; `--fp16` passes the fp16 pair.
     """
     g: dict = {
         "1": {"class_type": "CLIPLoader", "inputs": {"clip_name": CLIP, "type": "wan", "device": "default"}},
@@ -136,22 +134,22 @@ def main() -> None:
     ap.add_argument("--image", required=True, help="input still (i2v start frame)")
     ap.add_argument("--prompt", required=True, help="motion prompt — see ../license-lane.md exposure 4")
     ap.add_argument("--out", default=None, help="output path stem")
-    ap.add_argument("--width", type=int, default=640)
-    ap.add_argument("--height", type=int, default=640)
-    ap.add_argument("--frames", type=int, default=81, help="81 @ 16fps = ~5.06s")
+    ap.add_argument("--width", type=int, default=1280)
+    ap.add_argument("--height", type=int, default=720)
+    ap.add_argument("--frames", type=int, default=33,
+                    help="33 @ 16fps = ~2.06s (the recipe); 97 = ~6s, the chain-link length")
     ap.add_argument("--fps", type=int, default=16)
     ap.add_argument("--seed", type=int, default=901)
     ap.add_argument("--no-lora", dest="lora", action="store_false",
-                    help="skip the 4-step speed LoRAs: slower, but keeps motion dynamics")
+                    help="skip the 4-step LoRAs: 20 steps, cfg 3.5, negatives act; ~1 h per clip. "
+                         "Only when you need cfg > 1.")
     ap.add_argument("--steps", type=int, default=None, help="default 4 with LoRA, 20 without")
     ap.add_argument("--cfg", type=float, default=None, help="default 1.0 with LoRA, 3.5 without")
     ap.add_argument("--fp16", action="store_true",
-                    help="use the fp16 UNET checkpoints instead of fp8_scaled (WI 1015): no fp8 "
-                         "weight-prep at load, but 2x the VRAM (26.6 GiB/checkpoint)")
-    ap.add_argument("--sampler", default="euler",
-                    help="KSampler sampler_name (WI 1019: res_multistep reported better than euler)")
-    ap.add_argument("--scheduler", default="simple",
-                    help="KSampler scheduler (WI 1019: sgm_uniform reported better than simple)")
+                    help="fp16 UNET checkpoints instead of fp8_scaled: marginally sharper, 3x slower, "
+                         "spills to lowvram, ~69 GB host RAM. For precision-sensitive shots only.")
+    ap.add_argument("--sampler", default="euler", help="KSampler sampler_name (recipe: euler)")
+    ap.add_argument("--scheduler", default="simple", help="KSampler scheduler (recipe: simple)")
     ap.add_argument("--shift", type=float, default=5.0, help="ModelSamplingSD3 shift (blueprint: 5.0)")
     ap.add_argument("--timeout", type=float, default=None,
                     help="optional backstop in seconds; default: wait indefinitely for the server "

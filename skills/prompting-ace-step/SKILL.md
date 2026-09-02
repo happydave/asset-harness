@@ -14,10 +14,12 @@ string (the sound) and a **lyrics** block (the words). They do different jobs �
 
 | Setting | Value |
 |---|---|
-| Steps / cfg | 40 / 5, euler / simple |
+| Checkpoint | **`turbo`** (default): 8 steps / cfg 1.0. `base` (40 / 5.0) is for comparison only |
+| Sampler | euler / simple, ModelSamplingAuraFlow shift 3 |
 | Encoder params | `cfg_scale 2.0, temperature 0.85, top_p 0.9, top_k 0, min_p 0.0` |
 | Fields | `bpm`, `duration` (s), `timesignature 4`, `language`, `keyscale` |
 | Negative | `ConditioningZeroOut(positive)` |
+| Save | −1 dBTP ceiling (pure gain); a truncation warning = the song ran out of time |
 | Candidates | several seeds (`--seeds 701,702,703`) → pick the best, then lock that seed |
 
 ## Writing the tags
@@ -61,9 +63,8 @@ seed count — no need to ask.
 
 ## Community notes (reported, not fact)
 
-Online step/CFG numbers conflict because they're **per-variant** (Turbo fixes steps=8/cfg=1; Base
-sweet-spots ~27; low-CFG recipes use 65). The default here sits between — treat the rest as tuning
-directions. Universally echoed and already above: batch candidates, lock the winning seed.
+Step/CFG numbers online conflict because they're **per-variant**: Turbo fixes steps=8/cfg=1 (our
+default); Base sweet-spots ~27–40. Universally echoed: batch candidates, lock the winning seed.
 
 ## Source
 

@@ -4,7 +4,8 @@ Repeatable, AI-leaning pipelines that turn prompts/specs into **game-ready asset
 games can lean on generation instead of manual art/CAD.
 
 **New here?** Start with the [Cold Start guide](docs/cold-start.md) — prerequisites and
-a first-asset walkthrough.
+a first-asset walkthrough. **Here to make a music video?** The
+[music-video operator card](music-video/AGENTS.md) is the whole reading list.
 
 Per-track status lives in the [tracks table](#tracks--status) below; each track's own
 `README.md`, `discover.md`, and `findings/` hold the detail.

@@ -13,6 +13,10 @@ the same render now also emits a **56.0 s seamless loop** whose join is adjacent
 construction ([findings](findings/2026-08-25-loop-seam-finish.md)). Discovery:
 [WI 989](../../../tickets/docs/pending/989-ah-music-video-track/discover.md).
 
+**Operating the pipeline (making a video)?** Read [`AGENTS.md`](AGENTS.md) — a one-screen card of the
+commands, rules and nevers — and the model skill for each step. The rest of this README is the
+track's record, for developing the pipeline.
+
 ## Purpose
 
 Produce a complete **lyric-driven music video**: an AI-generated song *with vocals*, plus images and
@@ -116,6 +120,7 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
 
 ## Contents
 
+- [`AGENTS.md`](AGENTS.md) — the operator card: how to make a video, in one screen.
 - [`license-lane.md`](license-lane.md) — the vocal/lyrics license lane. **Required reading before
   generating.**
 - `prototypes/`

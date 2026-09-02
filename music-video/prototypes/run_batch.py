@@ -11,7 +11,7 @@ Spec: a JSON file containing a list of clip objects. Only `image`, `prompt`, `ou
     {"image": "in/a.png", "prompt": "...", "out": "out/a", "no_lora": true},
     {"image": "in/b.png", "prompt": "...", "out": "out/b", "width": 1280, "height": 720, "seed": 7}
   ]
-Optional per-clip keys (else the defaults below): no_lora, width(1280), height(720), frames(81),
+Optional per-clip keys (else the defaults below): no_lora, width(1280), height(720), frames(33),
 fps(16), seed(901), steps, cfg, fp16.
 """
 from __future__ import annotations
@@ -36,7 +36,7 @@ def _graph_for(server: str, spec: dict):
     return gc.build_graph(
         image_name, spec["prompt"],
         width=spec.get("width", 1280), height=spec.get("height", 720),
-        frames=spec.get("frames", 81), fps=spec.get("fps", 16), seed=spec.get("seed", 901),
+        frames=spec.get("frames", 33), fps=spec.get("fps", 16), seed=spec.get("seed", 901),
         use_lora=use_lora, steps=steps, cfg=cfg,
         prefix="asset_harness/mv_batch",
         high_unet=high, low_unet=low)
