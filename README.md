@@ -22,6 +22,10 @@ lifecycle:
 Outputs are **engine-agnostic**. Consuming games (Phaser/TS, Bevy/Rust, Ebitengine/Go) import
 them through a thin, per-engine downstream step that lives in the game repo, not here.
 
+Where an output is destined for a **specific external platform** rather than a game engine, the
+platform's demands are written down once in [`docs/delivery-targets/`](docs/delivery-targets/) and
+shared across tracks — currently [Slack custom emoji](docs/delivery-targets/slack-emoji.md).
+
 The generation harness is **Python** (ComfyUI's API is Python-native; workflows export as
 API-JSON).
 
@@ -29,7 +33,7 @@ API-JSON).
 
 | Track | Purpose | Status |
 |-------|---------|--------|
-| [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟢 ships + station kit + spider-miner body; in-game |
+| [2d](2d/) | Sprites w/ clean alpha, tiling textures, backdrops/skyboxes | 🟢 ships + station kit + spider-miner body; in-game. Also drives small symbolic icons ([Slack emoji](docs/delivery-targets/slack-emoji.md)) |
 | [pbr-materials](pbr-materials/) | Base color → normal / roughness / AO maps | 🟢 hull + structural + biome terrain libraries; Bevy-ready, in-game |
 | [3d-static-props](3d-static-props/) | Image-to-3D meshes + heightmap terrain → cleanup → glTF | 🟡 heightmap-displacement terrain (clean); MoGe=props; TripoSR env-blocked |
 | [mechanical-kit](mechanical-kit/) | Parametric Blender kit + AI surface/decals | 🟡 20 AI-textured parts in `parts/` (rover + rocket-domain + fittings), mount-at-origin, for Sounding WI 608 |

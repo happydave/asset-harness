@@ -1,0 +1,182 @@
+{
+  "prompt": "a small flat vector icon, centered on a large plain white background, generous empty white space around it, thick dark outline, bold saturated colors, strong high contrast, minimal internal detail, one single subject, a red coffee mug ringed by a bright gold halo of light, orange beams and small gold stars radiating outward from it",
+  "negative": "text, letters, words, caption, title, watermark, signature, logo, thin delicate lines, fine intricate detail, busy cluttered composition, photorealistic, blurry, low contrast, pale washed out colors, white fill, drop shadow, full-bleed background, multiple separate objects",
+  "seed": 11,
+  "size": 1024,
+  "model": "base",
+  "sampling": {
+    "steps": 20,
+    "cfg": 4.0,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "shift": 3.0
+  },
+  "models": {
+    "unet": "z_image_bf16.safetensors",
+    "clip": "qwen_3_4b.safetensors",
+    "vae": "ae.safetensors",
+    "bg": "BiRefNet-HR-matting.safetensors"
+  },
+  "graph": {
+    "1": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen_3_4b.safetensors",
+        "type": "lumina2",
+        "device": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "a small flat vector icon, centered on a large plain white background, generous empty white space around it, thick dark outline, bold saturated colors, strong high contrast, minimal internal detail, one single subject, a red coffee mug ringed by a bright gold halo of light, orange beams and small gold stars radiating outward from it",
+        "clip": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, letters, words, caption, title, watermark, signature, logo, thin delicate lines, fine intricate detail, busy cluttered composition, photorealistic, blurry, low contrast, pale washed out colors, white fill, drop shadow, full-bleed background, multiple separate objects",
+        "clip": [
+          "1",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "z_image_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "5": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "4",
+          0
+        ],
+        "shift": 3.0
+      }
+    },
+    "6": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ae.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      }
+    },
+    "8": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "5",
+          0
+        ],
+        "seed": 11,
+        "steps": 20,
+        "cfg": 4.0,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latent_image": [
+          "7",
+          0
+        ],
+        "denoise": 1.0
+      }
+    },
+    "9": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "8",
+          0
+        ],
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "inputs": {
+        "bg_removal_name": "BiRefNet-HR-matting.safetensors"
+      }
+    },
+    "11": {
+      "class_type": "RemoveBackground",
+      "inputs": {
+        "image": [
+          "9",
+          0
+        ],
+        "bg_removal_model": [
+          "10",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "InvertMask",
+      "inputs": {
+        "mask": [
+          "11",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "JoinImageWithAlpha",
+      "inputs": {
+        "image": [
+          "9",
+          0
+        ],
+        "alpha": [
+          "12",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "13",
+          0
+        ],
+        "filename_prefix": "asset_harness/emoji_glowing-object_s11_rgba"
+      }
+    },
+    "15": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "9",
+          0
+        ],
+        "filename_prefix": "asset_harness/emoji_glowing-object_s11_opaque"
+      }
+    }
+  }
+}

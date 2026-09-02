@@ -10,7 +10,10 @@ DWA WI 813. The hauler now renders **in-game in DWA**. The generators also expos
 **Z-Image Base** engine (`--model base`, full CFG + working negative prompts, Apache 2.0) alongside the
 default Turbo, for stylized/anime txt2img and LoRA-training data —
 [findings](findings/2026-07-14-zimage-base.md) (Base is a **txt2img** engine here; the Turbo-trained
-ControlNet does not transfer, so ControlNet-driven sprites stay on Turbo). Remaining polish: data-driven
+ControlNet does not transfer, so ControlNet-driven sprites stay on Turbo). A second, non-game output shape is now validated as well:
+**small symbolic icons** (Slack emoji) via txt2img + the same matte tail, gated against a
+[delivery-target spec](../docs/delivery-targets/slack-emoji.md) and judged at display size —
+[findings](findings/2026-09-01-world-of-magic-emoji.md). Remaining polish: data-driven
 port/rotation manifest, more module types, and the DWA-side composed-base render.
 
 ## Purpose
@@ -49,6 +52,12 @@ anchor approach is an explicit goal of this track, not an afterthought.
 
 ## Contents
 
+- **Small symbolic icons (Slack emoji).** [`prototypes/generate_emoji.py`](prototypes/generate_emoji.py)
+  (txt2img + alpha tail, no ControlNet) and [`prototypes/emoji_post.py`](prototypes/emoji_post.py)
+  (fit → spec gate → display-size contact sheet) target
+  [`docs/delivery-targets/slack-emoji.md`](../docs/delivery-targets/slack-emoji.md). Judge these at
+  16–32 px, not at 128 px — see [findings](findings/2026-09-01-world-of-magic-emoji.md), which also
+  records the two prompt clauses the matte depends on.
 - [`discover.md`](discover.md) — generation-stack discovery: installed models on `ai2`,
   **license matrix** (clean engine = Z-Image Turbo; FLUX.2 Klein 9B is non-commercial), and
   remaining gaps. **Read this first.**

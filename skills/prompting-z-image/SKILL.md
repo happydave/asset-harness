@@ -38,6 +38,18 @@ Use a defect + unwanted-text guard (`blurry, jpeg artifacts, watermark, text, ca
 deformed, extra limbs, bad anatomy`). **Do not** negate "cluttered/busy background" for an establishing
 shot — it wants richness. Negatives work on `base` (real CFG); Turbo ignores them.
 
+## Matted icons (RGBA, not a scene)
+
+The "keep it opaque" rule above is for **i2v seed frames**. When the target *is* a cut-out icon
+(Slack emoji, small symbol), Z-Image drives the BiRefNet matte tail instead, and two prompt clauses
+become matte requirements rather than style choices:
+
+- **Small subject inside a large white frame.** Ask for "a small icon, centered on a large plain
+  white background, generous empty white space around it". Without it the model fills the canvas,
+  and a salient-object matter given no background returns an **empty mask**.
+- **Saturated subject.** A pale or white-filled subject on white mattes down to its outlines only.
+  Name strong colours in the subject; negate `pale washed out colors, white fill`.
+
 ## Common mistakes
 
 | Mistake | Correct approach |
@@ -56,4 +68,6 @@ many candidates to generate — no need to ask.
 ## Source
 
 Preset and traps: `../../music-video/prototypes/generate_still.py` and the music-video Wan-quality
-findings entry. Prompt hygiene: `../../music-video/license-lane.md`.
+findings entry. Matted icons: `../../2d/prototypes/generate_emoji.py` and
+`../../2d/findings/2026-09-01-world-of-magic-emoji.md`. Prompt hygiene:
+`../../music-video/license-lane.md`.
