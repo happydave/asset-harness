@@ -81,7 +81,8 @@ a marginal softness (WI 1161).
 
 **`ai2` must be running ComfyUI with `--disable-mmap`.** Without it, one checkpoint load takes 35.8 min
 instead of 6 s — that flag is worth ~360× on a load, against fp8-vs-fp16's 3×. It is a shared service:
-check it, don't change it unilaterally.
+check it, don't change it unilaterally. `prototypes/preflight.py` checks it, along with every other
+operational precondition below, and prints the fix for anything that fails — run it first.
 
 Full recipe, VRAM limits, and the clip-chaining technique for longer continuous shots:
 [`skills/prompting-wan-i2v/SKILL.md`](../skills/prompting-wan-i2v/SKILL.md) and
@@ -124,6 +125,11 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
 - [`license-lane.md`](license-lane.md) — the vocal/lyrics license lane. **Required reading before
   generating.**
 - `prototypes/`
+  - [`preflight.py`](prototypes/preflight.py) — **run first.** Checks every operational precondition
+    (server up, `--disable-mmap` on, queue idle and not in the load hang, last job not Wan, recipe
+    checkpoints/LoRAs/encoders/VAEs installed, workstation ffmpeg, track venvs) and prints the fix for
+    each failure; exit 1 on any failure so drivers can gate on it. Read-only. `--stage` narrows it.
+    [`test_preflight.py`](prototypes/test_preflight.py) (57 checks, no server or GPU needed).
   - [`generate_song.py`](prototypes/generate_song.py) — ACE-Step 1.5 with lyrics; `--seeds a,b,c`
     gives the 3–5 candidates the pick gate wants.
   - [`timeline.py`](prototypes/timeline.py) — the lyric timeline (JSON + LRC). **Every route emits

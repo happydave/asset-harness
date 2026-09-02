@@ -9,7 +9,8 @@ All commands below run from `prototypes/`.
 
 ## Make a video
 
-1. **Preflight** — `python3 preflight.py`. Fix what it names before generating anything.
+1. **Preflight** — `python3 preflight.py` (or `--stage clip` etc. for one stage). Fix what it names
+   before generating anything; a `WARN` is advice, a `FAIL` is a stop.
 2. **Song** — `python3 generate_song.py --seeds 701,702,703` → three FLAC candidates. Lyrics and tags
    are the `SONG` block in the script today; edit them per `../skills/prompting-ace-step/SKILL.md`.
    The best candidate is the one the owner (or Audiobox CE, once WI 1176 lands) picks.
