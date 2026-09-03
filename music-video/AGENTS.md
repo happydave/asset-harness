@@ -24,9 +24,11 @@ All commands below run from `prototypes/`.
    the form → `python3 cull_stills.py apply-form <manifest> --run <dir>`. No owner available:
    `python3 cull_stills.py provisional <manifest>` picks drafts labelled as such. Prompts per
    `../skills/prompting-z-image/SKILL.md`.
-5. **Clips** — one or two hero shots only: `python3 generate_clip.py --image <still>.png
-   --prompt "<motion>" --out <stem>`. Defaults are the recipe. Read
-   `../skills/prompting-wan-i2v/SKILL.md` first.
+5. **Clips** — one or two hero shots only, each a `video` shot in the manifest:
+   `python3 clip_candidates.py sweep <manifest> --shot I --source-shot K --prompt "<motion>"`
+   (K must not be next to I). Two candidates, objective gates, a strip sheet + the same form; the
+   owner picks (`apply-form`) or `provisional --shot I` takes the first survivor. Motion prompts per
+   `../skills/prompting-wan-i2v/SKILL.md`.
 6. **Manifest** — shots of `{lines, t_start, t_end, kind, prompt, asset, kb}` partitioning the song;
    `manifest.py` validates. `build_lobby.py` is the worked example until the brief-file driver
    (WI 1180) lands.

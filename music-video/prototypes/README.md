@@ -42,6 +42,10 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   → group-relative cull → shuffled lettered sheets + `pick_form.md` + `_tile_key.json`; `apply-form`
   → owner picks with reasons; `provisional` → machine-provisional drafts. **`test_cull_stills.py`** —
   37 checks (calibration replay on the archived corpora + fakes for client/scorer/tiler).
+- **`clip_candidates.py`** — the clip stage (WI 1178): `sweep` N Wan candidates for one video shot
+  from a non-adjacent source still → objective gates (integrity; seam + acuity when chained) → motion
+  report → strip sheet + the shared form; `apply-form` (shared); `provisional` (first survivor,
+  labelled). **`test_clip_candidates.py`** — 35 checks, every side effect faked.
 - **`comfy_client.py`** — shared helpers: `queue`, `wait_for_history` (the rule above),
   `download_outputs`, `run_job` (queue→wait→download), `fetch_from_history`.
 - **`fetch_from_history.py`** — recover a finished prompt's outputs after the fact

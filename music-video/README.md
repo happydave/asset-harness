@@ -146,6 +146,14 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
     `provisional` (top-PickScore survivor as a `machine-provisional` draft). Every candidate, score,
     verdict and gate lands in the manifest. [`test_cull_stills.py`](prototypes/test_cull_stills.py)
     (37 checks, including the calibration replay).
+  - [`clip_candidates.py`](prototypes/clip_candidates.py) — **the clip stage** (WI 1178): for one
+    `video` shot, `sweep` N Wan candidates (default 2, ≤ 4) from a chosen source still — a source
+    adjacent to the shot is refused before any GPU time (the WI 1160 rule) — gated **objectively
+    only** (integrity: frames/fps/size; when chained via `chain_clip`: seam SSIM + acuity), motion
+    scene-scores recorded as a report and never gated; survivors on a first/middle/last-frame strip
+    sheet with the same shuffled letters + form as the still stage. `apply-form` is the still stage's;
+    `provisional` takes the first survivor and says no video aesthetic signal exists.
+    [`test_clip_candidates.py`](prototypes/test_clip_candidates.py) (35 checks).
   - [`generate_song.py`](prototypes/generate_song.py) — ACE-Step 1.5 with lyrics; `--seeds a,b,c`
     gives the 3–5 candidates the pick gate wants. The graph, checkpoint arms and save-time
     postprocess that `select_song.py` reuses.
