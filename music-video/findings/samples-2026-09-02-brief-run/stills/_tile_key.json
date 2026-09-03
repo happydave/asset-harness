@@ -1,0 +1,41 @@
+{
+  "run_id": "stills",
+  "manifest": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/clamor_hold_the_line.manifest.json",
+  "shots": {
+    "shot 00": {
+      "A": "stills/shot00_seed41.png",
+      "B": "stills/shot00_seed42.png",
+      "C": "stills/shot00_seed43.png"
+    },
+    "shot 01": {
+      "A": "stills/shot01_seed42.png",
+      "B": "stills/shot01_seed43.png",
+      "C": "stills/shot01_seed41.png"
+    },
+    "shot 03": {
+      "A": "stills/shot03_seed42.png",
+      "B": "stills/shot03_seed41.png",
+      "C": "stills/shot03_seed43.png"
+    },
+    "shot 04": {
+      "A": "stills/shot04_seed42.png",
+      "B": "stills/shot04_seed41.png",
+      "C": "stills/shot04_seed43.png"
+    },
+    "shot 05": {
+      "A": "stills/shot05_seed42.png",
+      "B": "stills/shot05_seed41.png",
+      "C": "stills/shot05_seed43.png"
+    },
+    "shot 06": {
+      "A": "stills/shot06_seed43.png",
+      "B": "stills/shot06_seed41.png",
+      "C": "stills/shot06_seed42.png"
+    },
+    "shot 07": {
+      "A": "stills/shot07_seed43.png",
+      "B": "stills/shot07_seed41.png",
+      "C": "stills/shot07_seed42.png"
+    }
+  }
+}

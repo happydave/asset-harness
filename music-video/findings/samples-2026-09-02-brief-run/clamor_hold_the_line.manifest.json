@@ -1,0 +1,1154 @@
+{
+  "audio": "song/clamor_hold_the_line_seed701.flac",
+  "duration": 75.0,
+  "source_timeline": "timeline.timeline.json",
+  "shots": [
+    {
+      "index": 0,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 0,
+          "text": "Six of us went out at first light"
+        },
+        {
+          "index": 1,
+          "text": "Counting every step and every round"
+        }
+      ],
+      "t_start": 0.0,
+      "t_end": 14.844,
+      "kind": "kenburns",
+      "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot00_seed41.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot00_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.381,
+            "pickscore_letterbox": 0.2007,
+            "clip_ratio": 1.0613,
+            "pickscore_ratio": 1.0035
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 0,
+                "text": "Six of us went out at first light"
+              },
+              {
+                "index": 1,
+                "text": "Counting every step and every round"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot00_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3568,
+            "pickscore_letterbox": 0.1978,
+            "clip_ratio": 0.9939,
+            "pickscore_ratio": 0.989
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 0,
+                "text": "Six of us went out at first light"
+              },
+              {
+                "index": 1,
+                "text": "Counting every step and every round"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot00_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.359,
+            "pickscore_letterbox": 0.2,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 0,
+                "text": "Six of us went out at first light"
+              },
+              {
+                "index": 1,
+                "text": "Counting every step and every round"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.2007 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 1,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 2,
+          "text": "The colony is waiting on the far side"
+        },
+        {
+          "index": 3,
+          "text": "Of a city that has forgotten how to make a sound"
+        }
+      ],
+      "t_start": 14.844,
+      "t_end": 24.433,
+      "kind": "kenburns",
+      "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot01_seed42.png",
+      "kb": {
+        "zoom": "none",
+        "pan": "r"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot01_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3608,
+            "pickscore_letterbox": 0.197,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 0.9909
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 2,
+                "text": "The colony is waiting on the far side"
+              },
+              {
+                "index": 3,
+                "text": "Of a city that has forgotten how to make a sound"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot01_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3669,
+            "pickscore_letterbox": 0.2035,
+            "clip_ratio": 1.0169,
+            "pickscore_ratio": 1.0236
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 2,
+                "text": "The colony is waiting on the far side"
+              },
+              {
+                "index": 3,
+                "text": "Of a city that has forgotten how to make a sound"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot01_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3584,
+            "pickscore_letterbox": 0.1988,
+            "clip_ratio": 0.9933,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 2,
+                "text": "The colony is waiting on the far side"
+              },
+              {
+                "index": 3,
+                "text": "Of a city that has forgotten how to make a sound"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.2035 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 2,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 4,
+          "text": "Hold the line, hold the line"
+        },
+        {
+          "index": 5,
+          "text": "Take what we can carry, leave the rest behind"
+        }
+      ],
+      "t_start": 24.433,
+      "t_end": 39.975,
+      "kind": "video",
+      "prompt": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move",
+      "asset": "clips-shot02/shot02_seed901.mp4",
+      "kb": {
+        "zoom": "none",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "clips-shot02/shot02_seed901.mp4",
+          "recipe": {
+            "high_unet": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+            "low_unet": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+            "loras": [
+              "wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+              "wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors"
+            ],
+            "seed": 901,
+            "steps": 4,
+            "cfg": 1.0,
+            "shift": 5.0,
+            "width": 1280,
+            "height": 720,
+            "frames": 33,
+            "fps": 16,
+            "links": 1,
+            "prompt": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move"
+          },
+          "scores": {
+            "frames": 33,
+            "fps": 16.0,
+            "size": "1280x720",
+            "expected_frames": 33,
+            "links": 1,
+            "motion_scene_n": 32,
+            "motion_scene_mean": 0.00637,
+            "motion_scene_max": 0.02981
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "source_shot": 4,
+            "source_still": "stills/shot04_seed42.png",
+            "prompt": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move"
+          }
+        },
+        {
+          "asset": "clips-shot02/shot02_seed902.mp4",
+          "recipe": {
+            "high_unet": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+            "low_unet": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+            "loras": [
+              "wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+              "wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors"
+            ],
+            "seed": 902,
+            "steps": 4,
+            "cfg": 1.0,
+            "shift": 5.0,
+            "width": 1280,
+            "height": 720,
+            "frames": 33,
+            "fps": 16,
+            "links": 1,
+            "prompt": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move"
+          },
+          "scores": {
+            "frames": 33,
+            "fps": 16.0,
+            "size": "1280x720",
+            "expected_frames": 33,
+            "links": 1,
+            "motion_scene_n": 32,
+            "motion_scene_mean": 0.00424,
+            "motion_scene_max": 0.02898
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "source_shot": 4,
+            "source_still": "stills/shot04_seed42.png",
+            "prompt": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move"
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "first surviving clip candidate; no video aesthetic signal exists (WI 1035 \u00a74)",
+        "history": []
+      }
+    },
+    {
+      "index": 3,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 6,
+          "text": "One more street, one more night"
+        },
+        {
+          "index": 7,
+          "text": "We are going home, we are going home tonight"
+        }
+      ],
+      "t_start": 39.975,
+      "t_end": 44.998,
+      "kind": "kenburns",
+      "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot03_seed41.png",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot03_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3941,
+            "pickscore_letterbox": 0.2102,
+            "clip_ratio": 1.0448,
+            "pickscore_ratio": 1.0234
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 6,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 7,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot03_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3772,
+            "pickscore_letterbox": 0.2054,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 6,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 7,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot03_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3513,
+            "pickscore_letterbox": 0.1969,
+            "clip_ratio": 0.9313,
+            "pickscore_ratio": 0.9586
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 6,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 7,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.2102 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 4,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 8,
+          "text": "She has got the map and I have got the last flare"
+        },
+        {
+          "index": 9,
+          "text": "Something in the stairwell heard us come"
+        }
+      ],
+      "t_start": 44.998,
+      "t_end": 49.981,
+      "kind": "kenburns",
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot04_seed42.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot04_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3313,
+            "pickscore_letterbox": 0.1933,
+            "clip_ratio": 0.9665,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 8,
+                "text": "She has got the map and I have got the last flare"
+              },
+              {
+                "index": 9,
+                "text": "Something in the stairwell heard us come"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot04_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3506,
+            "pickscore_letterbox": 0.1985,
+            "clip_ratio": 1.0228,
+            "pickscore_ratio": 1.0269
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 8,
+                "text": "She has got the map and I have got the last flare"
+              },
+              {
+                "index": 9,
+                "text": "Something in the stairwell heard us come"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot04_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3428,
+            "pickscore_letterbox": 0.1885,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 0.9752
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 8,
+                "text": "She has got the map and I have got the last flare"
+              },
+              {
+                "index": 9,
+                "text": "Something in the stairwell heard us come"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.1985 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 5,
+      "section": "verse",
+      "lines": [
+        {
+          "index": 10,
+          "text": "Do not you run, do not you make a sound out there"
+        },
+        {
+          "index": 11,
+          "text": "Count it down and take them one by one"
+        }
+      ],
+      "t_start": 49.981,
+      "t_end": 56.906,
+      "kind": "kenburns",
+      "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot05_seed43.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "u"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot05_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3613,
+            "pickscore_letterbox": 0.1822,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 10,
+                "text": "Do not you run, do not you make a sound out there"
+              },
+              {
+                "index": 11,
+                "text": "Count it down and take them one by one"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot05_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3631,
+            "pickscore_letterbox": 0.179,
+            "clip_ratio": 1.005,
+            "pickscore_ratio": 0.9824
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 10,
+                "text": "Do not you run, do not you make a sound out there"
+              },
+              {
+                "index": 11,
+                "text": "Count it down and take them one by one"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot05_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3517,
+            "pickscore_letterbox": 0.1823,
+            "clip_ratio": 0.9734,
+            "pickscore_ratio": 1.0005
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 10,
+                "text": "Do not you run, do not you make a sound out there"
+              },
+              {
+                "index": 11,
+                "text": "Count it down and take them one by one"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.1823 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 6,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 12,
+          "text": "Hold the line, hold the line"
+        },
+        {
+          "index": 13,
+          "text": "Take what we can carry, leave the rest behind"
+        }
+      ],
+      "t_start": 56.906,
+      "t_end": 67.422,
+      "kind": "kenburns",
+      "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot06_seed43.png",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot06_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3782,
+            "pickscore_letterbox": 0.2062,
+            "clip_ratio": 1.0404,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 12,
+                "text": "Hold the line, hold the line"
+              },
+              {
+                "index": 13,
+                "text": "Take what we can carry, leave the rest behind"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot06_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3433,
+            "pickscore_letterbox": 0.1995,
+            "clip_ratio": 0.9444,
+            "pickscore_ratio": 0.9675
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 12,
+                "text": "Hold the line, hold the line"
+              },
+              {
+                "index": 13,
+                "text": "Take what we can carry, leave the rest behind"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot06_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3635,
+            "pickscore_letterbox": 0.2089,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 1.0131
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 12,
+                "text": "Hold the line, hold the line"
+              },
+              {
+                "index": 13,
+                "text": "Take what we can carry, leave the rest behind"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.2089 (provisional draft)",
+        "history": []
+      }
+    },
+    {
+      "index": 7,
+      "section": "chorus",
+      "lines": [
+        {
+          "index": 14,
+          "text": "One more street, one more night"
+        },
+        {
+          "index": 15,
+          "text": "We are going home, we are going home tonight"
+        }
+      ],
+      "t_start": 67.422,
+      "t_end": 75.0,
+      "kind": "kenburns",
+      "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+      "asset": "stills/shot07_seed41.png",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      },
+      "candidates": [
+        {
+          "asset": "stills/shot07_seed41.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 41,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3714,
+            "pickscore_letterbox": 0.2044,
+            "clip_ratio": 1.0406,
+            "pickscore_ratio": 1.0084
+          },
+          "verdict": "chosen",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 14,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 15,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot07_seed42.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 42,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3569,
+            "pickscore_letterbox": 0.2027,
+            "clip_ratio": 1.0,
+            "pickscore_ratio": 1.0
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 14,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 15,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        },
+        {
+          "asset": "stills/shot07_seed43.png",
+          "recipe": {
+            "model": "base",
+            "unet": "z_image_bf16.safetensors",
+            "seed": 43,
+            "steps": 20,
+            "cfg": 4.0,
+            "width": 1280,
+            "height": 720,
+            "negative": "blurry, low quality, low resolution, jpeg artifacts, watermark, signature, text, caption, title, subtitle, letters, ui, hud, frame border, deformed, extra limbs, bad anatomy"
+          },
+          "scores": {
+            "clip_letterbox": 0.3516,
+            "pickscore_letterbox": 0.1985,
+            "clip_ratio": 0.9851,
+            "pickscore_ratio": 0.9793
+          },
+          "verdict": "passed-over",
+          "culled_by": "",
+          "provenance": {
+            "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista, painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+            "lines": [
+              {
+                "index": 14,
+                "text": "One more street, one more night"
+              },
+              {
+                "index": 15,
+                "text": "We are going home, we are going home tonight"
+              }
+            ]
+          }
+        }
+      ],
+      "pick": {
+        "picked_by": "machine-provisional",
+        "reason": "top PickScore survivor 0.2044 (provisional draft)",
+        "history": []
+      }
+    }
+  ],
+  "notes": "run_brief clamor_hold_the_line; mode provisional",
+  "loop": {
+    "length": 56.616,
+    "crossfade": 0.75,
+    "search": 2.0,
+    "blend_at": "end"
+  },
+  "song_candidates": [
+    {
+      "asset": "song/clamor_hold_the_line_seed701.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 701,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.5,
+        "truncated": false,
+        "audiobox_CE": 7.2887,
+        "audiobox_CU": 7.7226,
+        "audiobox_PC": 6.3145,
+        "audiobox_PQ": 8.0572
+      },
+      "verdict": "chosen",
+      "culled_by": "",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    },
+    {
+      "asset": "song/clamor_hold_the_line_seed702.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 702,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.55,
+        "truncated": false,
+        "audiobox_CE": 7.3079,
+        "audiobox_CU": 7.7701,
+        "audiobox_PC": 6.2317,
+        "audiobox_PQ": 8.1047
+      },
+      "verdict": "passed-over",
+      "culled_by": "",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    },
+    {
+      "asset": "song/clamor_hold_the_line_seed703.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 703,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.05,
+        "truncated": true,
+        "audiobox_CE": 7.2506,
+        "audiobox_CU": 7.5662,
+        "audiobox_PC": 6.5353,
+        "audiobox_PQ": 7.9979
+      },
+      "verdict": "culled",
+      "culled_by": "qc:truncation",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    }
+  ],
+  "song_pick": {
+    "picked_by": "owner",
+    "reason": "seed 702 aligned 8/16 lines; 701 aligned 16/16 in WI 1001",
+    "history": [
+      {
+        "asset": "song/clamor_hold_the_line_seed702.flac",
+        "picked_by": "machine-auto",
+        "reason": "top Audiobox CE 7.3079 among 2 unvetoed of 3",
+        "date": "2026-09-02"
+      }
+    ]
+  },
+  "scorer_versions": {
+    "audio_qc": "wi1046",
+    "audiobox_aesthetics": "0.0.4",
+    "still_clip": "openai/clip-vit-base-patch32",
+    "still_pickscore": "yuvalkirstain/PickScore_v1"
+  }
+}

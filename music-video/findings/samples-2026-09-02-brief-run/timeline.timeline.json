@@ -1,0 +1,136 @@
+{
+  "audio": "clamor_hold_the_line_seed701.flac",
+  "duration": 75.0,
+  "route": "demucs-whisperx",
+  "lines": [
+    {
+      "index": 0,
+      "section": "verse",
+      "text": "Six of us went out at first light",
+      "start": 4.955,
+      "end": 9.219,
+      "confidence": "high"
+    },
+    {
+      "index": 1,
+      "section": "verse",
+      "text": "Counting every step and every round",
+      "start": 9.98,
+      "end": 12.982,
+      "confidence": "high"
+    },
+    {
+      "index": 2,
+      "section": "verse",
+      "text": "The colony is waiting on the far side",
+      "start": 14.844,
+      "end": 19.208,
+      "confidence": "high"
+    },
+    {
+      "index": 3,
+      "section": "verse",
+      "text": "Of a city that has forgotten how to make a sound",
+      "start": 19.748,
+      "end": 24.232,
+      "confidence": "high"
+    },
+    {
+      "index": 4,
+      "section": "chorus",
+      "text": "Hold the line, hold the line",
+      "start": 24.433,
+      "end": 26.254,
+      "confidence": "high"
+    },
+    {
+      "index": 5,
+      "section": "chorus",
+      "text": "Take what we can carry, leave the rest behind",
+      "start": 29.329,
+      "end": 39.975,
+      "confidence": "high"
+    },
+    {
+      "index": 6,
+      "section": "chorus",
+      "text": "One more street, one more night",
+      "start": 39.975,
+      "end": 41.231,
+      "confidence": "low"
+    },
+    {
+      "index": 7,
+      "section": "chorus",
+      "text": "We are going home, we are going home tonight",
+      "start": 41.231,
+      "end": 42.487,
+      "confidence": "low"
+    },
+    {
+      "index": 8,
+      "section": "verse",
+      "text": "She has got the map and I have got the last flare",
+      "start": 44.998,
+      "end": 47.46,
+      "confidence": "high"
+    },
+    {
+      "index": 9,
+      "section": "verse",
+      "text": "Something in the stairwell heard us come",
+      "start": 47.5,
+      "end": 49.801,
+      "confidence": "high"
+    },
+    {
+      "index": 10,
+      "section": "verse",
+      "text": "Do not you run, do not you make a sound out there",
+      "start": 49.981,
+      "end": 52.783,
+      "confidence": "high"
+    },
+    {
+      "index": 11,
+      "section": "verse",
+      "text": "Count it down and take them one by one",
+      "start": 52.823,
+      "end": 55.445,
+      "confidence": "high"
+    },
+    {
+      "index": 12,
+      "section": "chorus",
+      "text": "Hold the line, hold the line",
+      "start": 56.906,
+      "end": 59.35,
+      "confidence": "high"
+    },
+    {
+      "index": 13,
+      "section": "chorus",
+      "text": "Take what we can carry, leave the rest behind",
+      "start": 61.833,
+      "end": 67.422,
+      "confidence": "high"
+    },
+    {
+      "index": 14,
+      "section": "chorus",
+      "text": "One more street, one more night",
+      "start": 67.422,
+      "end": 69.948,
+      "confidence": "low"
+    },
+    {
+      "index": 15,
+      "section": "chorus",
+      "text": "We are going home, we are going home tonight",
+      "start": 69.948,
+      "end": 72.474,
+      "confidence": "low"
+    }
+  ],
+  "notes": "demucs htdemucs vocal stem; whisper=small.en; 103 words recognised; 12/16 lines matched >= 34% of tokens; separation 13s, asr+align 12s"
+}

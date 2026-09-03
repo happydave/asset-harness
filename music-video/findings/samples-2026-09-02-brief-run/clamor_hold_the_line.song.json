@@ -1,0 +1,116 @@
+{
+  "spec": {
+    "name": "clamor_hold_the_line",
+    "seconds": 75.0,
+    "bpm": 96,
+    "key": "D minor",
+    "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+    "lyrics": "[verse]\nSix of us went out at first light\nCounting every step and every round\nThe colony is waiting on the far side\nOf a city that has forgotten how to make a sound\n\n[chorus]\nHold the line, hold the line\nTake what we can carry, leave the rest behind\nOne more street, one more night\nWe are going home, we are going home tonight\n\n[verse]\nShe has got the map and I have got the last flare\nSomething in the stairwell heard us come\nDo not you run, do not you make a sound out there\nCount it down and take them one by one\n\n[chorus]\nHold the line, hold the line\nTake what we can carry, leave the rest behind\nOne more street, one more night\nWe are going home, we are going home tonight\n"
+  },
+  "audio": "clamor_hold_the_line_seed702.flac",
+  "candidates": [
+    {
+      "asset": "clamor_hold_the_line_seed701.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 701,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.5,
+        "truncated": false,
+        "audiobox_CE": 7.2887,
+        "audiobox_CU": 7.7226,
+        "audiobox_PC": 6.3145,
+        "audiobox_PQ": 8.0572
+      },
+      "verdict": "passed-over",
+      "culled_by": "",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    },
+    {
+      "asset": "clamor_hold_the_line_seed702.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 702,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.55,
+        "truncated": false,
+        "audiobox_CE": 7.3079,
+        "audiobox_CU": 7.7701,
+        "audiobox_PC": 6.2317,
+        "audiobox_PQ": 8.1047
+      },
+      "verdict": "chosen",
+      "culled_by": "",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    },
+    {
+      "asset": "clamor_hold_the_line_seed703.flac",
+      "recipe": {
+        "unet": "acestep_v1.5_xl_turbo_bf16.safetensors",
+        "checkpoint": "turbo",
+        "seed": 703,
+        "steps": 8,
+        "cfg": 1.0,
+        "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+        "bpm": 96,
+        "key": "D minor",
+        "seconds": 75.0
+      },
+      "scores": {
+        "true_peak_dbtp": -1.0,
+        "end_decay_s": 0.05,
+        "truncated": true,
+        "audiobox_CE": 7.2506,
+        "audiobox_CU": 7.5662,
+        "audiobox_PC": 6.5353,
+        "audiobox_PQ": 7.9979
+      },
+      "verdict": "culled",
+      "culled_by": "qc:truncation",
+      "provenance": {
+        "spec_sha256": "37b65d77bb14f979c71b725a35d66b9ac43758cea68ac2f7295499e19cd6b552",
+        "lyrics_sha256": "2b9a5e3290b2de99ceace79c665b1c8bf17e4653581ed66452823b4cbd0b92a3",
+        "checkpoint": "turbo"
+      }
+    }
+  ],
+  "pick": {
+    "picked_by": "machine-auto",
+    "reason": "top Audiobox CE 7.3079 among 2 unvetoed of 3",
+    "history": []
+  },
+  "no_pick_reason": null,
+  "scorer_versions": {
+    "audio_qc": "wi1046",
+    "audiobox_aesthetics": "0.0.4"
+  },
+  "controls": {
+    "audiobox_deterministic": true
+  }
+}

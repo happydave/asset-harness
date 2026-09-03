@@ -1,0 +1,100 @@
+{
+  "name": "clamor_hold_the_line",
+  "song": {
+    "name": "clamor_hold_the_line",
+    "seconds": 75.0,
+    "bpm": 96,
+    "key": "D minor",
+    "tags": "post-apocalyptic folk rock, male and female vocals, gritty clean vocal, acoustic guitar, driving drums, bass, mournful strings, minor key, anthemic chorus, weary, defiant, cinematic",
+    "lyrics": "[verse]\nSix of us went out at first light\nCounting every step and every round\nThe colony is waiting on the far side\nOf a city that has forgotten how to make a sound\n\n[chorus]\nHold the line, hold the line\nTake what we can carry, leave the rest behind\nOne more street, one more night\nWe are going home, we are going home tonight\n\n[verse]\nShe has got the map and I have got the last flare\nSomething in the stairwell heard us come\nDo not you run, do not you make a sound out there\nCount it down and take them one by one\n\n[chorus]\nHold the line, hold the line\nTake what we can carry, leave the rest behind\nOne more street, one more night\nWe are going home, we are going home tonight\n"
+  },
+  "style": "painterly tabletop RPG concept art, dramatic volumetric light, warm lantern glow against cool blue shadows, cinematic wide establishing shot, richly detailed, muted desaturated palette, moody atmospheric",
+  "shots": [
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "a lone survivor scavenger setting out through a ruined overgrown city street at first light, worn leather armor and a heavy backpack, alert wary posture",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "a vast silent ruined city sprawling under a pale dawn sky, distant fortified colony with faint warm lights on the far horizon across the dead skyline, empty streets, utter stillness",
+      "kb": {
+        "zoom": "none",
+        "pan": "r"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "video",
+      "source_shot": 4,
+      "motion": "two survivors holding position inside a dark ruined building, the red flare in one hand flickers and throws moving light across the walls, thin smoke drifting slowly upward, the looming shadow in the broken stairwell shifts almost imperceptibly, the figures stay still and alert, only the flare light and the smoke move"
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "a small band of survivors walking down a debris-strewn ruined avenue toward a warm distant glow of home, hopeful, backs to the camera, embers drifting",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "two survivors inside a dark ruined building, one holding up a burning red flare that casts dramatic light, a menacing shadow looming in a broken stairwell behind them, tense",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "a survivor braced in a shattered doorway aiming a makeshift weapon into darkness, a single shambling undead silhouette approaching down the corridor, extreme tension, held breath",
+      "kb": {
+        "zoom": "in",
+        "pan": "u"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "a menacing horde of shambling undead advancing down a ruined avenue toward a makeshift barricade at night, backlit by cold moonlight and drifting embers",
+      "kb": {
+        "zoom": "in",
+        "pan": "c"
+      }
+    },
+    {
+      "lines": 2,
+      "kind": "kenburns",
+      "prompt": "dawn breaking over a ruined city as silhouetted survivors walk away toward a fortified colony gate glowing with warm safe light, hope and resolution, wide cinematic vista",
+      "kb": {
+        "zoom": "out",
+        "pan": "c"
+      }
+    }
+  ],
+  "loop": {
+    "length": 56.616,
+    "crossfade": 0.75,
+    "search": 2.0,
+    "blend_at": "end"
+  },
+  "candidates": {
+    "song_seeds": [
+      701,
+      702,
+      703
+    ],
+    "stills_n": 3,
+    "clips_n": 2,
+    "seed_base_stills": 41,
+    "seed_base_clips": 901
+  }
+}

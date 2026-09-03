@@ -1,0 +1,31 @@
+{
+  "brief_sha256": "de1ce024e7911c9b5ac29c90152ddca60bbd9ad257d381e2378de94032b292a4",
+  "mode": "provisional",
+  "stages": {
+    "preflight": "done",
+    "song": "done",
+    "timeline": "done",
+    "manifest": "done",
+    "stills": "done",
+    "clips": "done",
+    "render": "done"
+  },
+  "song_chosen": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/song/clamor_hold_the_line_seed701.flac",
+  "still_runs": [
+    "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/stills"
+  ],
+  "last_render_assets": {
+    "0": "stills/shot00_seed41.png",
+    "1": "stills/shot01_seed42.png",
+    "2": "clips-shot02/shot02_seed901.mp4",
+    "3": "stills/shot03_seed41.png",
+    "4": "stills/shot04_seed42.png",
+    "5": "stills/shot05_seed43.png",
+    "6": "stills/shot06_seed43.png",
+    "7": "stills/shot07_seed41.png",
+    "audio": "song/clamor_hold_the_line_seed701.flac"
+  },
+  "notes": [
+    "song re-pick: shots reset []"
+  ]
+}

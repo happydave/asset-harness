@@ -1,0 +1,46 @@
+{
+  "output": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/clamor_hold_the_line_loop.mp4",
+  "source": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/clamor_hold_the_line.mp4",
+  "source_duration": 75.0,
+  "requested_length": 56.616,
+  "search": 2.0,
+  "crossfade": 0.75,
+  "curve": "tri",
+  "blend_at": "end",
+  "fps": 30.0,
+  "chosen": {
+    "length": 56.0667,
+    "frames": 1682,
+    "candidates": 61,
+    "envelope_distance": 0.4463,
+    "authored_distance": 0.8261,
+    "match_window_s": 0.75
+  },
+  "video": {
+    "frames": 1682,
+    "join_ssim": 0.9165,
+    "local_norm": 0.9827,
+    "gap": 0.0661,
+    "keyframe_norm": 0.958,
+    "keyframe_gap": 0.0415,
+    "pass": true
+  },
+  "audio": {
+    "sample_rate": 48000,
+    "intended_samples": 2691200,
+    "codec_padding_samples": 896,
+    "codec_padding_ms": 18.67,
+    "join_delta": 15,
+    "local_max_delta": 99,
+    "discontinuity_ratio": 0.15,
+    "discontinuity_pass": true,
+    "rms_before": 1160.4,
+    "rms_after": 291.5,
+    "level_window": "either side of the dissolve",
+    "level_ratio": 3.981,
+    "level_pass": true
+  },
+  "webm": null,
+  "pass": true,
+  "shot_boundary_note": null
+}

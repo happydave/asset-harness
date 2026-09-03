@@ -30,6 +30,9 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
 
 ## Files
 
+- **`run_brief.py`** — the driver (WI 1180): brief JSON → every stage in order, resumable via
+  `run.json`; assisted pauses (exit 3) / provisional drafts; re-pick handling. `brief.schema.json` +
+  `inputs/*.brief.json`. **`test_run_brief.py`** — 36 checks.
 - **`preflight.py`** — run before a session: server, `--disable-mmap`, queue + load-hang fingerprint,
   last-job-was-Wan, recipe artifacts (names imported from the generators), workstation ffmpeg, track
   venvs. Every failure prints its fix; exit 1 on any FAIL. Read-only, stdlib + requests.

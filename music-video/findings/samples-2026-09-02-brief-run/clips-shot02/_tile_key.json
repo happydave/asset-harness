@@ -1,0 +1,10 @@
+{
+  "run_id": "clips-shot02",
+  "manifest": "/home/dave/Documents/projects/asset-harness/music-video/prototypes/outputs/runs/clamor_hold_the_line/clamor_hold_the_line.manifest.json",
+  "shots": {
+    "shot 02": {
+      "A": "clips-shot02/shot02_seed901.mp4",
+      "B": "clips-shot02/shot02_seed902.mp4"
+    }
+  }
+}

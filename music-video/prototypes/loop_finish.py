@@ -230,6 +230,11 @@ def wrap(src: Path, out: Path, length: float, crossfade: float, *, audio: Path |
     fps = fps or probe_fps(src)
     n = max(1, int(round(crossfade * fps)))      # blend frames
     xf = n / fps                                 # crossfade quantised to whole frames
+    # Work in whole frames throughout: a length rounded to a few decimals (55.8667 for 1676/30)
+    # lands a hair past the frame grid, and ffmpeg's -t then admits one more frame per cut. The
+    # lobby's 56.0 s sat exactly on the grid, which is why this only surfaced on a searched length.
+    total = int(round(length * fps))
+    length = total / fps
     asrc = audio or src
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -244,7 +249,7 @@ def wrap(src: Path, out: Path, length: float, crossfade: float, *, audio: Path |
         graph = (f"[0:v][1:v]xfade=transition=fade:duration={xf:.6f}:offset=0[v];"
                  f"{av}{ah}acrossfade=d={xf:.6f}:c1={curve}:c2={curve}[a]")
     else:
-        mid = length - xf
+        mid = (total - n) / fps
         inputs = ["-ss", f"{xf:.6f}", "-t", f"{mid:.6f}", "-i", str(src),        # 0 mid
                   "-ss", f"{length:.6f}", "-t", f"{xf:.6f}", "-i", str(src),     # 1 tail
                   "-ss", "0", "-t", f"{xf:.6f}", "-i", str(src)]                 # 2 head start
@@ -412,7 +417,7 @@ def finish(src: Path, out: Path, *, length: float, crossfade: float, search: flo
         frames = int(round(length * fps))
         chosen = {"length": round(frames / fps, 4), "frames": frames, "candidates": 1,
                   "envelope_distance": None, "authored_distance": None, "match_window_s": None}
-    t = chosen["length"]
+    t = chosen["frames"] / fps  # the exact grid length; chosen["length"] is its 4-decimal display
 
     wrap(src, out, t, crossfade, audio=audio, curve=curve, blend_at=blend_at, fps=fps)
     report = {"output": str(out), "source": str(src), "source_duration": round(duration, 3),

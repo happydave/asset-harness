@@ -9,33 +9,25 @@ All commands below run from `prototypes/`.
 
 ## Make a video
 
-1. **Preflight** — `python3 preflight.py` (or `--stage clip` etc. for one stage). Fix what it names
-   before generating anything; a `WARN` is advice, a `FAIL` is a stop.
-2. **Song** — write a spec JSON (copy `inputs/clamor_hold_the_line.song.json`: name, seconds, bpm,
-   key, tags, lyrics; per `../skills/prompting-ace-step/SKILL.md`), then
-   `python3 select_song.py --spec <spec>.json`. It sweeps three seeds, vetoes truncated takes, ranks by
-   Audiobox CE and picks; the record is `outputs/<name>/song/<name>.song.json`. Exit 1 = no pick, the
-   message says why; pick by hand with `repick.py`.
-3. **Timeline** — `.venv/bin/python align_posthoc.py --audio <song>.flac --lyrics <sheet>.txt`. The
-   sheet is the lyrics text with its `[verse]`/`[chorus]` tags. Fallback: `python3 tap_align.py`.
-4. **Stills** — with the manifest's prompts in place (step 6 first, then come back):
-   `python3 cull_stills.py sweep <manifest> --run <dir>` sweeps five seeds per shot, culls clear
-   outliers, and writes one shuffled lettered sheet per shot plus `pick_form.md`. The **owner** fills
-   the form → `python3 cull_stills.py apply-form <manifest> --run <dir>`. No owner available:
-   `python3 cull_stills.py provisional <manifest>` picks drafts labelled as such. Prompts per
-   `../skills/prompting-z-image/SKILL.md`.
-5. **Clips** — one or two hero shots only, each a `video` shot in the manifest:
-   `python3 clip_candidates.py sweep <manifest> --shot I --source-shot K --prompt "<motion>"`
-   (K must not be next to I). Two candidates, objective gates, a strip sheet + the same form; the
-   owner picks (`apply-form`) or `provisional --shot I` takes the first survivor. Motion prompts per
-   `../skills/prompting-wan-i2v/SKILL.md`.
-6. **Manifest** — shots of `{lines, t_start, t_end, kind, prompt, asset, kb}` partitioning the song;
-   `manifest.py` validates. `build_lobby.py` is the worked example until the brief-file driver
-   (WI 1180) lands.
-7. **Render** — `python3 render.py <manifest>.json --out <cut>.mp4`. A `loop` block in the manifest
-   also emits the seamless loop cut.
-8. **Record** — a findings entry per `../_template/findings.md`, including the license-lane check
-   table.
+1. **Write the brief.** Copy `prototypes/inputs/clamor_hold_the_line.brief.json` and edit it: the
+   song (name, seconds, bpm, key, tags, original lyrics with `[verse]`/`[chorus]` tags), a style
+   string, one entry per shot (how many lyric lines it covers, `still`/`kenburns`/`video`, its image
+   prompt or, for a video shot, a motion prompt and a non-adjacent `source_shot`), an optional loop
+   block. `prototypes/brief.schema.json` is the contract. Read the model skill for the prompts you
+   write: `../skills/prompting-ace-step/SKILL.md`, `prompting-z-image`, `prompting-wan-i2v`.
+2. **Run it.** From `prototypes/`:
+   `python3 run_brief.py run <brief>.json --out outputs/runs/<name> --mode provisional`
+   runs preflight, the song stage (three seeds, truncation veto, Audiobox pick), alignment, the
+   still sweep, the clip sweep and the render, drafting every pick and labelling it
+   `machine-provisional`. Without `--mode provisional` it is **assisted**: it stops (exit 3) at each
+   pick point, prints the form to fill, and `python3 run_brief.py resume <brief>.json --out <dir>`
+   continues. `run.json` in the output folder says where a run stands.
+3. **Change a pick.** `python3 repick.py pick <manifest> --shot N --to <asset> --by owner --reason "…"`
+   (or `--song`) then `resume`: a song re-pick re-derives the timeline; a still re-pick re-renders.
+4. **Record** a findings entry per `../_template/findings.md`, including the license-lane check table.
+
+The stage tools also run on their own (`select_song.py`, `cull_stills.py`, `clip_candidates.py`,
+`render.py`); the track README describes each.
 
 ## Rules
 

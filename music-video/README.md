@@ -125,6 +125,15 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
 - [`license-lane.md`](license-lane.md) — the vocal/lyrics license lane. **Required reading before
   generating.**
 - `prototypes/`
+  - [`run_brief.py`](prototypes/run_brief.py) — **the gated run driver** (WI 1180): a brief file
+    ([`brief.schema.json`](prototypes/brief.schema.json);
+    [`inputs/clamor_hold_the_line.brief.json`](prototypes/inputs/clamor_hold_the_line.brief.json) is
+    the filled example) → preflight → song stage → alignment → partition (placeholder assets) → still
+    stage → clip stage → render (+ loop). `--mode assisted` (default) stops at each pick point with the
+    form path, exit 3, and `resume` continues; `--mode provisional` drafts every pick. `run.json`
+    records the stages; a song re-pick re-derives the timeline and keeps shots whose lyric text is
+    unchanged; a still re-pick re-renders and the driver reports which shots changed.
+    [`test_run_brief.py`](prototypes/test_run_brief.py) (36 checks, every stage faked).
   - [`preflight.py`](prototypes/preflight.py) — **run first.** Checks every operational precondition
     (server up, `--disable-mmap` on, queue idle and not in the load hang, last job not Wan, recipe
     checkpoints/LoRAs/encoders/VAEs installed, workstation ffmpeg, track venvs) and prints the fix for
