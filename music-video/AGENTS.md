@@ -11,9 +11,11 @@ All commands below run from `prototypes/`.
 
 1. **Preflight** — `python3 preflight.py` (or `--stage clip` etc. for one stage). Fix what it names
    before generating anything; a `WARN` is advice, a `FAIL` is a stop.
-2. **Song** — `python3 generate_song.py --seeds 701,702,703` → three FLAC candidates. Lyrics and tags
-   are the `SONG` block in the script today; edit them per `../skills/prompting-ace-step/SKILL.md`.
-   The best candidate is the one the owner (or Audiobox CE, once WI 1176 lands) picks.
+2. **Song** — write a spec JSON (copy `inputs/clamor_hold_the_line.song.json`: name, seconds, bpm,
+   key, tags, lyrics; per `../skills/prompting-ace-step/SKILL.md`), then
+   `python3 select_song.py --spec <spec>.json`. It sweeps three seeds, vetoes truncated takes, ranks by
+   Audiobox CE and picks; the record is `outputs/<name>/song/<name>.song.json`. Exit 1 = no pick, the
+   message says why; pick by hand with `repick.py`.
 3. **Timeline** — `.venv/bin/python align_posthoc.py --audio <song>.flac --lyrics <sheet>.txt`. The
    sheet is the lyrics text with its `[verse]`/`[chorus]` tags. Fallback: `python3 tap_align.py`.
 4. **Stills** — one `python3 generate_still.py --prompt "<scene>" --out <stem>` per shot; seconds each,

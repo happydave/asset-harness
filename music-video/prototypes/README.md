@@ -34,6 +34,10 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   last-job-was-Wan, recipe artifacts (names imported from the generators), workstation ffmpeg, track
   venvs. Every failure prints its fix; exit 1 on any FAIL. Read-only, stdlib + requests.
   **`test_preflight.py`** — 57 checks (`python3 test_preflight.py`), all probes faked.
+- **`select_song.py`** — the song stage (WI 1176): spec JSON → sweep (all seeds queued up front,
+  each waited on) → QC veto → Audiobox CE rank → auto-pick → `<name>.song.json`; `--into` lands it in a
+  manifest. **`test_select_song.py`** — 24 checks, sweep and scorer faked.
+  **`scoring/score_audiobox.py`** — Audiobox-only scorer for the stage (venv), with its determinism control.
 - **`comfy_client.py`** — shared helpers: `queue`, `wait_for_history` (the rule above),
   `download_outputs`, `run_job` (queue→wait→download), `fetch_from_history`.
 - **`fetch_from_history.py`** — recover a finished prompt's outputs after the fact

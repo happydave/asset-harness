@@ -130,8 +130,16 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
     checkpoints/LoRAs/encoders/VAEs installed, workstation ffmpeg, track venvs) and prints the fix for
     each failure; exit 1 on any failure so drivers can gate on it. Read-only. `--stage` narrows it.
     [`test_preflight.py`](prototypes/test_preflight.py) (57 checks, no server or GPU needed).
+  - [`select_song.py`](prototypes/select_song.py) — **the song stage** (WI 1176): a song spec JSON
+    (`inputs/clamor_hold_the_line.song.json` is the template) → seed sweep on `ai2` → save-time QC
+    (ceiling + truncation veto) → Audiobox CE rank in the scoring venv
+    ([`scoring/score_audiobox.py`](prototypes/scoring/score_audiobox.py)) → `machine-auto` pick →
+    `<name>.song.json` record built from the substrate dataclasses; `--into MANIFEST` lands the song
+    block. A truncated candidate is never promoted; no CE score means no pick (exit 1, owner re-picks).
+    [`test_select_song.py`](prototypes/test_select_song.py) (24 checks).
   - [`generate_song.py`](prototypes/generate_song.py) — ACE-Step 1.5 with lyrics; `--seeds a,b,c`
-    gives the 3–5 candidates the pick gate wants.
+    gives the 3–5 candidates the pick gate wants. The graph, checkpoint arms and save-time
+    postprocess that `select_song.py` reuses.
   - [`timeline.py`](prototypes/timeline.py) — the lyric timeline (JSON + LRC). **Every route emits
     this**, so the shot list cannot tell which produced it. Validates at emit time.
   - [`manifest.py`](prototypes/manifest.py) — the **shot-list manifest** schema (the track's durable
