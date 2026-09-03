@@ -38,6 +38,10 @@ paths = comfy_client.run_job(server, graph, out_stem, kinds=("videos",), backsto
   each waited on) → QC veto → Audiobox CE rank → auto-pick → `<name>.song.json`; `--into` lands it in a
   manifest. **`test_select_song.py`** — 24 checks, sweep and scorer faked.
   **`scoring/score_audiobox.py`** — Audiobox-only scorer for the stage (venv), with its determinism control.
+- **`cull_stills.py`** — the still stage (WI 1177): `sweep` → score (`scoring/score_stills.py`, venv)
+  → group-relative cull → shuffled lettered sheets + `pick_form.md` + `_tile_key.json`; `apply-form`
+  → owner picks with reasons; `provisional` → machine-provisional drafts. **`test_cull_stills.py`** —
+  37 checks (calibration replay on the archived corpora + fakes for client/scorer/tiler).
 - **`comfy_client.py`** — shared helpers: `queue`, `wait_for_history` (the rule above),
   `download_outputs`, `run_job` (queue→wait→download), `fetch_from_history`.
 - **`fetch_from_history.py`** — recover a finished prompt's outputs after the fact

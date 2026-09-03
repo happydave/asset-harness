@@ -137,6 +137,15 @@ one clean fallback worth knowing about — CogVideoX-5B is not.
     `<name>.song.json` record built from the substrate dataclasses; `--into MANIFEST` lands the song
     block. A truncated candidate is never promoted; no CE score means no pick (exit 1, owner re-picks).
     [`test_select_song.py`](prototypes/test_select_song.py) (24 checks).
+  - [`cull_stills.py`](prototypes/cull_stills.py) — **the still stage** (WI 1177): `sweep` (N Z-Image
+    seeds per shot on `ai2`, whole-frame CLIP + PickScore via
+    [`scoring/score_stills.py`](prototypes/scoring/score_stills.py), a group-relative **cull** that
+    only removes clear outliers — calibrated so no real candidate in the archived WI 1037/1111 corpora
+    is culled while the off-brief control is — then one **shuffled, lettered contact sheet per shot**
+    and one `pick_form.md`), `apply-form` (the owner's letters + reasons become `owner` picks),
+    `provisional` (top-PickScore survivor as a `machine-provisional` draft). Every candidate, score,
+    verdict and gate lands in the manifest. [`test_cull_stills.py`](prototypes/test_cull_stills.py)
+    (37 checks, including the calibration replay).
   - [`generate_song.py`](prototypes/generate_song.py) — ACE-Step 1.5 with lyrics; `--seeds a,b,c`
     gives the 3–5 candidates the pick gate wants. The graph, checkpoint arms and save-time
     postprocess that `select_song.py` reuses.

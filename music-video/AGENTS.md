@@ -18,8 +18,12 @@ All commands below run from `prototypes/`.
    message says why; pick by hand with `repick.py`.
 3. **Timeline** — `.venv/bin/python align_posthoc.py --audio <song>.flac --lyrics <sheet>.txt`. The
    sheet is the lyrics text with its `[verse]`/`[chorus]` tags. Fallback: `python3 tap_align.py`.
-4. **Stills** — one `python3 generate_still.py --prompt "<scene>" --out <stem>` per shot; seconds each,
-   so sweep seeds. Read `../skills/prompting-z-image/SKILL.md` first. The owner picks.
+4. **Stills** — with the manifest's prompts in place (step 6 first, then come back):
+   `python3 cull_stills.py sweep <manifest> --run <dir>` sweeps five seeds per shot, culls clear
+   outliers, and writes one shuffled lettered sheet per shot plus `pick_form.md`. The **owner** fills
+   the form → `python3 cull_stills.py apply-form <manifest> --run <dir>`. No owner available:
+   `python3 cull_stills.py provisional <manifest>` picks drafts labelled as such. Prompts per
+   `../skills/prompting-z-image/SKILL.md`.
 5. **Clips** — one or two hero shots only: `python3 generate_clip.py --image <still>.png
    --prompt "<motion>" --out <stem>`. Defaults are the recipe. Read
    `../skills/prompting-wan-i2v/SKILL.md` first.
