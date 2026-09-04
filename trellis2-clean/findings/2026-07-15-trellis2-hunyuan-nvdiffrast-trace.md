@@ -77,3 +77,32 @@ same license Hunyuan-derivative UltraShape 1.0 inherits (WI 937).
 - Whether merely *importing* (not calling) nvdiffrast creates any NC-license obligation is a legal
   question, not a code one; the patch removes the question entirely for v2. Not legal advice.
 - o-voxel `IS_HIP_EXTENSION` (ROCm) branch not tested — portability to AMD remains unverified for v2.
+
+## Correction — 2026-08-27: the portability conclusion above is wrong
+
+The "Portability" bullet and the caveat directly above it understate ROCm support badly enough to
+have mis-set the hardware plan. Re-audited at fork HEAD `75fbf01` on 2026-08-27:
+
+- **All three** MIT extensions — o-voxel, CuMesh, FlexGEMM — expose a first-class `BUILD_TARGET=rocm`
+  path with `GPU_ARCHS` → `--offload-arch=`, not just o-voxel (`o-voxel/setup.py:11-26` and the
+  equivalents upstream). Calling this "an `IS_HIP_EXTENSION` branch hinting at possible ROCm" was an
+  undercount.
+- **FlexGEMM's actual compute is Triton** (`flex_gemm/kernels/triton/spconv/*`), which is
+  ROCm-portable. Its `.cu` files are hashmap/neighbour-map bookkeeping containing no CUTLASS, `wmma`,
+  or `mma.sync`, and it carries a **hand-written AMD shim** (`migemm_neighmap_pp.cu:9`, `__syncwarp`
+  → `__builtin_amdgcn_wave_barrier()`) — evidence someone has actually compiled it on AMD.
+- `setup.sh` detects `rocminfo` → `PLATFORM=hip` and installs a ROCm torch. The **only** two things it
+  refuses on HIP are **nvdiffrast and nvdiffrec** (`setup.sh:103,113`) — precisely the two
+  non-commercial dependencies. On AMD the clean geometry lane is therefore the default *by
+  construction*, not by discipline. This is a licensing argument the original trace missed entirely.
+- flash-attn is avoidable via `ATTN_BACKEND=sdpa` (`trellis2/modules/attention/config.py:15`), so the
+  gfx942/MI300 pin in `setup.sh` does not bind.
+
+The "run on the RTX 5070" conclusion does not survive: the workstation 5070 is **12 GiB** against a
+README requirement of **≥24 GiB**, on CUDA 12.4 — a toolchain predating the card's own sm_120 arch.
+`ai2` (gfx1201, 31.9 GiB, ROCm 7.2.4) clears both bars.
+
+Still genuinely unverified: whether hipify handles **o-voxel and CuMesh**, which have ROCm build flags
+but no HIP-specific source. Only FlexGEMM shows evidence of having been built on AMD. That is the
+question [WI 1197](../../../../tickets/docs/pending/1197-trellis2-rocm-geometry-spike/spike.md) exists
+to settle by running it.
