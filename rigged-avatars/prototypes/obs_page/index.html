@@ -61,6 +61,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from './vendor/three-vrm.module.js';
 import { FilesetResolver, FaceLandmarker } from './vendor/mediapipe/vision_bundle.mjs';
 
@@ -96,7 +97,11 @@ const resize = () => {
 addEventListener('resize', resize); resize();
 
 // ---------------------------------------------------------------- the avatar
-let vrm = null, headBone = null, expressionNames = new Set();
+let vrm = null, headBone = null, expressionNames = new Set(), facingZ = 1;
+// Mouse wheel = zoom, drag = orbit, right-drag = pan. Requested by the owner mid-run.
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.minDistance = 0.12; controls.maxDistance = 4.0;
 try {
   const loader = new GLTFLoader();
   loader.register(p => new VRMLoaderPlugin(p));
@@ -107,10 +112,21 @@ try {
   scene.add(vrm.scene);
   headBone = vrm.humanoid?.getNormalizedBoneNode('head') ?? null;
   for (const n of Object.keys(vrm.expressionManager?.expressionMap ?? {})) expressionNames.add(n);
-  // frame the head
+  // Frame the head, on whichever side the face actually IS.
+  //
+  // WI 1362's avatar faces -Z, and VRM 1.0 requires +Z. Confirmed from the file: the humanoid eye bones
+  // sit at z = -0.107. This is a real defect in the asset (Blender's +Y exports to glTF -Z, and the head
+  // was built with its face at Blender +Y) and the fix belongs in blender_v1_face_rig.py, NOT here.
+  // Until then, read the facing off the eye bones so the page shows the face rather than the back of the
+  // head -- and say so on the HUD, so the workaround cannot quietly become the fix.
   const hb = vrm.humanoid?.getRawBoneNode('head');
+  const eye = vrm.humanoid?.getRawBoneNode('leftEye');
   const y = hb ? hb.getWorldPosition(new THREE.Vector3()).y : 1.2;
-  camera.position.set(0, y + 0.02, 0.62); camera.lookAt(0, y + 0.02, 0);
+  facingZ = eye ? Math.sign(eye.getWorldPosition(new THREE.Vector3()).z || 1) : 1;
+  const target = new THREE.Vector3(0, y + 0.02, 0);
+  camera.position.set(0, y + 0.02, 0.62 * facingZ);
+  controls.target.copy(target);
+  controls.update();
 } catch (e) { fail('VRM LOAD (three-vrm)', e); }
 
 // ---------------------------------------------------------------- tracker
@@ -224,6 +240,7 @@ function frame() {
     if (shapes && vrm) { driveFromBlendshapes(shapes); driveHeadPose(res); }
   }
 
+  controls.update();
   if (vrm) vrm.update(Math.min(clock.getDelta(), 1 / 30));
   renderer.render(scene, camera);
   stats.renderFrames++;
@@ -238,6 +255,8 @@ function frame() {
     hud.innerHTML =
       `<b>WI 1370</b>  route C (window capture)   delegate=${DELEGATE}\n` +
       `camera     ${camLabel}\n` +
+      `facing     ${facingZ > 0 ? '<span class="good">+Z (VRM 1.0 correct)</span>'
+                                : '<span class="bad">-Z — BACKWARDS, WI 1362 defect; view compensated</span>'}\n` +
       `WebGL2     ${gl2 ? '<span class="good">yes</span>' : '<span class="bad">NO (WebGL1)</span>'}\n` +
       `render     ${stats.fps.toFixed(1)} fps   (${stats.frameMs.toFixed(1)} ms/frame)\n` +
       `tracker    ${stats.tfps.toFixed(1)} fps   (${stats.trackMs.toFixed(1)} ms/detect)\n` +
@@ -246,7 +265,8 @@ function frame() {
       `signal     ${stats.driven} receiving a non-zero score  (only 16 are bound;\n`  +
       `           the other 36 are declared stubs and will not visibly move)\n` +
       `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
-      `keys       [c] magenta backdrop  [h] hide HUD`;
+      `keys       [c] magenta backdrop  [h] hide HUD  [r] reset view\n` +
+      `mouse      wheel = zoom, drag = orbit, right-drag = pan`;
   }
   // ms clock for the camera-loop latency measurement
   clockEl.textContent = String(now.toFixed(0)).slice(-5);
@@ -256,6 +276,12 @@ frame();
 addEventListener('keydown', e => {
   if (e.key === 'c') document.getElementById('chroma').classList.toggle('on');
   if (e.key === 'h') { hud.style.display = hud.style.display === 'none' ? '' : 'none'; }
+  if (e.key === 'r' && vrm) {
+    const hb2 = vrm.humanoid?.getRawBoneNode('head');
+    const y2 = hb2 ? hb2.getWorldPosition(new THREE.Vector3()).y : 1.2;
+    camera.position.set(0, y2 + 0.02, 0.62 * facingZ);
+    controls.target.set(0, y2 + 0.02, 0); controls.update();
+  }
 });
 </script>
 </body>
