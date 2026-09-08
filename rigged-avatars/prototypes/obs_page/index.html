@@ -37,6 +37,11 @@
      difference IS the end-to-end camera->screen latency. Costs nothing and needs no instrumentation. */
   #clock { position: fixed; right: 14px; bottom: 12px; font-size: 46px; font-weight: 700;
            color: #fff; background: #000; padding: 4px 12px; letter-spacing: 2px; z-index: 5; }
+  #copy { position: fixed; left: 10px; top: 10px; transform: translateY(-100%); margin-top: -4px;
+           z-index: 7; font: inherit; font-size: 11px; color: #cfd3dc; cursor: pointer;
+           background: #1b1f28; border: 1px solid #2b2f3a; border-radius: 5px; padding: 3px 9px; }
+  #copy:hover { background: #262c38; }
+  #copy.done { color: #7ddc8a; border-color: #3f6f4a; }
   #err { position: fixed; inset: auto 10px 10px 10px; padding: 10px 14px; border-radius: 6px;
          background: #3a1114; border: 1px solid #71232a; color: #ffb4b4; display: none;
          white-space: pre-wrap; z-index: 9; }
@@ -59,6 +64,7 @@
 <canvas id="gl"></canvas>
 <video id="cam" playsinline></video>
 <div id="hud">starting…</div>
+<button id="copy" title="copy a stats snapshot">copy stats</button>
 <div id="clock">--</div>
 <canvas id="preview" width="320" height="180"></canvas>
 <div id="bars"></div>
@@ -186,6 +192,8 @@ try {
   video.srcObject = await navigator.mediaDevices.getUserMedia(constraints);
   camLabel = video.srcObject.getVideoTracks()[0]?.label ?? '(unlabelled)';
   await video.play(); camReady = true;
+  if (HAS_RVFC) video.requestVideoFrameCallback(onCamFrame);
+  else setInterval(() => { frameDirty = true; stats.camFrames++; }, 1000 / 60);  // coarse fallback
 } catch (e) {
   // Translate the three getUserMedia failures that actually happen into what to DO about them. The
   // first one cost a session: V4L2 capture is effectively exclusive, and OBS holding the camera makes
@@ -210,10 +218,23 @@ try {
 
 // ---------------------------------------------------------------- loop
 const stats = {
-  renderFrames: 0, trackFrames: 0, fps: 0, tfps: 0,
+  renderFrames: 0, trackFrames: 0, camFrames: 0, fps: 0, tfps: 0, cfps: 0,
   faceSeen: false, driven: 0, matched: 0, unmatched: new Set(),
-  trackMs: 0, frameMs: 0, lastVideoTs: -1,
+  trackMs: 0, frameMs: 0,
 };
+// Running ranges, so the copy button reports what was actually seen rather than one instant.
+const range = {};
+const track = (k, v) => { const r = range[k] ??= [v, v]; if (v < r[0]) r[0] = v; if (v > r[1]) r[1] = v; };
+
+// Gate detection on a genuinely NEW camera frame. `video.currentTime` advances continuously, not in
+// frame steps, so keying on it re-ran inference on the same image ~2x over and reported the result as
+// "tracker fps" — a number that overstated useful work and burned GPU a game would want.
+let frameDirty = false;
+const HAS_RVFC = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+function onCamFrame() {
+  frameDirty = true; stats.camFrames++;
+  video.requestVideoFrameCallback(onCamFrame);
+}
 let windowStart = performance.now();
 const clockEl = document.getElementById('clock');
 const pv = document.getElementById('preview'), pvx = pv.getContext('2d');
@@ -259,8 +280,8 @@ function frame() {
   requestAnimationFrame(frame);
   const t0 = performance.now();
 
-  if (landmarker && camReady && video.readyState >= 2 && video.currentTime !== stats.lastVideoTs) {
-    stats.lastVideoTs = video.currentTime;
+  if (landmarker && camReady && video.readyState >= 2 && frameDirty) {
+    frameDirty = false;
     const ts0 = performance.now();
     let res = null;
     try { res = landmarker.detectForVideo(video, ts0); }
@@ -294,9 +315,13 @@ function frame() {
 
   const now = performance.now();
   if (now - windowStart >= 1000) {
-    stats.fps  = (stats.renderFrames * 1000 / (now - windowStart));
-    stats.tfps = (stats.trackFrames  * 1000 / (now - windowStart));
-    stats.renderFrames = stats.trackFrames = 0; windowStart = now;
+    const span = now - windowStart;
+    stats.fps  = stats.renderFrames * 1000 / span;
+    stats.tfps = stats.trackFrames  * 1000 / span;
+    stats.cfps = stats.camFrames    * 1000 / span;
+    stats.renderFrames = stats.trackFrames = stats.camFrames = 0; windowStart = now;
+    track('render fps', stats.fps); track('camera fps', stats.cfps);
+    track('detect/s', stats.tfps); track('ms/detect', stats.trackMs);
     // top scoring clips, with bound-vs-stub called out: separates "the tracker isn't seeing it" from
     // "our morph is too small", which is not a distinction you can make by looking at the avatar
     const top = [...lastCats].filter(c => c.categoryName !== '_neutral')
@@ -315,7 +340,8 @@ function frame() {
                                 : '<span class="bad">-Z — BACKWARDS, WI 1362 defect; view compensated</span>'}\n` +
       `WebGL2     ${gl2 ? '<span class="good">yes</span>' : '<span class="bad">NO (WebGL1)</span>'}\n` +
       `render     ${stats.fps.toFixed(1)} fps   (${stats.frameMs.toFixed(1)} ms/frame)\n` +
-      `tracker    ${stats.tfps.toFixed(1)} fps   (${stats.trackMs.toFixed(1)} ms/detect)\n` +
+      `camera     ${stats.cfps.toFixed(1)} fps delivered${HAS_RVFC ? '' : '  <span class="bad">(estimated — no rVFC)</span>'}\n` +
+      `detect     ${stats.tfps.toFixed(1)}/s   (${stats.trackMs.toFixed(1)} ms each)\n` +
       `face       ${face}\n` +
       `clips      ${stats.matched} of 51 ARKit names matched the VRM\n` +
       `signal     ${stats.driven} receiving a non-zero score  (only 16 are bound;\n`  +
@@ -329,6 +355,35 @@ function frame() {
   clockEl.textContent = String(now.toFixed(0)).slice(-5);
 }
 frame();
+
+// The HUD rewrites itself every second, which resets any text selection — so copying it by hand is
+// impossible. Requested by the owner mid-run.
+document.getElementById('copy').addEventListener('click', async ev => {
+  const r = k => range[k] ? `${range[k][0].toFixed(1)}–${range[k][1].toFixed(1)}` : 'n/a';
+  const text = [
+    `WI 1370 route C — ${new Date().toISOString()}`,
+    `page       ${location.href}`,
+    `camera     ${camLabel}`,
+    `facing     ${facingZ > 0 ? '+Z' : '-Z (WI 1362 defect, view compensated)'}`,
+    `pose       pitch ${SIGN.pitch} yaw ${SIGN.yaw} roll ${SIGN.roll}  smooth ${SMOOTH}  delegate ${DELEGATE}`,
+    ``,
+    `render fps   ${r('render fps')}`,
+    `camera fps   ${r('camera fps')}   ${HAS_RVFC ? '(measured per delivered frame)' : '(ESTIMATED — no requestVideoFrameCallback)'}`,
+    `detections/s ${r('detect/s')}`,
+    `ms/detect    ${r('ms/detect')}`,
+    `clips        ${stats.matched} of 51 ARKit names matched`,
+    `unmatched    ${stats.unmatched.size ? [...stats.unmatched].join(', ') : 'none'}`,
+    ``,
+    `top blendshapes at copy time:`,
+    ...[...lastCats].filter(c => c.categoryName !== '_neutral')
+        .sort((a, b) => b.score - a.score).slice(0, 8)
+        .map(c => `  ${c.categoryName.padEnd(22)} ${c.score.toFixed(2)}` +
+                  `${BOUND.has(c.categoryName) ? '' : '   (stub — nothing bound)'}`),
+  ].join('\n');
+  try { await navigator.clipboard.writeText(text); } catch { console.log(text); }
+  ev.target.textContent = 'copied ✓'; ev.target.classList.add('done');
+  setTimeout(() => { ev.target.textContent = 'copy stats'; ev.target.classList.remove('done'); }, 1500);
+});
 
 addEventListener('keydown', e => {
   if (e.key === 'c') document.getElementById('chroma').classList.toggle('on');
