@@ -98,9 +98,11 @@ const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadi
 // ?key=00ff00 etc. Magenta needed ~218 similarity in OBS's Color Key; a different hue may key
 // tighter, and a tight key matters because a loose one starts eating the avatar.
 const KEY = qs.get('key') ?? 'ff00c8';
-// gaze pitch defaults inverted: BOTH vertical axes came out backwards on first contact (head pitch,
-// then eye pitch). Treat any new vertical mapping in this pipeline as suspect until seen.
-const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? -1),
+// Gaze pitch is +1, confirmed by the owner once the iris was actually visible. It was briefly flipped
+// to -1 on an earlier report of "up/down backward" -- but that report was made while the eyeballs were
+// solid blue with no iris, so the direction was not judgeable. Do not flip a default on a visual
+// report about something that is not yet visible.
+const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? 1),
                deg: +(qs.get('gazedeg') ?? 22) };
 const hud = document.getElementById('hud');
 const errBox = document.getElementById('err');
