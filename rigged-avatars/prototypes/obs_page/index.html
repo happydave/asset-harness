@@ -41,6 +41,17 @@
          background: #3a1114; border: 1px solid #71232a; color: #ffb4b4; display: none;
          white-space: pre-wrap; z-index: 9; }
   video { display: none; }
+  /* The tracker's own view. Answers "is it even seeing my eyebrows?" without guesswork. */
+  #preview { position: fixed; right: 14px; top: 10px; width: 320px; height: 180px; z-index: 6;
+             border: 1px solid #2b2f3a; border-radius: 6px; background: #000; transform: scaleX(-1); }
+  #bars { position: fixed; right: 14px; top: 200px; width: 320px; z-index: 6; padding: 8px 10px;
+          border-radius: 6px; background: rgba(8,8,12,.82); border: 1px solid #2b2f3a; }
+  #bars div { display: flex; align-items: center; gap: 6px; margin: 1px 0; font-size: 11px; }
+  #bars span.n { width: 132px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #bars span.v { width: 30px; text-align: right; color: #9aa3b2; }
+  #bars i { height: 7px; background: #4a9eff; border-radius: 2px; display: block; }
+  #bars .stub i { background: #6b5330; }
+  #preview.off, #bars.off { display: none; }
 </style>
 </head>
 <body>
@@ -49,6 +60,8 @@
 <video id="cam" playsinline></video>
 <div id="hud">starting…</div>
 <div id="clock">--</div>
+<canvas id="preview" width="320" height="180"></canvas>
+<div id="bars"></div>
 <div id="err"></div>
 
 <script type="importmap">
@@ -63,13 +76,19 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from './vendor/three-vrm.module.js';
-import { FilesetResolver, FaceLandmarker } from './vendor/mediapipe/vision_bundle.mjs';
+import { FilesetResolver, FaceLandmarker, DrawingUtils } from './vendor/mediapipe/vision_bundle.mjs';
 
 const qs   = new URLSearchParams(location.search);
 const VRM_URL = qs.get('vrm') ?? '../../findings/samples-2026-09-07-v1-face-rig/v1_face_rig.vrm';
 // ?delegate=CPU falls back if WebGL-based inference misbehaves — Firefox is a less-trodden path for
 // MediaPipe's GPU delegate than Chrome, and a one-URL change beats editing the file.
 const DELEGATE = (qs.get('delegate') ?? 'GPU').toUpperCase();
+// Head-pose axis signs. Mirroring (what a VTuber wants) is yaw+roll negated; pitch was reported
+// inverted on the first live run, so it defaults negated too. Exposed because the correct combination
+// is a 10-second empirical question for whoever is sitting in front of the camera, and a slow one to
+// guess at over a round trip:  ?pitch=1&yaw=-1&roll=-1
+const SIGN = { pitch: +(qs.get('pitch') ?? -1), yaw: +(qs.get('yaw') ?? -1), roll: +(qs.get('roll') ?? -1) };
+const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadier but laggier
 const hud = document.getElementById('hud');
 const errBox = document.getElementById('err');
 const fail = (where, e) => {
@@ -197,6 +216,15 @@ const stats = {
 };
 let windowStart = performance.now();
 const clockEl = document.getElementById('clock');
+const pv = document.getElementById('preview'), pvx = pv.getContext('2d');
+const barsEl = document.getElementById('bars');
+const draw = new DrawingUtils(pvx);
+// The 16 clips WI 1362 actually authored. Everything else in the 52 is a declared stub, so a high
+// score on one of those means the TRACKER sees it and our avatar has nothing to move.
+const BOUND = new Set(['eyeBlinkLeft','eyeBlinkRight','eyeWideLeft','eyeWideRight','eyeSquintLeft',
+  'eyeSquintRight','browInnerUp','browDownLeft','browDownRight','jawOpen','mouthSmileLeft',
+  'mouthSmileRight','mouthFrownLeft','mouthFrownRight','mouthFunnel','mouthPucker']);
+let lastCats = [];
 
 function driveFromBlendshapes(categories) {
   // IDENTITY MAPPING. MediaPipe's category names are the ARKit-52 vocabulary, which is exactly what
@@ -213,13 +241,17 @@ function driveFromBlendshapes(categories) {
   stats.matched = matched; stats.driven = driven;
 }
 
+const _e = new THREE.Euler(0, 0, 0, 'YXZ'), _q = new THREE.Quaternion(), _m = new THREE.Matrix4();
 function driveHeadPose(matrixes) {
   if (!headBone || !matrixes?.facialTransformationMatrixes?.length) return;
-  const m = new THREE.Matrix4().fromArray(matrixes.facialTransformationMatrixes[0].data);
-  const q = new THREE.Quaternion().setFromRotationMatrix(m);
-  // mirror so it reads as a mirror, not as someone facing you
-  q.y *= -1; q.z *= -1;
-  headBone.quaternion.slerp(q, 0.5);
+  _m.fromArray(matrixes.facialTransformationMatrixes[0].data);
+  _q.setFromRotationMatrix(_m);
+  // Decompose to named axes rather than negating quaternion components. Negating q.y/q.z happens to
+  // mirror, but it gives no way to correct ONE axis -- and pitch was the one that came out backwards.
+  // YXZ order = yaw, pitch, roll, which is how a head actually moves.
+  _e.setFromQuaternion(_q, 'YXZ');
+  _e.set(_e.x * SIGN.pitch, _e.y * SIGN.yaw, _e.z * SIGN.roll, 'YXZ');
+  headBone.quaternion.slerp(_q.setFromEuler(_e), SMOOTH);
 }
 
 const clock = new THREE.Clock();
@@ -238,6 +270,20 @@ function frame() {
     const shapes = res?.faceBlendshapes?.[0]?.categories;
     stats.faceSeen = !!shapes;                 // <- the falsifiable check: cover the lens, this goes false
     if (shapes && vrm) { driveFromBlendshapes(shapes); driveHeadPose(res); }
+    lastCats = shapes ?? [];
+    if (!pv.classList.contains('off')) {
+      pvx.save(); pvx.clearRect(0, 0, pv.width, pv.height);
+      pvx.drawImage(video, 0, 0, pv.width, pv.height);
+      const lm = res?.faceLandmarks?.[0];
+      if (lm) {
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: '#2effa030', lineWidth: 0.4 });
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_CONTOURS,    { color: '#7ddc8a',   lineWidth: 1 });
+        // brows highlighted: the owner asked whether they are being seen at all
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,  { color: '#ffcc00', lineWidth: 2.5 });
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW, { color: '#ffcc00', lineWidth: 2.5 });
+      }
+      pvx.restore();
+    }
   }
 
   controls.update();
@@ -251,6 +297,16 @@ function frame() {
     stats.fps  = (stats.renderFrames * 1000 / (now - windowStart));
     stats.tfps = (stats.trackFrames  * 1000 / (now - windowStart));
     stats.renderFrames = stats.trackFrames = 0; windowStart = now;
+    // top scoring clips, with bound-vs-stub called out: separates "the tracker isn't seeing it" from
+    // "our morph is too small", which is not a distinction you can make by looking at the avatar
+    const top = [...lastCats].filter(c => c.categoryName !== '_neutral')
+      .sort((a, b) => b.score - a.score).slice(0, 8);
+    barsEl.innerHTML = top.map(c =>
+      `<div class="${BOUND.has(c.categoryName) ? '' : 'stub'}"><span class="n">${c.categoryName}` +
+      `${BOUND.has(c.categoryName) ? '' : ' *'}</span>` +
+      `<i style="width:${Math.round(c.score * 120)}px"></i>` +
+      `<span class="v">${c.score.toFixed(2)}</span></div>`).join('') +
+      `<div style="opacity:.6;margin-top:4px">* = declared stub, nothing bound to move</div>`;
     const face = stats.faceSeen ? '<span class="good">YES</span>' : '<span class="bad">NO</span>';
     hud.innerHTML =
       `<b>WI 1370</b>  route C (window capture)   delegate=${DELEGATE}\n` +
@@ -265,7 +321,8 @@ function frame() {
       `signal     ${stats.driven} receiving a non-zero score  (only 16 are bound;\n`  +
       `           the other 36 are declared stubs and will not visibly move)\n` +
       `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
-      `keys       [c] magenta backdrop  [h] hide HUD  [r] reset view\n` +
+      `keys       [c] magenta  [h] HUD  [r] reset view  [v] tracker view\n` +
+      `pose       pitch ${SIGN.pitch>0?'+':''}${SIGN.pitch} yaw ${SIGN.yaw>0?'+':''}${SIGN.yaw} roll ${SIGN.roll>0?'+':''}${SIGN.roll}  smooth ${SMOOTH}   (?pitch=1 etc)\n` +
       `mouse      wheel = zoom, drag = orbit, right-drag = pan`;
   }
   // ms clock for the camera-loop latency measurement
@@ -275,6 +332,7 @@ frame();
 
 addEventListener('keydown', e => {
   if (e.key === 'c') document.getElementById('chroma').classList.toggle('on');
+  if (e.key === 'v') { pv.classList.toggle('off'); barsEl.classList.toggle('off'); }
   if (e.key === 'h') { hud.style.display = hud.style.display === 'none' ? '' : 'none'; }
   if (e.key === 'r' && vrm) {
     const hb2 = vrm.humanoid?.getRawBoneNode('head');
