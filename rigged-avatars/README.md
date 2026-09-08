@@ -12,8 +12,9 @@ Perfect-Sync stubs), plus expression **override modes** so stacked expressions s
 The 52 names, preset table and stub reasons now live in [`prototypes/arkit52.py`](prototypes/arkit52.py) —
 **the single owner of the clip contract**, imported by the generators. `vrm_export.py` extended again, not
 forked. **64/64 automated checks + 3 negative-control classes seen to fail.**
-[findings](findings/2026-09-07-v1-face-rig.md). [visual/manual] owner: drive the expressions in the Studio
-inspector.
+[findings](findings/2026-09-07-v1-face-rig.md). **Owner gate closed 2026-09-07** — sliders driven in the
+Studio inspector: *"stylistically rough (as expected), but it does seem structurally correct."* The look is
+the toon art lane's job, not this rig's.
 
 **Status:** 🟡 **Prototypes A + B work** (2026-07-09) — both clean-licensed, no AI. **A** (WI 882):
 rigid robot walks ([findings](findings/2026-07-09-rigid-robot-walk.md)). **B** (WI 885): Kerbal-tier
