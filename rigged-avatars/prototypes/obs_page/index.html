@@ -127,14 +127,51 @@ try {
   });
 } catch (e) { fail('MEDIAPIPE INIT (wasm/model)', e); }
 
+// ?device=N picks the Nth video input. The BRIO exposes TWO capture nodes — /dev/video0 is the RGB
+// camera and /dev/video2 is an 8-bit greyscale IR sensor for face-auth — and nothing stops the browser
+// defaulting to the wrong one.
+let camLabel = '(unknown)';
 try {
-  video.srcObject = await navigator.mediaDevices.getUserMedia({
+  const constraints = {
     // 720p30 deliberately: on the BRIO, YUYV at 1080p is bandwidth-starved, and face landmarks want
-    // frame rate over resolution.
+    // frame rate over resolution. Plain values are 'ideal', so a device that cannot do this still opens.
     video: { width: 1280, height: 720, frameRate: 30 }, audio: false,
-  });
+  };
+  const want = qs.get('device');
+  if (want !== null) {
+    // enumerateDevices only returns labels once permission exists, so take a throwaway stream first
+    const probe = await navigator.mediaDevices.getUserMedia({ video: true });
+    const inputs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
+    probe.getTracks().forEach(t => t.stop());
+    const pick = inputs[Number(want)];
+    if (!pick) throw new Error(`?device=${want} out of range; ${inputs.length} video inputs: ` +
+                               inputs.map((d, i) => `[${i}] ${d.label}`).join(' '));
+    constraints.video.deviceId = { exact: pick.deviceId };
+  }
+  video.srcObject = await navigator.mediaDevices.getUserMedia(constraints);
+  camLabel = video.srcObject.getVideoTracks()[0]?.label ?? '(unlabelled)';
   await video.play(); camReady = true;
-} catch (e) { fail('WEBCAM (getUserMedia)', e); }
+} catch (e) {
+  // Translate the three getUserMedia failures that actually happen into what to DO about them. The
+  // first one cost a session: V4L2 capture is effectively exclusive, and OBS holding the camera makes
+  // Firefox fail here with a message that names neither OBS nor the camera.
+  const hint = {
+    NotReadableError:
+      'Another process already holds the camera — V4L2 capture is effectively exclusive.\n' +
+      'Most likely OBS: remove or deactivate its "Video Capture Device (V4L2)" source and reload.\n' +
+      'Confirm with:  fuser -v /dev/video*\n' +
+      '(Under route C, OBS should capture the browser WINDOW, not the camera.)',
+    NotAllowedError:
+      'Camera permission denied, or the page is not in a secure context.\n' +
+      'Serve over http://localhost — file:// will not work.',
+    NotFoundError:
+      'No video input found. Check:  ls /dev/video*  and  v4l2-ctl --list-devices',
+    OverconstrainedError:
+      'The selected device cannot satisfy the constraints — likely the IR sensor (8-bit greyscale).\n' +
+      'Try ?device=0 to pick the RGB camera explicitly.',
+  }[e?.name];
+  fail('WEBCAM (getUserMedia)', hint ? `${e.name}: ${e.message}\n\n${hint}` : e);
+}
 
 // ---------------------------------------------------------------- loop
 const stats = {
@@ -200,6 +237,7 @@ function frame() {
     const face = stats.faceSeen ? '<span class="good">YES</span>' : '<span class="bad">NO</span>';
     hud.innerHTML =
       `<b>WI 1370</b>  route C (window capture)   delegate=${DELEGATE}\n` +
+      `camera     ${camLabel}\n` +
       `WebGL2     ${gl2 ? '<span class="good">yes</span>' : '<span class="bad">NO (WebGL1)</span>'}\n` +
       `render     ${stats.fps.toFixed(1)} fps   (${stats.frameMs.toFixed(1)} ms/frame)\n` +
       `tracker    ${stats.tfps.toFixed(1)} fps   (${stats.trackMs.toFixed(1)} ms/detect)\n` +
