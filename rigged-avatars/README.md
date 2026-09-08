@@ -21,9 +21,10 @@ MPFB `default`-rig human → clean **13.4k pure-quad** head, authors **5 ARKit m
 skinned articulation (jawOpen — the mouth is skinned to the lip bones, not the jaw group) + *weight-mask
 displacement* for localized surface shapes (eyelids, lip corners). **The dense topology gives the clean blink
 the WI 936 smooth sphere couldn't** — confirming 936's topology call. Automated: glb + VRM re-import with all
-5 morphs, 15/15 humanoid slots, presets bound. [findings](findings/2026-07-15-realistic-head-arkit-spike.md);
-[visual/manual] load `realistic_head.vrm` in the Studio inspector. 930's gated parts (FLAME/texture/52-shapes)
-stay deferred.
+5 morphs, 15/15 humanoid slots, presets bound. [findings](findings/2026-07-15-realistic-head-arkit-spike.md).
+**Owner gate closed 2026-07-15** — the inspector review found three real bugs (whole-body jaw leak, a stray
+startup `Cube` swept in by the scene-global VRM exporter, a smile masked on the cheek), all fixed that session.
+930's gated parts (FLAME/texture/52-shapes) stay deferred.
 
 **MPFB2 body-donor eval (WI 927, 2026-07-15) — qualified:** timeboxed evaluation of **MPFB2** (MakeHuman's
 Blender add-on) as a **CC0 skinned-body donor**. Verdict: **no for the current Kerbal-tier stylized
@@ -43,7 +44,8 @@ the Studio VRM inspector. A skinned Kerbal-tier head with **14 authored ARKit mo
 wide/squint, brows, jaw, smile/frown) and the **full ARKit-52 declared** (14 bound + 38 empty Perfect-Sync
 stubs); eyes/brows/mouth are material regions on the single deformable mesh so the morphs read. VRM 1.0 + 0.x
 + glb via `vrm_export.py`; 14/14 automated + readable by preview render. [findings](findings/2026-07-15-expressive-head.md).
-[visual/manual] load in the Studio inspector.
+**Owner gate closed 2026-07-15** ("sliders seem to do what they say"); the owner also noted the smooth-sphere
+head reads "a little rough", which is why the real v1 rig freezes loop topology instead of inheriting it.
 
 **Kill-shot spike (WI 926, 2026-07-14) — PASSED:** a **skinned** mesh (armature modifier + weights, not
 bone-parenting) carrying **four ARKit-named shape keys** (`eyeBlinkLeft/Right`, `jawOpen`, `mouthSmileLeft`)
