@@ -25,7 +25,7 @@
                font: 13px/1.45 ui-monospace, "DejaVu Sans Mono", monospace; color: #cfd3dc; }
   /* A garish backdrop on purpose: with a transparent renderer this is what shows through, so the
      falsifiable alpha check is "do you see magenta where the avatar isn't". */
-  #chroma { position: fixed; inset: 0; background: #ff00c8; display: none; }
+  #chroma { position: fixed; inset: 0; display: none; }   /* colour set from ?key= */
   #chroma.on { display: block; }
   canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   #hud { position: fixed; top: 10px; left: 10px; padding: 10px 14px; border-radius: 6px;
@@ -95,6 +95,9 @@ const DELEGATE = (qs.get('delegate') ?? 'GPU').toUpperCase();
 // guess at over a round trip:  ?pitch=1&yaw=-1&roll=-1
 const SIGN = { pitch: +(qs.get('pitch') ?? -1), yaw: +(qs.get('yaw') ?? -1), roll: +(qs.get('roll') ?? -1) };
 const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadier but laggier
+// ?key=00ff00 etc. Magenta needed ~218 similarity in OBS's Color Key; a different hue may key
+// tighter, and a tight key matters because a loose one starts eating the avatar.
+const KEY = qs.get('key') ?? 'ff00c8';
 const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? 1),
                deg: +(qs.get('gazedeg') ?? 22) };
 const hud = document.getElementById('hud');
@@ -242,6 +245,7 @@ try {
 // ---------------------------------------------------------------- loop
 let windowStart = performance.now();
 const clockEl = document.getElementById('clock');
+document.getElementById('chroma').style.background = '#' + KEY;
 const pv = document.getElementById('preview'), pvx = pv.getContext('2d');
 const barsEl = document.getElementById('bars');
 const draw = new DrawingUtils(pvx);
@@ -370,7 +374,7 @@ function frame() {
       `signal     ${stats.driven} receiving a non-zero score  (only 16 are bound;\n`  +
       `           the other 36 are declared stubs and will not visibly move)\n` +
       `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
-      `keys       [c] magenta  [h] HUD  [r] reset view  [v] tracker view\n` +
+      `keys       [c] key colour #${KEY}  [h] HUD  [r] reset  [v] tracker view\n` +
       `pose       pitch ${SIGN.pitch>0?'+':''}${SIGN.pitch} yaw ${SIGN.yaw>0?'+':''}${SIGN.yaw} roll ${SIGN.roll>0?'+':''}${SIGN.roll}  smooth ${SMOOTH}\n` +
       `gaze       ${eyeL && eyeR ? `bone-driven, \u00b1${GAZE.deg}\u00b0  (?gazeyaw=-1 ?gazepitch=-1)`
                                  : '<span class="bad">no eye bones in this VRM</span>'}\n` +

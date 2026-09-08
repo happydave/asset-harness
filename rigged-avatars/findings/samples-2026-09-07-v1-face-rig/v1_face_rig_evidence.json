@@ -162,6 +162,16 @@
   },
   "checks": [
     {
+      "check": "eyeball.L carries both sclera and iris",
+      "ok": true,
+      "detail": "material indices used: [0, 1] of 2 slots"
+    },
+    {
+      "check": "eyeball.R carries both sclera and iris",
+      "ok": true,
+      "detail": "material indices used: [0, 1] of 2 slots"
+    },
+    {
       "check": "no vertex escapes the head volume",
       "ok": true,
       "detail": "0 verts beyond 186.0 mm from the head centre"
@@ -482,5 +492,5 @@
       "detail": ""
     }
   ],
-  "summary": "64/64"
+  "summary": "66/66"
 }

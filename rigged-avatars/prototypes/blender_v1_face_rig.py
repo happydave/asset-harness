@@ -65,6 +65,7 @@ EYE_AX, EYE_AZ = 0.044, 0.038   # eye PATCH half-extents (the lid zone's outer e
 EYE_BALL_R = 0.032              # wide enough to seal the aperture corner (26.5 mm out)
 EYE_BALL_SY = 0.78              # flattened, so it does not breach the shell beside the eye
 EYE_BALL_Y = 0.107              # recessed: a ball proud of the shell breaks through as a crescent
+IRIS_FRACTION = 0.35            # front fraction of the ball that is iris
 
 BROW_CZ = 1.247                  # brow arc centre z
 BROW_AX, BROW_AZ = 0.052, 0.027  # brow arc half-extents (the deform zone)
@@ -245,10 +246,20 @@ def build_eyeball(name, cx, mats):
     me = o.data                                     # origin, which the local-space iris test needs
     for k in ("sclera", "iris"):
         me.materials.append(mats[k])
+    # Split the ball by its OWN measured extent rather than against a constant. A constant encodes an
+    # assumption about which coordinate frame poly.center is in, and that assumption has now been wrong
+    # twice on this line: the first version compared a local y against a world one, and the second
+    # assumed the mesh was origin-centred. The whole ball shipped as iris, with no sclera in the file.
+    ys = [poly.center.y for poly in me.polygons]
+    lo, hi = min(ys), max(ys)
+    iris_from = lo + (hi - lo) * (1.0 - IRIS_FRACTION)
     for poly in me.polygons:
-        # local space: primitive_uv_sphere_add puts the centre in the OBJECT's location,
-        # not in the mesh data, so this must not be compared against a world y
-        poly.material_index = 1 if poly.center.y > 0.30 * EYE_BALL_R * EYE_BALL_SY else 0
+        poly.material_index = 1 if poly.center.y > iris_from else 0
+    n_iris = sum(1 for poly in me.polygons if poly.material_index == 1)
+    if not 0 < n_iris < len(me.polygons):
+        raise SystemExit(f"{name}: iris split degenerate — {n_iris}/{len(me.polygons)} polys. "
+                         f"poly.center.y spans [{lo:.4f}, {hi:.4f}], threshold {iris_from:.4f}")
+    print(f"  {name}: {n_iris}/{len(me.polygons)} polys iris (y span [{lo:.4f}, {hi:.4f}])")
     return o
 
 
@@ -507,6 +518,10 @@ def check_geometry(ck, head):
     semi = max(HR * HS[0], HR * HS[1], HR * HS[2])
     outliers = [i for i, c in enumerate(base)
                 if math.dist((c.x, c.y, c.z - HZ), (0, 0, 0)) > semi * 1.02]
+    for o in (bpy.data.objects[EYE_L], bpy.data.objects[EYE_R]):
+        used = {poly.material_index for poly in o.data.polygons}
+        ck.add(f"{o.name} carries both sclera and iris", used == {0, 1},
+               f"material indices used: {sorted(used)} of {len(o.data.materials)} slots")
     ck.add("no vertex escapes the head volume", not outliers,
            f"{len(outliers)} verts beyond {semi * 1.02 * 1000:.1f} mm from the head centre")
 
