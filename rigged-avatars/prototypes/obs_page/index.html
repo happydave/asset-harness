@@ -155,8 +155,27 @@ try {
 } catch (e) { fail('VRM LOAD (three-vrm)', e); }
 
 // ---------------------------------------------------------------- tracker
+const stats = {
+  renderFrames: 0, trackFrames: 0, camFrames: 0, fps: 0, tfps: 0, cfps: 0,
+  faceSeen: false, driven: 0, matched: 0, unmatched: new Set(),
+  trackMs: 0, frameMs: 0,
+};
+// Running ranges, so the copy button reports what was actually seen rather than one instant.
+const range = {};
+const track = (k, v) => { const r = range[k] ??= [v, v]; if (v < r[0]) r[0] = v; if (v > r[1]) r[1] = v; };
+
 let landmarker = null, camReady = false;
 const video = document.getElementById('cam');
+
+// Gate detection on a genuinely NEW camera frame. `video.currentTime` advances continuously, not in
+// frame steps, so keying on it re-ran inference on the same image ~2x over and reported the result as
+// "tracker fps" — a number that overstated useful work and burned GPU a game would want.
+let frameDirty = false;
+const HAS_RVFC = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+function onCamFrame() {
+  frameDirty = true; stats.camFrames++;
+  video.requestVideoFrameCallback(onCamFrame);
+}
 try {
   const fileset = await FilesetResolver.forVisionTasks('./vendor/mediapipe/wasm');
   landmarker = await FaceLandmarker.createFromOptions(fileset, {
@@ -217,24 +236,6 @@ try {
 }
 
 // ---------------------------------------------------------------- loop
-const stats = {
-  renderFrames: 0, trackFrames: 0, camFrames: 0, fps: 0, tfps: 0, cfps: 0,
-  faceSeen: false, driven: 0, matched: 0, unmatched: new Set(),
-  trackMs: 0, frameMs: 0,
-};
-// Running ranges, so the copy button reports what was actually seen rather than one instant.
-const range = {};
-const track = (k, v) => { const r = range[k] ??= [v, v]; if (v < r[0]) r[0] = v; if (v > r[1]) r[1] = v; };
-
-// Gate detection on a genuinely NEW camera frame. `video.currentTime` advances continuously, not in
-// frame steps, so keying on it re-ran inference on the same image ~2x over and reported the result as
-// "tracker fps" — a number that overstated useful work and burned GPU a game would want.
-let frameDirty = false;
-const HAS_RVFC = 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
-function onCamFrame() {
-  frameDirty = true; stats.camFrames++;
-  video.requestVideoFrameCallback(onCamFrame);
-}
 let windowStart = performance.now();
 const clockEl = document.getElementById('clock');
 const pv = document.getElementById('preview'), pvx = pv.getContext('2d');
