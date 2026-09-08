@@ -49,6 +49,7 @@ VRM1_PRESETS = (
 # ---------------------------------------------------------------------------
 
 STYLIZED_V1_AUTHORED = (
+    # --- WI 1362: the core that composes the 13 morph-driven presets -------------------------------
     "eyeBlinkLeft", "eyeBlinkRight",
     "eyeWideLeft", "eyeWideRight",
     "eyeSquintLeft", "eyeSquintRight",
@@ -57,6 +58,15 @@ STYLIZED_V1_AUTHORED = (
     "mouthSmileLeft", "mouthSmileRight",
     "mouthFrownLeft", "mouthFrownRight",
     "mouthFunnel", "mouthPucker",
+    # --- WI 1363: the tranche. Outer brows FIRST, on live-tracker evidence rather than the ladder's
+    # ordering: driving the WI 1362 avatar from a webcam put browOuterUp* and mouthStretchLeft in the
+    # top-scoring blendshapes repeatedly, while the brows visibly failed to move.
+    "browOuterUpLeft", "browOuterUpRight",
+    "mouthUpperUpLeft", "mouthUpperUpRight",
+    "mouthLowerDownLeft", "mouthLowerDownRight",
+    "mouthStretchLeft", "mouthStretchRight",
+    "mouthLeft", "mouthRight", "mouthClose",
+    "jawLeft", "jawRight",
 )
 
 # Why each unauthored clip is a stub. Every one of the 52 is either authored or has a reason here.
@@ -72,14 +82,6 @@ STUB_REASONS = {
         "noseSneerLeft", "noseSneerRight",
     ),
     "not-webcam-driveable": ("cheekPuff", "jawForward", "tongueOut"),
-    "deferred-to-the-tranche-work-item-1363": (
-        "browOuterUpLeft", "browOuterUpRight",
-        "jawLeft", "jawRight",
-        "mouthClose", "mouthLeft", "mouthRight",
-        "mouthLowerDownLeft", "mouthLowerDownRight",
-        "mouthStretchLeft", "mouthStretchRight",
-        "mouthUpperUpLeft", "mouthUpperUpRight",
-    ),
 }
 
 # VRM 1.0 preset -> [(authored ARKit shape, weight)]. Fractional weights are the point: a viseme is a
@@ -131,6 +133,32 @@ PRESET_OVERRIDES = {
 }
 
 
+# Peak displacement each authored shape ASKS for, in metres. WI 1362 recorded `browInnerUp` delivering
+# 8.7 mm against a 30 mm request -- an elliptical falloff multiplied by an inner taper -- wrote it into
+# test.md as a finding, and shipped anyway. A finding that does not become a gate is a finding that
+# recurs, and it did: the brows read as dead the moment a real tracker touched the file.
+NOMINAL_MM = {
+    "eyeBlinkLeft": 19.0, "eyeBlinkRight": 19.0, "eyeWideLeft": 15.0, "eyeWideRight": 15.0,
+    "eyeSquintLeft": 13.0, "eyeSquintRight": 13.0,
+    "browInnerUp": 30.0, "browDownLeft": 26.0, "browDownRight": 26.0,
+    "browOuterUpLeft": 26.0, "browOuterUpRight": 26.0,
+    "jawOpen": 43.0, "jawLeft": 14.0, "jawRight": 14.0,
+    "mouthSmileLeft": 28.0, "mouthSmileRight": 28.0,
+    "mouthFrownLeft": 26.0, "mouthFrownRight": 26.0,
+    "mouthFunnel": 22.0, "mouthPucker": 30.0,
+    "mouthUpperUpLeft": 16.0, "mouthUpperUpRight": 16.0,
+    "mouthLowerDownLeft": 18.0, "mouthLowerDownRight": 18.0,
+    "mouthStretchLeft": 20.0, "mouthStretchRight": 20.0,
+    "mouthLeft": 16.0, "mouthRight": 16.0, "mouthClose": 14.0,
+}
+# A shape must deliver at least this fraction of its nominal, or the mask is eating the amplitude.
+NOMINAL_FLOOR = 0.60
+
+# The six L/R pairs added by WI 1363. Asymmetry is where Perfect Sync visibly beats presets, so driving
+# one side must leave the other alone -- checked, not assumed.
+ASYMMETRIC_PAIRS_V2 = ("browOuterUp", "mouthUpperUp", "mouthLowerDown", "mouthStretch")
+
+
 def stub_names(authored):
     """The declared-but-empty clips, given the authored set."""
     return tuple(n for n in ARKIT_52 if n not in set(authored))
@@ -178,6 +206,9 @@ def check_contract(authored=STYLIZED_V1_AUTHORED):
                 problems.append(f"preset {preset!r} binds unauthored shape {shape!r}")
             if not 0.0 < weight <= 1.0:
                 problems.append(f"preset {preset!r} binds {shape!r} at out-of-range weight {weight}")
+    for name in authored:
+        if name not in NOMINAL_MM:
+            problems.append(f"authored shape {name!r} has no NOMINAL_MM entry to be checked against")
     for preset in PRESET_OVERRIDES:
         if preset not in PRESET_COMPOSITION:
             problems.append(f"override set on {preset!r}, which composes nothing")

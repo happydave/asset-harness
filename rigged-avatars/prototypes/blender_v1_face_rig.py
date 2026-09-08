@@ -369,6 +369,25 @@ def _lipz(co):
     return _aperture_t(co, 0.0, MOUTH_CZ, MOUTH_AX, MOUTH_AZ, MOUTH_HOLE)
 
 
+def _brow_at(co, side_sign, dx_off, ax):
+    """Weight for a brow shape whose own ellipse is centred where that shape acts — inner end for
+    browInnerUp, outer end for browOuterUp. One falloff, so the peak reaches the requested amplitude.
+
+    WI 1362 instead multiplied a brow-wide falloff by an inner taper, and the product peaked at 29% of
+    nominal: the brows barely moved under a real tracker. Two falloffs multiplied is one falloff too
+    many."""
+    e = _ellipse_e(co, side_sign * (EYE_CX + dx_off), BROW_CZ, ax, BROW_AZ)
+    if _depth(co) <= 0.03 or e > 1.0:
+        return 0.0
+    return 1.0 - e
+
+
+def _side_weight(x, side_sign, reach=0.015):
+    """1 on the given side, 0 across the midline, smooth between — and it REACHES 1, so a shape gated
+    by it can still hit its nominal amplitude."""
+    return max(0.0, min(1.0, side_sign * x / reach))
+
+
 def _brow(co, side_sign):
     """(in_zone, t) over one brow arc, t falling smoothly to 0 at the edge. A constant displacement
     inside a rectangular band left a hard step at the mask boundary, which rendered as a fold across
@@ -420,12 +439,10 @@ def _disp(co, key):
         return (0.0, 0.0, 0.013 * t) if (inz and not upper) else (0.0, 0.0, 0.0)
 
     if key == "browInnerUp":
-        for sx in (1, -1):
-            inz, t = _brow(co, sx)
-            if inz:
-                inner = max(0.0, min(1.0, 1.0 - (abs(x) - 0.015) / 0.070))
-                return (0.0, 0.0, 0.030 * t * inner)
-        return (0.0, 0.0, 0.0)
+        w = max(_brow_at(co, 1, -0.030, 0.042), _brow_at(co, -1, -0.030, 0.042))
+        return (0.0, 0.0, 0.030 * w)
+    if key.startswith("browOuterUp") and side_ok:
+        return (0.0, 0.0, 0.026 * _brow_at(co, side, 0.030, 0.042))
     if key.startswith("browDown") and side_ok:
         inz, t = _brow(co, side)
         return (0.0, 0.0, -0.026 * t) if inz else (0.0, 0.0, 0.0)
@@ -455,6 +472,41 @@ def _disp(co, key):
         inz, t = _lipz(co)
         w = t * _corner_weight(x, side)
         return (side * 0.007 * w, 0.0, -0.030 * w) if inz else (0.0, 0.0, 0.0)
+    # --- WI 1363 mouth tranche -------------------------------------------------------------------
+    # Upper and lower lip move independently; that is what makes these worth authoring rather than
+    # stubbing, and it is where Perfect Sync visibly beats a preset.
+    if key.startswith("mouthUpperUp") and side_ok:
+        inz, t = _lipz(co)
+        if inz and z > MOUTH_CZ:
+            return (0.0, 0.0, 0.016 * t * _side_weight(x, side))
+        return (0.0, 0.0, 0.0)
+    if key.startswith("mouthLowerDown") and side_ok:
+        inz, t = _lipz(co)
+        if inz and z <= MOUTH_CZ:
+            return (0.0, 0.0, -0.018 * t * _side_weight(x, side))
+        return (0.0, 0.0, 0.0)
+    if key.startswith("mouthStretch") and side_ok:
+        inz, t = _lipz(co)
+        if inz:
+            return (side * 0.020 * t * _side_weight(x, side), 0.0, 0.0)
+        return (0.0, 0.0, 0.0)
+    if key in ("mouthLeft", "mouthRight"):
+        # ARKit means the subject's own left/right; +x is this character's left.
+        inz, t = _lipz(co)
+        return ((0.016 if key == "mouthLeft" else -0.016) * t, 0.0, 0.0) if inz else (0.0, 0.0, 0.0)
+    if key == "mouthClose":
+        # lips meet WITHOUT the jaw rising — that is what distinguishes it from an un-driven jawOpen
+        inz, t = _lipz(co)
+        return (0.0, 0.0, (MOUTH_CZ - z) * t) if inz else (0.0, 0.0, 0.0)
+    if key in ("jawLeft", "jawRight"):
+        if z > MOUTH_CZ:
+            return (0.0, 0.0, 0.0)
+        drop = min(1.0, (MOUTH_CZ - z) / 0.12) * _front_falloff(co)
+        # 0.022, not 0.014: the jaw falloff caps `drop` around 0.61, so a 14 mm request delivered
+        # 8.6 mm — the same falloff-eats-amplitude shape as browInnerUp, an order milder. Asked for
+        # what it needs to actually reach the nominal rather than leaving it scraping the floor.
+        return ((0.022 if key == "jawLeft" else -0.022) * drop, 0.0, 0.0)
+
     if key == "mouthFunnel":
         inz, t = _lipz(co)
         if inz:
@@ -661,7 +713,36 @@ def check_morph_contract(ck, head):
     basis = kb["Basis"].data
     for name in names:
         d = max((kb[name].data[i].co - basis[i].co).length for i in range(len(basis)))
-        ck.add(f"authored morph {name} displaces", d > 1e-4, f"max {d * 1000:.1f} mm")
+        # Against the amplitude the shape's own code ASKED for, not merely against zero. WI 1362's
+        # displaces-at-all check passed on a browInnerUp delivering 29% of nominal, which is exactly
+        # the defect this work item exists to fix -- a gate the known defect passes is not a gate.
+        nom = arkit52.NOMINAL_MM.get(name)
+        floor = (nom or 0.0) * arkit52.NOMINAL_FLOOR
+        scale = 0.35 if (NEGATIVE == "compound-falloff" and name == "browOuterUpLeft") else 1.0
+        # A check must REPORT, never crash: an unknown shape has no nominal, and formatting None threw
+        # a TypeError that killed the run after the first failure instead of listing all of them.
+        detail = (f"{d * 1000 * scale:.1f} mm of {nom:.1f} mm nominal "
+                  f"(floor {floor:.1f} mm = {arkit52.NOMINAL_FLOOR:.0%})") if nom is not None else \
+                 f"{d * 1000 * scale:.1f} mm, but no NOMINAL_MM entry to check it against"
+        ck.add(f"authored morph {name} reaches its nominal amplitude",
+               nom is not None and d * 1000 * scale >= floor, detail)
+
+    # Asymmetry is the reason these pairs are authored rather than stubbed, so driving one side must
+    # leave the other alone. Checking only that they displace would satisfy the letter and miss the point.
+    dg = bpy.context.evaluated_depsgraph_get()
+    base_co = [v.co.copy() for v in head.evaluated_get(dg).data.vertices]
+    for stem in arkit52.ASYMMETRIC_PAIRS_V2:
+        for side, sign in (("Left", 1), ("Right", -1)):
+            _drive(head, {f"{stem}{side}": 1.0})
+            now = _evaluated_coords(head)
+            moved_own = sum(1 for i, c in enumerate(base_co)
+                            if sign * c.x > 0.012 and (now[i] - c).length > 1e-5)
+            moved_other = [i for i, c in enumerate(base_co)
+                           if sign * c.x < -0.012 and (now[i] - c).length > 1e-5]
+            ck.add(f"{stem}{side} is one-sided",
+                   moved_own > 0 and not moved_other,
+                   f"{moved_own} verts on its own side, {len(moved_other)} on the other")
+    _drive(head, {})
 
 
 def check_export_reimport(ck, out, name):
@@ -822,6 +903,14 @@ SHOTS = {
               "mouthFrownRight": 0.45},
     "sad": {"browInnerUp": 1.0, "mouthFrownLeft": 0.8, "mouthFrownRight": 0.8},
     "surprised": {"eyeWideLeft": 1.0, "eyeWideRight": 1.0, "browInnerUp": 0.85, "jawOpen": 0.6},
+    # WI 1363: one-sided shots. Asymmetry is why these are authored rather than stubbed, so the contact
+    # sheet has to show it -- a symmetric sheet cannot tell you whether a pair reads as asymmetric.
+    "browOuterUp_L": {"browOuterUpLeft": 1.0},
+    "browsUp_both": {"browInnerUp": 1.0, "browOuterUpLeft": 1.0, "browOuterUpRight": 1.0},
+    "smirk_L": {"mouthStretchLeft": 1.0, "mouthUpperUpLeft": 1.0},
+    "sneer_L": {"mouthUpperUpLeft": 1.0, "mouthLowerDownLeft": 0.6},
+    "mouthLeft": {"mouthLeft": 1.0},
+    "mouthClose": {"jawOpen": 0.6, "mouthClose": 1.0},
 }
 
 

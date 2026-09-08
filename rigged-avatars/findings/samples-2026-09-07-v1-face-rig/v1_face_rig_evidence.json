@@ -31,11 +31,24 @@
       "mouthFrownLeft",
       "mouthFrownRight",
       "mouthFunnel",
-      "mouthPucker"
+      "mouthPucker",
+      "browOuterUpLeft",
+      "browOuterUpRight",
+      "mouthUpperUpLeft",
+      "mouthUpperUpRight",
+      "mouthLowerDownLeft",
+      "mouthLowerDownRight",
+      "mouthStretchLeft",
+      "mouthStretchRight",
+      "mouthLeft",
+      "mouthRight",
+      "mouthClose",
+      "jawLeft",
+      "jawRight"
     ],
-    "authored_count": 16,
+    "authored_count": 29,
     "declared": 52,
-    "stub_count": 36,
+    "stub_count": 23,
     "stub_reasons": {
       "gaze-is-bone-driven": [
         "eyeLookDownLeft",
@@ -65,21 +78,6 @@
         "cheekPuff",
         "jawForward",
         "tongueOut"
-      ],
-      "deferred-to-the-tranche-work-item-1363": [
-        "browOuterUpLeft",
-        "browOuterUpRight",
-        "jawLeft",
-        "jawRight",
-        "mouthClose",
-        "mouthLeft",
-        "mouthRight",
-        "mouthLowerDownLeft",
-        "mouthLowerDownRight",
-        "mouthStretchLeft",
-        "mouthStretchRight",
-        "mouthUpperUpLeft",
-        "mouthUpperUpRight"
       ]
     }
   },
@@ -155,10 +153,10 @@
     "effective output licence": "clean"
   },
   "artifacts": {
-    "vrm1": "/home/dave/wi1372/v1_face_rig.vrm",
-    "vrm0": "/home/dave/wi1372/v1_face_rig.vrm0.vrm",
-    "glb": "/home/dave/wi1372/v1_face_rig.glb",
-    "previews": "/home/dave/wi1372/previews"
+    "vrm1": "/home/dave/wi1363/v1_face_rig.vrm",
+    "vrm0": "/home/dave/wi1363/v1_face_rig.vrm0.vrm",
+    "glb": "/home/dave/wi1363/v1_face_rig.glb",
+    "previews": "/home/dave/wi1363/previews"
   },
   "checks": [
     {
@@ -274,87 +272,192 @@
     {
       "check": "authored shape keys are exactly the contract's authored set",
       "ok": true,
-      "detail": "16 keys"
+      "detail": "29 keys"
     },
     {
-      "check": "authored morph eyeBlinkLeft displaces",
+      "check": "authored morph eyeBlinkLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 19.0 mm"
+      "detail": "19.0 mm of 19.0 mm nominal (floor 11.4 mm = 60%)"
     },
     {
-      "check": "authored morph eyeBlinkRight displaces",
+      "check": "authored morph eyeBlinkRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 19.0 mm"
+      "detail": "19.0 mm of 19.0 mm nominal (floor 11.4 mm = 60%)"
     },
     {
-      "check": "authored morph eyeWideLeft displaces",
+      "check": "authored morph eyeWideLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 15.0 mm"
+      "detail": "15.0 mm of 15.0 mm nominal (floor 9.0 mm = 60%)"
     },
     {
-      "check": "authored morph eyeWideRight displaces",
+      "check": "authored morph eyeWideRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 15.0 mm"
+      "detail": "15.0 mm of 15.0 mm nominal (floor 9.0 mm = 60%)"
     },
     {
-      "check": "authored morph eyeSquintLeft displaces",
+      "check": "authored morph eyeSquintLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 13.0 mm"
+      "detail": "13.0 mm of 13.0 mm nominal (floor 7.8 mm = 60%)"
     },
     {
-      "check": "authored morph eyeSquintRight displaces",
+      "check": "authored morph eyeSquintRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 13.0 mm"
+      "detail": "13.0 mm of 13.0 mm nominal (floor 7.8 mm = 60%)"
     },
     {
-      "check": "authored morph browInnerUp displaces",
+      "check": "authored morph browInnerUp reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 8.7 mm"
+      "detail": "28.6 mm of 30.0 mm nominal (floor 18.0 mm = 60%)"
     },
     {
-      "check": "authored morph browDownLeft displaces",
+      "check": "authored morph browDownLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 24.4 mm"
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
     },
     {
-      "check": "authored morph browDownRight displaces",
+      "check": "authored morph browDownRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 24.4 mm"
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
     },
     {
-      "check": "authored morph jawOpen displaces",
+      "check": "authored morph jawOpen reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 43.5 mm"
+      "detail": "43.5 mm of 43.0 mm nominal (floor 25.8 mm = 60%)"
     },
     {
-      "check": "authored morph mouthSmileLeft displaces",
+      "check": "authored morph mouthSmileLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 28.4 mm"
+      "detail": "28.4 mm of 28.0 mm nominal (floor 16.8 mm = 60%)"
     },
     {
-      "check": "authored morph mouthSmileRight displaces",
+      "check": "authored morph mouthSmileRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 28.4 mm"
+      "detail": "28.4 mm of 28.0 mm nominal (floor 16.8 mm = 60%)"
     },
     {
-      "check": "authored morph mouthFrownLeft displaces",
+      "check": "authored morph mouthFrownLeft reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 26.5 mm"
+      "detail": "26.5 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
     },
     {
-      "check": "authored morph mouthFrownRight displaces",
+      "check": "authored morph mouthFrownRight reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 26.5 mm"
+      "detail": "26.5 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
     },
     {
-      "check": "authored morph mouthFunnel displaces",
+      "check": "authored morph mouthFunnel reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 22.1 mm"
+      "detail": "22.1 mm of 22.0 mm nominal (floor 13.2 mm = 60%)"
     },
     {
-      "check": "authored morph mouthPucker displaces",
+      "check": "authored morph mouthPucker reaches its nominal amplitude",
       "ok": true,
-      "detail": "max 30.0 mm"
+      "detail": "30.0 mm of 30.0 mm nominal (floor 18.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph browOuterUpLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph browOuterUpRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthUpperUpLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthUpperUpRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLowerDownLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "18.0 mm of 18.0 mm nominal (floor 10.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLowerDownRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "18.0 mm of 18.0 mm nominal (floor 10.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthStretchLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "20.0 mm of 20.0 mm nominal (floor 12.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthStretchRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "20.0 mm of 20.0 mm nominal (floor 12.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthClose reaches its nominal amplitude",
+      "ok": true,
+      "detail": "11.2 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph jawLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.5 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph jawRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.5 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "browOuterUpLeft is one-sided",
+      "ok": true,
+      "detail": "120 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "browOuterUpRight is one-sided",
+      "ok": true,
+      "detail": "120 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthUpperUpLeft is one-sided",
+      "ok": true,
+      "detail": "40 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthUpperUpRight is one-sided",
+      "ok": true,
+      "detail": "40 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthLowerDownLeft is one-sided",
+      "ok": true,
+      "detail": "49 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthLowerDownRight is one-sided",
+      "ok": true,
+      "detail": "49 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthStretchLeft is one-sided",
+      "ok": true,
+      "detail": "89 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthStretchRight is one-sided",
+      "ok": true,
+      "detail": "89 verts on its own side, 0 on the other"
     },
     {
       "check": "eye bones exist on the rig",
@@ -389,7 +492,7 @@
     {
       "check": "glb re-imports with every authored morph",
       "ok": true,
-      "detail": "16 morph targets"
+      "detail": "29 morph targets"
     },
     {
       "check": "glb re-imports with an armature",
@@ -414,7 +517,7 @@
     {
       "check": "the authored clips are bound 1:1",
       "ok": true,
-      "detail": "16 bound, each with exactly one morph target"
+      "detail": "29 bound, each with exactly one morph target"
     },
     {
       "check": "one morph per ARKit clip",
@@ -424,7 +527,7 @@
     {
       "check": "the remaining clips are declared empty stubs",
       "ok": true,
-      "detail": "36 stubs"
+      "detail": "23 stubs"
     },
     {
       "check": "the 13 morph-composed presets are bound",
@@ -507,5 +610,5 @@
       "detail": ""
     }
   ],
-  "summary": "69/69"
+  "summary": "90/90"
 }

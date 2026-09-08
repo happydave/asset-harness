@@ -6,9 +6,10 @@ topology question WI 936 left open. Each eye and the mouth is a real **aperture 
 (repeated `inset_region`), so a blink is a lid folding shut over an eyeball — measured **17.8 mm open →
 0.0 mm shut, with zero displacement at the brow band**, which is exactly what 936's smooth sphere could
 not do. Adds **bone-driven gaze** (`eye.L`/`eye.R` → the optional `left_eye`/`right_eye` humanoid slots,
-`look_at.type = 'bone'`), so the eight `eyeLook*` clips are legitimate free stubs. **16 authored morphs →
-the 13 morph-composed VRM presets with fractional weights, all 52 ARKit clips declared** (36 empty
-Perfect-Sync stubs), plus expression **override modes** so stacked expressions suppress instead of summing.
+`look_at.type = 'bone'`), so the eight `eyeLook*` clips are legitimate free stubs. **29 authored morphs →
+the 13 morph-composed VRM presets with fractional weights, all 52 ARKit clips declared** (23 empty
+Perfect-Sync stubs; 16 authored at WI 1362, the tranche of 13 at WI 1363, outer brows first on live
+tracker evidence — and WI 1372 turned the head to face +Z, which VRM 1.0 requires), plus expression **override modes** so stacked expressions suppress instead of summing.
 The 52 names, preset table and stub reasons now live in [`prototypes/arkit52.py`](prototypes/arkit52.py) —
 **the single owner of the clip contract**, imported by the generators. `vrm_export.py` extended again, not
 forked. **64/64 automated checks + 3 negative-control classes seen to fail.**
