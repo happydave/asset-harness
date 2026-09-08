@@ -1,5 +1,20 @@
 # Track: rigged-avatars
 
+**v1 stylized face rig — the archetype contract is frozen (WI 1362, 2026-09-07):**
+[`blender_v1_face_rig.py`](prototypes/blender_v1_face_rig.py) delivers **ladder step 6** and settles the
+topology question WI 936 left open. Each eye and the mouth is a real **aperture with concentric loops**
+(repeated `inset_region`), so a blink is a lid folding shut over an eyeball — measured **17.8 mm open →
+0.0 mm shut, with zero displacement at the brow band**, which is exactly what 936's smooth sphere could
+not do. Adds **bone-driven gaze** (`eye.L`/`eye.R` → the optional `left_eye`/`right_eye` humanoid slots,
+`look_at.type = 'bone'`), so the eight `eyeLook*` clips are legitimate free stubs. **16 authored morphs →
+the 13 morph-composed VRM presets with fractional weights, all 52 ARKit clips declared** (36 empty
+Perfect-Sync stubs), plus expression **override modes** so stacked expressions suppress instead of summing.
+The 52 names, preset table and stub reasons now live in [`prototypes/arkit52.py`](prototypes/arkit52.py) —
+**the single owner of the clip contract**, imported by the generators. `vrm_export.py` extended again, not
+forked. **64/64 automated checks + 3 negative-control classes seen to fail.**
+[findings](findings/2026-09-07-v1-face-rig.md). [visual/manual] owner: drive the expressions in the Studio
+inspector.
+
 **Status:** 🟡 **Prototypes A + B work** (2026-07-09) — both clean-licensed, no AI. **A** (WI 882):
 rigid robot walks ([findings](findings/2026-07-09-rigid-robot-walk.md)). **B** (WI 885): Kerbal-tier
 corn-person + **corn→popcorn failure transform** ([findings](findings/2026-07-09-corn-person-popcorn.md)).
@@ -97,6 +112,14 @@ The **failure-transform** is a reusable mechanic: two clean assets (avatar + bur
 
 - [`discover.md`](discover.md) — completed scoping + findings/assessment (tool landscape + licensing).
 - `prototypes/`:
+  - [`arkit52.py`](prototypes/arkit52.py) — **the ARKit-52 clip contract's single owner**: the 52 names,
+    the 18 VRM preset slots, the stylized archetype's authored/stub split with a reason per stub, the
+    preset composition table, and the expression override modes. Pure Python; `python3 arkit52.py`
+    validates the table with no Blender.
+  - [`vrm_export.py`](prototypes/vrm_export.py) — the shared VRM 1.0 + 0.x exporter (humanoid map, meta,
+    spring bones, expression binds, bone gaze, scene purge). Extended by each work item, never forked.
+  - [`blender_v1_face_rig.py`](prototypes/blender_v1_face_rig.py) — the stylized head archetype's v1 face
+    rig (WI 1362): aperture loop topology, 16 authored morphs, bone gaze, 64 checks, preview renders.
   - [`blender_robot.py`](prototypes/blender_robot.py) — Prototype A generator (robot: geometry +
     armature + rigid bone-parent + idle/walk + glTF export).
   - [`blender_corn.py`](prototypes/blender_corn.py) — Prototype B generator (corn-person + popcorn

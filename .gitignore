@@ -37,3 +37,6 @@ mechanical-kit/prototypes/materials/
 rigged-avatars/prototypes/out/*_walk_*.png
 rigged-avatars/prototypes/out/pop_*.png
 rigged-avatars/prototypes/out/debug/
+
+# Session scratch (rsync targets, pulled artifacts) — commit samples explicitly under findings/
+tmp/

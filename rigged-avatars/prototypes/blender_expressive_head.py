@@ -29,20 +29,9 @@ HEAD = "face"
 BODY = "torso"
 
 # ---- ARKit-52 (exact camelCase) --------------------------------------------
-ARKIT_52 = [
-    "browDownLeft", "browDownRight", "browInnerUp", "browOuterUpLeft", "browOuterUpRight",
-    "cheekPuff", "cheekSquintLeft", "cheekSquintRight",
-    "eyeBlinkLeft", "eyeBlinkRight", "eyeLookDownLeft", "eyeLookDownRight", "eyeLookInLeft",
-    "eyeLookInRight", "eyeLookOutLeft", "eyeLookOutRight", "eyeLookUpLeft", "eyeLookUpRight",
-    "eyeSquintLeft", "eyeSquintRight", "eyeWideLeft", "eyeWideRight",
-    "jawForward", "jawLeft", "jawOpen", "jawRight",
-    "mouthClose", "mouthDimpleLeft", "mouthDimpleRight", "mouthFrownLeft", "mouthFrownRight",
-    "mouthFunnel", "mouthLeft", "mouthLowerDownLeft", "mouthLowerDownRight", "mouthPressLeft",
-    "mouthPressRight", "mouthPucker", "mouthRight", "mouthRollLower", "mouthRollUpper",
-    "mouthShrugLower", "mouthShrugUpper", "mouthSmileLeft", "mouthSmileRight", "mouthStretchLeft",
-    "mouthStretchRight", "mouthUpperUpLeft", "mouthUpperUpRight",
-    "noseSneerLeft", "noseSneerRight", "tongueOut",
-]
+# Owned by arkit52.py since WI 1362 — a name list that must match byte-for-byte across the generator, the
+# exporter, the validator and the contracts sidecar has exactly one home, and it is not a generator.
+from arkit52 import ARKIT_52
 AUTHORED = [
     "eyeBlinkLeft", "eyeBlinkRight", "eyeWideLeft", "eyeWideRight", "eyeSquintLeft", "eyeSquintRight",
     "browInnerUp", "browDownLeft", "browDownRight", "jawOpen",

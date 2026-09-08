@@ -1,0 +1,486 @@
+{
+  "work_item": "WI 1362 \u2014 v1 stylized face rig on frozen loop topology (923 ladder step 6)",
+  "generator_script": "blender_v1_face_rig.py",
+  "contract_owner": "arkit52.py",
+  "negative_control": null,
+  "topology": {
+    "head_base": "UV sphere r=0.16 segments=128 rings=72, scaled (1.0, 0.98, 1.14)",
+    "apertures": {
+      "eyes": 2,
+      "mouth": 1
+    },
+    "concentric_loops_per_aperture": 3,
+    "eye_inset_thickness_m": 0.008,
+    "mouth_inset_thickness_m": 0.008,
+    "mouth_cavity_depth_m": 0.075
+  },
+  "morphs": {
+    "authored": [
+      "eyeBlinkLeft",
+      "eyeBlinkRight",
+      "eyeWideLeft",
+      "eyeWideRight",
+      "eyeSquintLeft",
+      "eyeSquintRight",
+      "browInnerUp",
+      "browDownLeft",
+      "browDownRight",
+      "jawOpen",
+      "mouthSmileLeft",
+      "mouthSmileRight",
+      "mouthFrownLeft",
+      "mouthFrownRight",
+      "mouthFunnel",
+      "mouthPucker"
+    ],
+    "authored_count": 16,
+    "declared": 52,
+    "stub_count": 36,
+    "stub_reasons": {
+      "gaze-is-bone-driven": [
+        "eyeLookDownLeft",
+        "eyeLookDownRight",
+        "eyeLookInLeft",
+        "eyeLookInRight",
+        "eyeLookOutLeft",
+        "eyeLookOutRight",
+        "eyeLookUpLeft",
+        "eyeLookUpRight"
+      ],
+      "no-visual-referent-on-a-stylized-face": [
+        "cheekSquintLeft",
+        "cheekSquintRight",
+        "mouthDimpleLeft",
+        "mouthDimpleRight",
+        "mouthPressLeft",
+        "mouthPressRight",
+        "mouthRollLower",
+        "mouthRollUpper",
+        "mouthShrugLower",
+        "mouthShrugUpper",
+        "noseSneerLeft",
+        "noseSneerRight"
+      ],
+      "not-webcam-driveable": [
+        "cheekPuff",
+        "jawForward",
+        "tongueOut"
+      ],
+      "deferred-to-the-tranche-work-item-1363": [
+        "browOuterUpLeft",
+        "browOuterUpRight",
+        "jawLeft",
+        "jawRight",
+        "mouthClose",
+        "mouthLeft",
+        "mouthRight",
+        "mouthLowerDownLeft",
+        "mouthLowerDownRight",
+        "mouthStretchLeft",
+        "mouthStretchRight",
+        "mouthUpperUpLeft",
+        "mouthUpperUpRight"
+      ]
+    }
+  },
+  "presets": {
+    "slots": 18,
+    "morph_composed": [
+      "aa",
+      "angry",
+      "blink",
+      "blink_left",
+      "blink_right",
+      "ee",
+      "happy",
+      "ih",
+      "oh",
+      "ou",
+      "relaxed",
+      "sad",
+      "surprised"
+    ],
+    "empty_by_design": [
+      "neutral",
+      "look_up",
+      "look_down",
+      "look_left",
+      "look_right"
+    ],
+    "overrides": {
+      "blink": {
+        "override_look_at": "block"
+      },
+      "blink_left": {
+        "override_look_at": "block"
+      },
+      "blink_right": {
+        "override_look_at": "block"
+      },
+      "happy": {
+        "override_mouth": "blend",
+        "override_blink": "blend"
+      },
+      "relaxed": {
+        "override_mouth": "blend",
+        "override_blink": "blend"
+      },
+      "angry": {
+        "override_mouth": "blend"
+      },
+      "sad": {
+        "override_mouth": "blend"
+      },
+      "surprised": {
+        "override_mouth": "blend",
+        "override_blink": "block"
+      }
+    }
+  },
+  "gaze": {
+    "mode": "bone",
+    "bones": [
+      "eye.L",
+      "eye.R"
+    ],
+    "humanoid_slots": [
+      "left_eye",
+      "right_eye"
+    ]
+  },
+  "licence": {
+    "head geometry / rig / morphs": "authored (ours) \u2014 commercial yes, redistribute yes",
+    "Blender + saturday06 VRM add-on": "GPL-3.0-or-later + MIT \u2014 tool only, imposes nothing on exported assets",
+    "ARKit names": "Apple public API vocabulary used as an interop convention; Google ships the identical 52 names under Apache-2.0. Describe as ARKit-compatible.",
+    "effective output licence": "clean"
+  },
+  "artifacts": {
+    "vrm1": "/home/dave/wi1362/v1_face_rig.vrm",
+    "vrm0": "/home/dave/wi1362/v1_face_rig.vrm0.vrm",
+    "glb": "/home/dave/wi1362/v1_face_rig.glb",
+    "previews": "/home/dave/wi1362/previews"
+  },
+  "checks": [
+    {
+      "check": "no vertex escapes the head volume",
+      "ok": true,
+      "detail": "0 verts beyond 186.0 mm from the head centre"
+    },
+    {
+      "check": "the left eyeball stays inside the head shell",
+      "ok": true,
+      "detail": "0 shell verts sit behind the eyeball surface"
+    },
+    {
+      "check": "eyelid loops exist (Left)",
+      "ok": true,
+      "detail": "58 lid verts in the centre column of the aperture"
+    },
+    {
+      "check": "eyeBlinkLeft closes the aperture",
+      "ok": true,
+      "detail": "vertical gap 17.8 mm open -> 0.0 mm shut"
+    },
+    {
+      "check": "eyeBlinkLeft does not disturb the brow",
+      "ok": true,
+      "detail": "0 displaced verts at or above the brow band"
+    },
+    {
+      "check": "eyeBlinkLeft lid covers the eyeball",
+      "ok": true,
+      "detail": "0 of 8 rim verts sink into the eyeball"
+    },
+    {
+      "check": "eyeBlinkLeft leaves the right eye alone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the right eyeball stays inside the head shell",
+      "ok": true,
+      "detail": "0 shell verts sit behind the eyeball surface"
+    },
+    {
+      "check": "eyelid loops exist (Right)",
+      "ok": true,
+      "detail": "58 lid verts in the centre column of the aperture"
+    },
+    {
+      "check": "eyeBlinkRight closes the aperture",
+      "ok": true,
+      "detail": "vertical gap 17.8 mm open -> 0.0 mm shut"
+    },
+    {
+      "check": "eyeBlinkRight does not disturb the brow",
+      "ok": true,
+      "detail": "0 displaced verts at or above the brow band"
+    },
+    {
+      "check": "eyeBlinkRight lid covers the eyeball",
+      "ok": true,
+      "detail": "0 of 8 rim verts sink into the eyeball"
+    },
+    {
+      "check": "eyeBlinkRight leaves the left eye alone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the mouth aperture exists",
+      "ok": true,
+      "detail": "9 upper-rim / 15 lower-rim verts in the centre column"
+    },
+    {
+      "check": "jawOpen opens the mouth",
+      "ok": true,
+      "detail": "aperture 3.2 mm shut -> 35.1 mm open"
+    },
+    {
+      "check": "jawOpen leaves the upper lip in place",
+      "ok": true,
+      "detail": "an open mouth drops the lower lip; the upper lip is not part of the jaw"
+    },
+    {
+      "check": "mouthSmileLeft lifts that corner",
+      "ok": true,
+      "detail": "mean corner lift 13.7 mm over 69 verts"
+    },
+    {
+      "check": "mouthSmileLeft leaves the cheek alone",
+      "ok": true,
+      "detail": "902 cheek verts checked"
+    },
+    {
+      "check": "mouthSmileRight lifts that corner",
+      "ok": true,
+      "detail": "mean corner lift 13.7 mm over 69 verts"
+    },
+    {
+      "check": "mouthSmileRight leaves the cheek alone",
+      "ok": true,
+      "detail": "902 cheek verts checked"
+    },
+    {
+      "check": "authored shape keys are exactly the contract's authored set",
+      "ok": true,
+      "detail": "16 keys"
+    },
+    {
+      "check": "authored morph eyeBlinkLeft displaces",
+      "ok": true,
+      "detail": "max 19.0 mm"
+    },
+    {
+      "check": "authored morph eyeBlinkRight displaces",
+      "ok": true,
+      "detail": "max 19.0 mm"
+    },
+    {
+      "check": "authored morph eyeWideLeft displaces",
+      "ok": true,
+      "detail": "max 15.0 mm"
+    },
+    {
+      "check": "authored morph eyeWideRight displaces",
+      "ok": true,
+      "detail": "max 15.0 mm"
+    },
+    {
+      "check": "authored morph eyeSquintLeft displaces",
+      "ok": true,
+      "detail": "max 13.0 mm"
+    },
+    {
+      "check": "authored morph eyeSquintRight displaces",
+      "ok": true,
+      "detail": "max 13.0 mm"
+    },
+    {
+      "check": "authored morph browInnerUp displaces",
+      "ok": true,
+      "detail": "max 8.7 mm"
+    },
+    {
+      "check": "authored morph browDownLeft displaces",
+      "ok": true,
+      "detail": "max 24.4 mm"
+    },
+    {
+      "check": "authored morph browDownRight displaces",
+      "ok": true,
+      "detail": "max 24.4 mm"
+    },
+    {
+      "check": "authored morph jawOpen displaces",
+      "ok": true,
+      "detail": "max 43.5 mm"
+    },
+    {
+      "check": "authored morph mouthSmileLeft displaces",
+      "ok": true,
+      "detail": "max 28.4 mm"
+    },
+    {
+      "check": "authored morph mouthSmileRight displaces",
+      "ok": true,
+      "detail": "max 28.4 mm"
+    },
+    {
+      "check": "authored morph mouthFrownLeft displaces",
+      "ok": true,
+      "detail": "max 26.5 mm"
+    },
+    {
+      "check": "authored morph mouthFrownRight displaces",
+      "ok": true,
+      "detail": "max 26.5 mm"
+    },
+    {
+      "check": "authored morph mouthFunnel displaces",
+      "ok": true,
+      "detail": "max 22.1 mm"
+    },
+    {
+      "check": "authored morph mouthPucker displaces",
+      "ok": true,
+      "detail": "max 30.0 mm"
+    },
+    {
+      "check": "eye bones exist on the rig",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "face has no eye-bone weight",
+      "ok": true,
+      "detail": "auto-weighting ran before the eye bones existed"
+    },
+    {
+      "check": "eyeball.L is rigidly skinned to its gaze bone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "eyeball.R is rigidly skinned to its gaze bone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "rotating eye.L moves the left eyeball",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "rotating eye.L moves neither the right eyeball nor the head",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "glb re-imports with every authored morph",
+      "ok": true,
+      "detail": "16 morph targets"
+    },
+    {
+      "check": "glb re-imports with an armature",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "VRM 1.0 re-imports with an armature",
+      "ok": true,
+      "detail": "1 armatures"
+    },
+    {
+      "check": "VRM 1.0 carries only the avatar",
+      "ok": true,
+      "detail": "objects: ['Armature', 'eyeball.L', 'eyeball.R', 'face', 'torso']"
+    },
+    {
+      "check": "VRM 1.0 declares all 52 ARKit clips, exact names",
+      "ok": true,
+      "detail": "52 customs"
+    },
+    {
+      "check": "the authored clips are bound 1:1",
+      "ok": true,
+      "detail": "16 bound, each with exactly one morph target"
+    },
+    {
+      "check": "one morph per ARKit clip",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the remaining clips are declared empty stubs",
+      "ok": true,
+      "detail": "36 stubs"
+    },
+    {
+      "check": "the 13 morph-composed presets are bound",
+      "ok": true,
+      "detail": "['aa', 'angry', 'blink', 'blink_left', 'blink_right', 'ee', 'happy', 'ih', 'oh', 'ou', 'relaxed', 'sad', 'surprised']"
+    },
+    {
+      "check": "bind counts match the composition table",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "fractional preset weights survive the round trip",
+      "ok": true,
+      "detail": "a viseme needs a partial jaw; hard-coded 1.0 could not express one"
+    },
+    {
+      "check": "the four look_* presets are empty (gaze is bone-driven)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "neutral is empty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "15/15 required humanoid slots bound",
+      "ok": true,
+      "detail": "15/15"
+    },
+    {
+      "check": "both optional eye slots bound",
+      "ok": true,
+      "detail": "eye.L / eye.R"
+    },
+    {
+      "check": "look_at is in bone mode",
+      "ok": true,
+      "detail": "bone"
+    },
+    {
+      "check": "expression override modes survive the round trip",
+      "ok": true,
+      "detail": "{\"angry\": {\"override_mouth\": \"blend\"}, \"blink\": {\"override_look_at\": \"block\"}, \"blink_left\": {\"override_look_at\": \"block\"}, \"blink_right\": {\"override_look_at\": \"block\"}, \"happy\": {\"override_blink\": \"blend\", \"override_mouth\": \"blend\"}, \"relaxed\": {\"override_blink\": \"blend\", \"override_mouth\": \"blend\"}, \"sad\": {\"override_mouth\": \"blend\"}, \"surprised\": {\"override_blink\": \"block\", \"override_mouth\": \"blend\"}}"
+    },
+    {
+      "check": "VRM 0.x re-imports with an armature",
+      "ok": true,
+      "detail": "1 armatures"
+    },
+    {
+      "check": "VRM 0.x carries only the avatar",
+      "ok": true,
+      "detail": "objects: ['Armature', 'eyeball.L', 'eyeball.R', 'face', 'torso']"
+    },
+    {
+      "check": "VRM 0.x carries every preset blend-shape group we wrote",
+      "ok": true,
+      "detail": "12 written, 13 present: ['Neutral', 'aa', 'angry', 'blink', 'blink_left', 'blink_right', 'ee', 'happy', 'ih', 'oh', 'ou', 'relaxed', 'sad']"
+    },
+    {
+      "check": "VRM 0.x omits `surprised` (a 1.0-only preset)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "summary": "64/64"
+}

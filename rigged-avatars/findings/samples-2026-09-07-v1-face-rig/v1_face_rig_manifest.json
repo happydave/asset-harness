@@ -1,0 +1,26 @@
+{
+  "asset": "WI 1362 stylized v1 face rig (ARKit-52 declared, 16 authored, bone gaze)",
+  "generator_script": "blender_v1_face_rig.py",
+  "bind": "SKINNED: armature modifier + auto weights; eyeballs rigid to eye.L/eye.R",
+  "authored_morphs": [
+    "eyeBlinkLeft",
+    "eyeBlinkRight",
+    "eyeWideLeft",
+    "eyeWideRight",
+    "eyeSquintLeft",
+    "eyeSquintRight",
+    "browInnerUp",
+    "browDownLeft",
+    "browDownRight",
+    "jawOpen",
+    "mouthSmileLeft",
+    "mouthSmileRight",
+    "mouthFrownLeft",
+    "mouthFrownRight",
+    "mouthFunnel",
+    "mouthPucker"
+  ],
+  "arkit_declared": 52,
+  "head_variant": "stylized-v1",
+  "license": "clean: Blender (GPL) + authored geometry + hand-authored morphs"
+}
