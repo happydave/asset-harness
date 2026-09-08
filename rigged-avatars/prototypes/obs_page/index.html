@@ -89,11 +89,14 @@ const VRM_URL = qs.get('vrm') ?? '../../findings/samples-2026-09-07-v1-face-rig/
 // ?delegate=CPU falls back if WebGL-based inference misbehaves — Firefox is a less-trodden path for
 // MediaPipe's GPU delegate than Chrome, and a one-URL change beats editing the file.
 const DELEGATE = (qs.get('delegate') ?? 'GPU').toUpperCase();
-// Head-pose axis signs. Mirroring (what a VTuber wants) is yaw+roll negated; pitch was reported
-// inverted on the first live run, so it defaults negated too. Exposed because the correct combination
-// is a 10-second empirical question for whoever is sitting in front of the camera, and a slow one to
-// guess at over a round trip:  ?pitch=1&yaw=-1&roll=-1
-const SIGN = { pitch: +(qs.get('pitch') ?? -1), yaw: +(qs.get('yaw') ?? -1), roll: +(qs.get('roll') ?? -1) };
+// Head-pose axis signs: pitch +1, yaw -1, roll -1. Confirmed by the owner against the WI 1372-corrected
+// asset, and the combination is not arbitrary -- it IS the left-right mirror a VTuber wants, which
+// negates yaw and roll and leaves pitch alone.
+//
+// Pitch briefly defaulted to -1. That was a workaround for WI 1362's backwards-facing avatar leaking
+// through, not a property of the tracker: correcting the facing removed the need for it and left yaw
+// and roll untouched. Half the earlier hypothesis, measured rather than argued.
+const SIGN = { pitch: +(qs.get('pitch') ?? 1), yaw: +(qs.get('yaw') ?? -1), roll: +(qs.get('roll') ?? -1) };
 const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadier but laggier
 // ?key=00ff00 etc. Magenta needed ~218 similarity in OBS's Color Key; a different hue may key
 // tighter, and a tight key matters because a loose one starts eating the avatar.
