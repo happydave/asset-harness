@@ -406,8 +406,9 @@ function frame() {
       `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
       `keys       [c] key colour #${KEY}  [h] HUD  [r] reset  [v] tracker view\n` +
       `pose       pitch ${SIGN.pitch>0?'+':''}${SIGN.pitch} yaw ${SIGN.yaw>0?'+':''}${SIGN.yaw} roll ${SIGN.roll>0?'+':''}${SIGN.roll}  smooth ${SMOOTH}\n` +
-      `gaze       ${eyeL && eyeR ? `bone-driven, \u00b1${GAZE.deg}\u00b0  (?gazeyaw=-1 ?gazepitch=-1)`
-                                 : '<span class="bad">no eye bones in this VRM</span>'}\n` +
+      `gaze       ${eyeL && eyeR
+          ? `pitch ${GAZE.pitch>0?'+':''}${GAZE.pitch} yaw ${GAZE.yaw>0?'+':''}${GAZE.yaw}  \u00b1${GAZE.deg}\u00b0`
+          : '<span class="bad">no eye bones in this VRM</span>'}\n` +
       `mouse      wheel = zoom, drag = orbit, right-drag = pan`;
   }
   // ms clock for the camera-loop latency measurement
