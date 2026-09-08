@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--
+  WI 1370 spike — does our own WebGL2 page reach a stream through OBS, webcam-driven?
+
+  Route C (owner's choice 2026-09-07): OBS has no Browser Source on this machine, so the page is rendered
+  in an ordinary browser and picked up with an OBS *Window Capture*. That answers everything the spike
+  asks except transparency, which window capture cannot carry.
+
+  The whole point of driving the VRM rather than a coloured triangle: MediaPipe FaceLandmarker emits the
+  *same 52 ARKit blendshape names* our clips are called (WI 923's finding — Google ships the identical
+  vocabulary under Apache-2.0). So the tracker->avatar mapping is an IDENTITY LOOKUP, and if it works,
+  that is a live test of WI 1362's clip contract against a real tracker.
+
+  Serve from the `rigged-avatars/` directory so the sample VRM is reachable:
+      cd rigged-avatars && python3 -m http.server 8777
+      → http://localhost:8777/prototypes/obs_page/
+  localhost is a secure context, which getUserMedia requires; file:// will not work.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WI 1370 — avatar / OBS pipeline spike</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #101014; overflow: hidden;
+               font: 13px/1.45 ui-monospace, "DejaVu Sans Mono", monospace; color: #cfd3dc; }
+  /* A garish backdrop on purpose: with a transparent renderer this is what shows through, so the
+     falsifiable alpha check is "do you see magenta where the avatar isn't". */
+  #chroma { position: fixed; inset: 0; background: #ff00c8; display: none; }
+  #chroma.on { display: block; }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #hud { position: fixed; top: 10px; left: 10px; padding: 10px 14px; border-radius: 6px;
+         background: rgba(8,8,12,.82); border: 1px solid #2b2f3a; white-space: pre; z-index: 5; }
+  #hud b { color: #8fd0ff; font-weight: 600; }
+  .bad  { color: #ff7a7a; }
+  .good { color: #7ddc8a; }
+  /* The latency loop: point the webcam at this clock. The captured frame shows an older value, and the
+     difference IS the end-to-end camera->screen latency. Costs nothing and needs no instrumentation. */
+  #clock { position: fixed; right: 14px; bottom: 12px; font-size: 46px; font-weight: 700;
+           color: #fff; background: #000; padding: 4px 12px; letter-spacing: 2px; z-index: 5; }
+  #err { position: fixed; inset: auto 10px 10px 10px; padding: 10px 14px; border-radius: 6px;
+         background: #3a1114; border: 1px solid #71232a; color: #ffb4b4; display: none;
+         white-space: pre-wrap; z-index: 9; }
+  video { display: none; }
+</style>
+</head>
+<body>
+<div id="chroma"></div>
+<canvas id="gl"></canvas>
+<video id="cam" playsinline></video>
+<div id="hud">starting…</div>
+<div id="clock">--</div>
+<div id="err"></div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { VRMLoaderPlugin, VRMUtils } from './vendor/three-vrm.module.js';
+import { FilesetResolver, FaceLandmarker } from './vendor/mediapipe/vision_bundle.mjs';
+
+const qs   = new URLSearchParams(location.search);
+const VRM_URL = qs.get('vrm') ?? '../../findings/samples-2026-09-07-v1-face-rig/v1_face_rig.vrm';
+// ?delegate=CPU falls back if WebGL-based inference misbehaves — Firefox is a less-trodden path for
+// MediaPipe's GPU delegate than Chrome, and a one-URL change beats editing the file.
+const DELEGATE = (qs.get('delegate') ?? 'GPU').toUpperCase();
+const hud = document.getElementById('hud');
+const errBox = document.getElementById('err');
+const fail = (where, e) => {
+  // Attribute failures to a LAYER, which is one of the spike's acceptance criteria: "the failure is
+  // attributed to a specific layer rather than to 'OBS'".
+  errBox.style.display = 'block';
+  errBox.textContent = `FAILED IN LAYER: ${where}\n${e?.stack || e}`;
+  console.error(where, e);
+};
+
+// ---------------------------------------------------------------- renderer
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+const gl2 = renderer.getContext() instanceof WebGL2RenderingContext;
+renderer.setClearAlpha(0);                       // transparent: route A/B would composite on this
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 20);
+scene.add(new THREE.DirectionalLight(0xffffff, 2.4).translateY(2).translateZ(3));
+scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+const resize = () => {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+};
+addEventListener('resize', resize); resize();
+
+// ---------------------------------------------------------------- the avatar
+let vrm = null, headBone = null, expressionNames = new Set();
+try {
+  const loader = new GLTFLoader();
+  loader.register(p => new VRMLoaderPlugin(p));
+  const gltf = await loader.loadAsync(VRM_URL);
+  vrm = gltf.userData.vrm;
+  if (!vrm) throw new Error(`${VRM_URL} loaded as plain glTF — no VRM extension found`);
+  VRMUtils.rotateVRM0(vrm);                      // no-op on a 1.0 file; correct for a 0.x one
+  scene.add(vrm.scene);
+  headBone = vrm.humanoid?.getNormalizedBoneNode('head') ?? null;
+  for (const n of Object.keys(vrm.expressionManager?.expressionMap ?? {})) expressionNames.add(n);
+  // frame the head
+  const hb = vrm.humanoid?.getRawBoneNode('head');
+  const y = hb ? hb.getWorldPosition(new THREE.Vector3()).y : 1.2;
+  camera.position.set(0, y + 0.02, 0.62); camera.lookAt(0, y + 0.02, 0);
+} catch (e) { fail('VRM LOAD (three-vrm)', e); }
+
+// ---------------------------------------------------------------- tracker
+let landmarker = null, camReady = false;
+const video = document.getElementById('cam');
+try {
+  const fileset = await FilesetResolver.forVisionTasks('./vendor/mediapipe/wasm');
+  landmarker = await FaceLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: './vendor/face_landmarker.task', delegate: DELEGATE },
+    runningMode: 'VIDEO',
+    numFaces: 1,
+    outputFaceBlendshapes: true,               // the ARKit-52 names — the identity mapping
+    outputFacialTransformationMatrixes: true,  // head pose
+  });
+} catch (e) { fail('MEDIAPIPE INIT (wasm/model)', e); }
+
+try {
+  video.srcObject = await navigator.mediaDevices.getUserMedia({
+    // 720p30 deliberately: on the BRIO, YUYV at 1080p is bandwidth-starved, and face landmarks want
+    // frame rate over resolution.
+    video: { width: 1280, height: 720, frameRate: 30 }, audio: false,
+  });
+  await video.play(); camReady = true;
+} catch (e) { fail('WEBCAM (getUserMedia)', e); }
+
+// ---------------------------------------------------------------- loop
+const stats = {
+  renderFrames: 0, trackFrames: 0, fps: 0, tfps: 0,
+  faceSeen: false, driven: 0, matched: 0, unmatched: new Set(),
+  trackMs: 0, frameMs: 0, lastVideoTs: -1,
+};
+let windowStart = performance.now();
+const clockEl = document.getElementById('clock');
+
+function driveFromBlendshapes(categories) {
+  // IDENTITY MAPPING. MediaPipe's category names are the ARKit-52 vocabulary, which is exactly what
+  // arkit52.py declares, so a name that fails to match here is a real contract defect, not a mapping gap.
+  let matched = 0, driven = 0;
+  for (const c of categories) {
+    // `_neutral` is MediaPipe's own first category, not an ARKit blendshape — never expected to match.
+    if (c.categoryName === '_neutral') continue;
+    if (!expressionNames.has(c.categoryName)) { stats.unmatched.add(c.categoryName); continue; }
+    matched++;
+    vrm.expressionManager.setValue(c.categoryName, c.score);
+    if (c.score > 0.02) driven++;
+  }
+  stats.matched = matched; stats.driven = driven;
+}
+
+function driveHeadPose(matrixes) {
+  if (!headBone || !matrixes?.facialTransformationMatrixes?.length) return;
+  const m = new THREE.Matrix4().fromArray(matrixes.facialTransformationMatrixes[0].data);
+  const q = new THREE.Quaternion().setFromRotationMatrix(m);
+  // mirror so it reads as a mirror, not as someone facing you
+  q.y *= -1; q.z *= -1;
+  headBone.quaternion.slerp(q, 0.5);
+}
+
+const clock = new THREE.Clock();
+function frame() {
+  requestAnimationFrame(frame);
+  const t0 = performance.now();
+
+  if (landmarker && camReady && video.readyState >= 2 && video.currentTime !== stats.lastVideoTs) {
+    stats.lastVideoTs = video.currentTime;
+    const ts0 = performance.now();
+    let res = null;
+    try { res = landmarker.detectForVideo(video, ts0); }
+    catch (e) { fail('MEDIAPIPE DETECT', e); landmarker = null; }
+    stats.trackMs = performance.now() - ts0;
+    stats.trackFrames++;
+    const shapes = res?.faceBlendshapes?.[0]?.categories;
+    stats.faceSeen = !!shapes;                 // <- the falsifiable check: cover the lens, this goes false
+    if (shapes && vrm) { driveFromBlendshapes(shapes); driveHeadPose(res); }
+  }
+
+  if (vrm) vrm.update(Math.min(clock.getDelta(), 1 / 30));
+  renderer.render(scene, camera);
+  stats.renderFrames++;
+  stats.frameMs = performance.now() - t0;
+
+  const now = performance.now();
+  if (now - windowStart >= 1000) {
+    stats.fps  = (stats.renderFrames * 1000 / (now - windowStart));
+    stats.tfps = (stats.trackFrames  * 1000 / (now - windowStart));
+    stats.renderFrames = stats.trackFrames = 0; windowStart = now;
+    const face = stats.faceSeen ? '<span class="good">YES</span>' : '<span class="bad">NO</span>';
+    hud.innerHTML =
+      `<b>WI 1370</b>  route C (window capture)   delegate=${DELEGATE}\n` +
+      `WebGL2     ${gl2 ? '<span class="good">yes</span>' : '<span class="bad">NO (WebGL1)</span>'}\n` +
+      `render     ${stats.fps.toFixed(1)} fps   (${stats.frameMs.toFixed(1)} ms/frame)\n` +
+      `tracker    ${stats.tfps.toFixed(1)} fps   (${stats.trackMs.toFixed(1)} ms/detect)\n` +
+      `face       ${face}\n` +
+      `clips      ${stats.matched} of 51 ARKit names matched the VRM\n` +
+      `signal     ${stats.driven} receiving a non-zero score  (only 16 are bound;\n`  +
+      `           the other 36 are declared stubs and will not visibly move)\n` +
+      `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
+      `keys       [c] magenta backdrop  [h] hide HUD`;
+  }
+  // ms clock for the camera-loop latency measurement
+  clockEl.textContent = String(now.toFixed(0)).slice(-5);
+}
+frame();
+
+addEventListener('keydown', e => {
+  if (e.key === 'c') document.getElementById('chroma').classList.toggle('on');
+  if (e.key === 'h') { hud.style.display = hud.style.display === 'none' ? '' : 'none'; }
+});
+</script>
+</body>
+</html>

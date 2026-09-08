@@ -40,3 +40,6 @@ rigged-avatars/prototypes/out/debug/
 
 # Session scratch (rsync targets, pulled artifacts) — commit samples explicitly under findings/
 tmp/
+
+# WI 1370 spike: vendored web deps (~27 MB wasm + model), re-fetchable via fetch_vendor.sh
+rigged-avatars/prototypes/obs_page/vendor/
