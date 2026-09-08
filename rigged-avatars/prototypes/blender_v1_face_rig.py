@@ -52,7 +52,21 @@ import vrm_export                                                 # noqa: E402
 HEAD, BODY = "face", "torso"
 EYE_L, EYE_R = "eyeball.L", "eyeball.R"
 
-# ---- head frame (armature/world space, +Y is front) -------------------------
+# ---- head frame (armature/world space) --------------------------------------
+# WI 1372. FACE_Y is the ONLY statement of which way the character points, and everything
+# front-related is expressed through _depth() below rather than through a bare sign.
+#
+# It is -1 because Blender's standard character convention is facing -Y (which is what makes the
+# 19-bone rig's `.L` bones at +X the character's LEFT), and because Blender -Y exports to glTF +Z,
+# which is what VRM 1.0 requires. WI 936 built its face at +Y and WI 1362 inherited that, so the
+# shipped avatar faced -Z and the rig and the face disagreed about which way the character pointed.
+#
+# NOT fixed by rotating the finished model: a 180 deg turn about the up axis would also swap left and
+# right, and a mirror would invert handedness. The head is BUILT facing -Y.
+# `--negative-control old-facing` rebuilds the WI 1362 defect, so the facing check is seen to fail
+# rather than merely seen to pass on a build that was never wrong.
+FACE_Y = 1.0 if NEGATIVE == "old-facing" else -1.0
+
 HZ = 1.15                       # head centre z
 HR = 0.16                       # head sphere radius before scaling
 HS = (1.0, 0.98, 1.14)          # head scale -> ellipsoid semi-axes (0.160, 0.1568, 0.1824)
@@ -64,7 +78,7 @@ EYE_AX, EYE_AZ = 0.044, 0.038   # eye PATCH half-extents (the lid zone's outer e
 # beside each eye — because the shell curves away faster than the ball does.
 EYE_BALL_R = 0.032              # wide enough to seal the aperture corner (26.5 mm out)
 EYE_BALL_SY = 0.78              # flattened, so it does not breach the shell beside the eye
-EYE_BALL_Y = 0.107              # recessed: a ball proud of the shell breaks through as a crescent
+EYE_BALL_D = 0.107              # DEPTH toward the face; recessed, or the ball breaks through the shell
 IRIS_FRACTION = 0.35            # front fraction of the ball that is iris
 
 BROW_CZ = 1.247                  # brow arc centre z
@@ -101,6 +115,12 @@ def _mat(name, rgb, rough=0.6, cull=True):
 # ---------------------------------------------------------------------------
 # aperture construction — this is what makes the loops real
 # ---------------------------------------------------------------------------
+def _depth(co):
+    """How far a point is toward the FRONT of the face, in metres. Positive is frontward whichever way
+    FACE_Y points, so every front-test reads the same and none of them carries a bare sign."""
+    return co[1] * FACE_Y
+
+
 def _ellipse_e(co, cx, cz, ax, az):
     """Normalised elliptical radius about a feature centre: 0 at the centre, 1 at the patch edge."""
     return math.hypot((co[0] - cx) / ax, (co[2] - cz) / az)
@@ -128,7 +148,7 @@ def _carve_aperture(bm, cx, cz, ax, az, thickness, insets=INSETS):
             raise SystemExit(f"aperture at ({cx}, {cz}): {insets} insets of {thickness} overrun a "
                              f"{ax} x {az} patch")
         return [f for f in bm.faces
-                if f.calc_center_median().y > 0.03
+                if _depth(f.calc_center_median()) > 0.03
                 and _ellipse_e(f.calc_center_median(), cx, cz, sax, saz) <= 1.0]
 
     for step in range(insets):
@@ -146,7 +166,7 @@ def _carve_aperture(bm, cx, cz, ax, az, thickness, insets=INSETS):
     bmesh.ops.delete(bm, geom=faces, context='FACES')
     bm.edges.ensure_lookup_table()
     edges = [e for e in bm.edges if len(e.link_faces) == 1
-             and all(_ellipse_e(v.co, cx, cz, ax, az) <= 1.0 and v.co.y > 0.03 for v in e.verts)]
+             and all(_ellipse_e(v.co, cx, cz, ax, az) <= 1.0 and _depth(v.co) > 0.03 for v in e.verts)]
     rim = {v for e in edges for v in e.verts}
     hx = max(abs(v.co.x - cx) for v in rim)
     hz = max(abs(v.co.z - cz) for v in rim)
@@ -159,9 +179,9 @@ def _cavity(bm, edges, cx, cz, depth):
     guaranteed closed, which a planar cap over a curved rim is not."""
     res = bmesh.ops.extrude_edge_only(bm, edges=edges)
     new_verts = [g for g in res["geom"] if isinstance(g, bmesh.types.BMVert)]
-    apex = [cx, min(v.co.y for v in new_verts) - depth, cz]
+    apex = [cx, (min(_depth(v.co) for v in new_verts) - depth) * FACE_Y, cz]
     for v in new_verts:
-        v.co.y -= depth * 0.5
+        v.co.y -= depth * 0.5 * FACE_Y
     bmesh.ops.pointmerge(bm, verts=new_verts, merge_co=apex)
     return len(new_verts)
 
@@ -211,9 +231,10 @@ def _face_region(co):
     """Colour by the SAME loop bands the morphs deform, so a feature's colour and its motion cannot
     disagree. Colouring by an independent ellipse produced blotches that drifted off the geometry."""
     x, y, z = co
-    if y <= 0.03:
+    d = _depth(co)
+    if d <= 0.03:
         return "skin"
-    if y < 0.085:                    # the socket / mouth cones are the only front geometry this far back
+    if d < 0.085:                    # the mouth cone is the only front geometry this far back
         return "cavity"
     if _lipz(co)[1] >= 0.35:
         return "lip"
@@ -237,7 +258,7 @@ def build_body(mats):
 def build_eyeball(name, cx, mats):
     """A two-material ball: white sclera, dark iris on the front cap. The iris is what makes bone-driven
     gaze legible — rotate the eye bone and you can see where it looks."""
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=EYE_BALL_R, location=(cx, EYE_BALL_Y, EYE_CZ),
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=EYE_BALL_R, location=(cx, EYE_BALL_D * FACE_Y, EYE_CZ),
                                          segments=24, ring_count=16)
     o = bpy.context.active_object
     o.name = name
@@ -250,16 +271,16 @@ def build_eyeball(name, cx, mats):
     # assumption about which coordinate frame poly.center is in, and that assumption has now been wrong
     # twice on this line: the first version compared a local y against a world one, and the second
     # assumed the mesh was origin-centred. The whole ball shipped as iris, with no sclera in the file.
-    ys = [poly.center.y for poly in me.polygons]
-    lo, hi = min(ys), max(ys)
+    ds = [_depth(poly.center) for poly in me.polygons]
+    lo, hi = min(ds), max(ds)
     iris_from = lo + (hi - lo) * (1.0 - IRIS_FRACTION)
     for poly in me.polygons:
-        poly.material_index = 1 if poly.center.y > iris_from else 0
+        poly.material_index = 1 if _depth(poly.center) > iris_from else 0
     n_iris = sum(1 for poly in me.polygons if poly.material_index == 1)
     if not 0 < n_iris < len(me.polygons):
         raise SystemExit(f"{name}: iris split degenerate — {n_iris}/{len(me.polygons)} polys. "
                          f"poly.center.y spans [{lo:.4f}, {hi:.4f}], threshold {iris_from:.4f}")
-    print(f"  {name}: {n_iris}/{len(me.polygons)} polys iris (y span [{lo:.4f}, {hi:.4f}])")
+    print(f"  {name}: {n_iris}/{len(me.polygons)} polys iris (depth span [{lo:.4f}, {hi:.4f}])")
     return o
 
 
@@ -274,8 +295,8 @@ def add_eye_bones(arm):
     eb = arm.data.edit_bones
     for name, sx in (("eye.L", 1), ("eye.R", -1)):
         b = eb.new(name)
-        b.head = (sx * EYE_CX, EYE_BALL_Y, EYE_CZ)
-        b.tail = (sx * EYE_CX, EYE_BALL_Y + 0.05, EYE_CZ)
+        b.head = (sx * EYE_CX, EYE_BALL_D * FACE_Y, EYE_CZ)
+        b.tail = (sx * EYE_CX, (EYE_BALL_D + 0.05) * FACE_Y, EYE_CZ)   # tail points out of the face
         b.use_connect = False
         b.parent = eb["head"]
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -314,7 +335,7 @@ def _aperture_t(co, cx, cz, ax, az, hole):
     normalising (1 - s) by (1 - s/q) gives 1 at the rim and 0 at the patch edge for every direction.
     """
     hx, hz = hole
-    if co[1] <= 0.03 or hx <= 0 or hz <= 0:
+    if _depth(co) <= 0.03 or hx <= 0 or hz <= 0:
         return False, 0.0
     s = _ellipse_e(co, cx, cz, ax, az)
     if s > 1.0:
@@ -353,7 +374,7 @@ def _brow(co, side_sign):
     inside a rectangular band left a hard step at the mask boundary, which rendered as a fold across
     the forehead on `angry` — the same class of defect as the smile's cutoff below."""
     e = _ellipse_e(co, side_sign * (EYE_CX + 0.004), BROW_CZ, BROW_AX, BROW_AZ)
-    if co[1] <= 0.03 or e > 1.0:
+    if _depth(co) <= 0.03 or e > 1.0:
         return False, 0.0
     return True, 1.0 - e
 
@@ -364,10 +385,10 @@ def _corner_weight(x, side_sign):
     return max(0.0, min(1.0, (side_sign * x - 0.006) / 0.026))
 
 
-def _front_falloff(y):
+def _front_falloff(co):
     """Smoothly kill a displacement toward the side of the head, so a jaw drop does not tear a seam at
-    a hard y cutoff the way WI 936's did."""
-    return max(0.0, min(1.0, (y - 0.02) / 0.05))
+    a hard cutoff the way WI 936's did."""
+    return max(0.0, min(1.0, (_depth(co) - 0.02) / 0.05))
 
 
 # Aperture half-extents, measured from the built mesh in build_head(). Placeholders until then.
@@ -389,8 +410,8 @@ def _disp(co, key):
         if upper:
             # the upper lid does most of the work, and swings forward so it passes IN FRONT of the
             # eyeball rather than through it
-            return (0.0, 0.012 * t, (LID_CLOSE_Z - z) * t)
-        return (0.0, 0.006 * t, (LID_CLOSE_Z - z) * t * LOWER_LID_SHARE)   # ...the lower lid rises to meet it
+            return (0.0, FACE_Y * 0.012 * t, (LID_CLOSE_Z - z) * t)
+        return (0.0, FACE_Y * 0.006 * t, (LID_CLOSE_Z - z) * t * LOWER_LID_SHARE)   # lower lid meets it
     if key.startswith("eyeWide") and side_ok:
         inz, t, upper = _lid(co, side)
         return (0.0, 0.0, 0.015 * t) if (inz and upper) else (0.0, 0.0, 0.0)
@@ -415,14 +436,14 @@ def _disp(co, key):
         if z > MOUTH_CZ:
             return (0.0, 0.0, 0.0)
         # the jaw as a whole swings down...
-        drop = min(1.0, (MOUTH_CZ - z) / 0.12) * _front_falloff(y)
+        drop = min(1.0, (MOUTH_CZ - z) / 0.12) * _front_falloff(co)
         dz = -0.070 * drop
         # ...and the lower lip drops further still, or the aperture barely parts: the general jaw
         # falloff is near zero right at the lip, which is exactly where the mouth has to open.
         inz, t = _lipz(co)
         if inz:
             dz -= 0.030 * t
-        return (0.0, 0.010 * drop, dz)
+        return (0.0, FACE_Y * 0.010 * drop, dz)
 
     # WI 938's lesson, applied to the stylized head: a mouth corner is BOTH lips, so the mask is the whole
     # lip zone on that side rather than a single band, and the corner moves up-and-out, not just up.
@@ -437,12 +458,12 @@ def _disp(co, key):
     if key == "mouthFunnel":
         inz, t = _lipz(co)
         if inz:
-            return (-x * 0.35 * t, 0.020 * t, -(z - MOUTH_CZ) * 0.25 * t)
+            return (-x * 0.35 * t, FACE_Y * 0.020 * t, -(z - MOUTH_CZ) * 0.25 * t)
         return (0.0, 0.0, 0.0)
     if key == "mouthPucker":
         inz, t = _lipz(co)
         if inz:
-            return (-x * 0.55 * t, 0.026 * t, -(z - MOUTH_CZ) * 0.45 * t)
+            return (-x * 0.55 * t, FACE_Y * 0.026 * t, -(z - MOUTH_CZ) * 0.45 * t)
         return (0.0, 0.0, 0.0)
     return (0.0, 0.0, 0.0)
 
@@ -535,13 +556,13 @@ def check_geometry(ck, head):
             d2 = (c.x - cx) ** 2 + (c.z - EYE_CZ) ** 2
             # only in front of the eyeball's equator: behind it, shell geometry inside the ball is the
             # socket doing its job, not a breach
-            if c.y < EYE_BALL_Y or d2 >= EYE_BALL_R ** 2:
+            if _depth(c) < EYE_BALL_D or d2 >= EYE_BALL_R ** 2:
                 continue
-            if c.y < EYE_BALL_Y + EYE_BALL_SY * math.sqrt(EYE_BALL_R ** 2 - d2):
+            if _depth(c) < EYE_BALL_D + EYE_BALL_SY * math.sqrt(EYE_BALL_R ** 2 - d2):
                 breach.append(v.index)
         ck.add(f"the {suffix.lower()} eyeball stays inside the head shell", not breach,
                f"{len(breach)} shell verts sit behind the eyeball surface")
-        col = [i for i, c in enumerate(base) if abs(c.x - cx) < 0.014 and c.y > 0.03
+        col = [i for i, c in enumerate(base) if abs(c.x - cx) < 0.014 and _depth(c) > 0.03
                and _ellipse_e(c, cx, EYE_CZ, EYE_AX, EYE_AZ) <= 1.0]
         ck.add(f"eyelid loops exist ({suffix})", len(col) >= 6,
                f"{len(col)} lid verts in the centre column of the aperture")
@@ -577,15 +598,15 @@ def check_geometry(ck, head):
             d2 = (shut[i].x - cx) ** 2 + (shut[i].z - EYE_CZ) ** 2
             if d2 >= EYE_BALL_R ** 2:
                 continue
-            surface_y = EYE_BALL_Y + EYE_BALL_SY * math.sqrt(EYE_BALL_R ** 2 - d2)
-            if shut[i].y <= surface_y:
+            surface_d = EYE_BALL_D + EYE_BALL_SY * math.sqrt(EYE_BALL_R ** 2 - d2)
+            if _depth(shut[i]) <= surface_d:
                 sunk.append(i)
         ck.add(f"eyeBlink{suffix} lid covers the eyeball", not sunk,
                f"{len(sunk)} of {len(rim_upper)} rim verts sink into the eyeball")
 
         other = "Right" if suffix == "Left" else "Left"
         ocx = -side_sign * EYE_CX
-        ocol = [i for i, c in enumerate(base) if abs(c.x - ocx) < 0.014 and c.y > 0.03
+        ocol = [i for i, c in enumerate(base) if abs(c.x - ocx) < 0.014 and _depth(c) > 0.03
                 and _ellipse_e(c, ocx, EYE_CZ, EYE_AX, EYE_AZ) <= 1.0]
         ck.add(f"eyeBlink{suffix} leaves the {other.lower()} eye alone",
                all((shut[i] - base[i]).length < 1e-6 for i in ocol))
@@ -594,11 +615,13 @@ def check_geometry(ck, head):
     # upper-lip vert to the highest lower-lip vert across a z cutoff, which are adjacent verts either
     # side of the cutoff — it reported 1.6 mm whether the mouth was open or shut.
     mouth_col = [i for i, c in enumerate(base)
-                 if abs(c.x) < 0.014 and c.y > 0.03 and _lipz(c)[1] >= 0.80]
+                 if abs(c.x) < 0.014 and _depth(c) > 0.03 and _lipz(c)[1] >= 0.80]
     m_up = [i for i in mouth_col if base[i].z > MOUTH_CZ]
     m_dn = [i for i in mouth_col if base[i].z <= MOUTH_CZ]
     ck.add("the mouth aperture exists", bool(m_up) and bool(m_dn),
            f"{len(m_up)} upper-rim / {len(m_dn)} lower-rim verts in the centre column")
+    if not (m_up and m_dn):
+        return          # an empty selection is already reported; do not die in min() on the way out
     closed = min(base[i].z for i in m_up) - max(base[i].z for i in m_dn)
     _drive(head, {"jawOpen": 1.0})
     jaw = _evaluated_coords(head)
@@ -619,7 +642,7 @@ def check_geometry(ck, head):
                f"mean corner lift {lift * 1000:.1f} mm over {len(corner)} verts")
         # WI 938's bug: a smile that puffs the cheek instead of moving the mouth
         cheek = [i for i, c in enumerate(base)
-                 if c.y > 0.03 and c.z > MOUTH_CZ + 0.045 and sign * c.x > 0.02]
+                 if _depth(c) > 0.03 and c.z > MOUTH_CZ + 0.045 and sign * c.x > 0.02]
         ck.add(f"mouthSmile{suffix} leaves the cheek alone",
                all((sm[i] - base[i]).length < 1e-6 for i in cheek),
                f"{len(cheek)} cheek verts checked")
@@ -710,6 +733,30 @@ def check_export_reimport(ck, out, name):
                    f"{hb.left_eye.node.bone_name} / {hb.right_eye.node.bone_name}")
             ck.add("look_at is in bone mode", ext.vrm1.look_at.type == "bone",
                    ext.vrm1.look_at.type)
+
+            # WI 1372. Both of these were missing, which is how a backwards avatar with a transposed
+            # gaze origin passed 64 checks. Positions are read in the re-imported BLENDER scene, whose
+            # y axis is glTF -z: a VRM facing +z has its eyes at negative Blender y.
+            def _world(slot):
+                bone = arms[0].data.bones.get(getattr(hb, slot).node.bone_name)
+                return arms[0].matrix_world @ bone.head_local if bone else None
+            le, re_, hd = _world("left_eye"), _world("right_eye"), _world("head")
+            ck.add("the avatar faces +Z (VRM 1.0)", le is not None and le.y < 0,
+                   f"left eye at glTF z = {-le.y * 1000:.1f} mm; VRM 1.0 requires the face at +Z"
+                   if le is not None else "no left eye bone")
+            # the check a rotation-based fix would fail: turning the model would move .L to the right
+            ck.add("handedness survives the turn (.L is the character's left)",
+                   le is not None and re_ is not None and le.x > 0 > re_.x,
+                   f"leftEye.x = {le.x * 1000:.1f} mm, rightEye.x = {re_.x * 1000:.1f} mm"
+                   if le is not None and re_ is not None else "missing eye bones")
+            # the gaze origin must MATCH the eyes, not merely be set -- asserting "is set" is exactly
+            # what let a value with y and z transposed ship
+            off = list(ext.vrm1.look_at.offset_from_head_bone)
+            want = [0.0, (le.z + re_.z) / 2 - hd.z, -(le.y + re_.y) / 2 + hd.y] if le is not None else None
+            ck.add("the gaze origin matches the eye bones",
+                   want is not None and all(abs(a - b) < 0.001 for a, b in zip(off, want)),
+                   f"offsetFromHeadBone {[round(v, 4) for v in off]} vs measured "
+                   f"{[round(v, 4) for v in want] if want else '?'} (tolerance 1 mm)")
             got = {p: {k: getattr(getattr(ext.vrm1.expressions.preset, p), k)
                        for k in arkit52.PRESET_OVERRIDES[p]}
                    for p in arkit52.PRESET_OVERRIDES}
@@ -795,7 +842,7 @@ def render_previews(head, out):
     cam_d = bpy.data.cameras.new("cam")
     cam = bpy.data.objects.new("cam", cam_d)
     scn.collection.objects.link(cam)
-    cam.location = (0, 0.80, HZ)
+    cam.location = (0, 0.80 * FACE_Y, HZ)
     cam_d.lens = 80
     scn.camera = cam
     con = cam.constraints.new('TRACK_TO')
@@ -806,7 +853,10 @@ def render_previews(head, out):
     sun_d.energy = 4
     sun = bpy.data.objects.new("s", sun_d)
     scn.collection.objects.link(sun)
-    sun.rotation_euler = (math.radians(-55), 0, math.radians(18))
+    # The key light follows FACE_Y too. Moving the camera by the constant and leaving the sun
+    # behind lit the back of the head and put the whole face in shadow -- the same
+    # inconsistency as WI 936's camera bug, one object over.
+    sun.rotation_euler = (math.radians(-55 * FACE_Y), 0, math.radians(18))
     scn.render.resolution_x = scn.render.resolution_y = 420
     engines = {e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items}
     scn.render.engine = 'BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in engines else 'BLENDER_EEVEE'
@@ -878,7 +928,11 @@ def main():
         arm, OUT, name, author="asset-harness (WI 1362)",
         humanoid=vrm_export.HUMANOID_19_EYES,
         expressions=expression_spec(),
-        look_at_offset=(0.0, EYE_BALL_Y, EYE_CZ - 1.00),   # relative to the head bone's head (z=1.00)
+        # In the glTF frame (x, up, forward), because the add-on writes this value VERBATIM — read off
+        # the shipped file, not assumed. Blender (x, y, z) maps to glTF (x, z, -y), and the eyes sit at
+        # Blender y = EYE_BALL_D * FACE_Y relative to a head bone at z = 1.00.
+        look_at_offset=((0.0, EYE_BALL_D, EYE_CZ - 1.00) if NEGATIVE == "blender-frame-offset"
+                       else (0.0, EYE_CZ - 1.00, -EYE_BALL_D * FACE_Y)),
         # the stray-object control also switches the purge off, so the DETECTOR is seen to fail —
         # leaving the purge on would only demonstrate that the purge works, which the normal run
         # already shows

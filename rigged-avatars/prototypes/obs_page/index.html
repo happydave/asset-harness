@@ -150,11 +150,9 @@ try {
   for (const n of Object.keys(vrm.expressionManager?.expressionMap ?? {})) expressionNames.add(n);
   // Frame the head, on whichever side the face actually IS.
   //
-  // WI 1362's avatar faces -Z, and VRM 1.0 requires +Z. Confirmed from the file: the humanoid eye bones
-  // sit at z = -0.107. This is a real defect in the asset (Blender's +Y exports to glTF -Z, and the head
-  // was built with its face at Blender +Y) and the fix belongs in blender_v1_face_rig.py, NOT here.
-  // Until then, read the facing off the eye bones so the page shows the face rather than the back of the
-  // head -- and say so on the HUD, so the workaround cannot quietly become the fix.
+  // Read the facing off the eye bones rather than assuming it. WI 1362 shipped facing -Z where VRM 1.0
+  // requires +Z; that is corrected in WI 1372, so a current asset reads +Z and the HUD says so. This is
+  // kept as a GUARD, not a workaround: it costs one line and it is how the defect surfaced at all.
   const hb = vrm.humanoid?.getRawBoneNode('head');
   const eye = vrm.humanoid?.getRawBoneNode('leftEye');
   const y = hb ? hb.getWorldPosition(new THREE.Vector3()).y : 1.2;

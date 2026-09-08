@@ -189,8 +189,12 @@ def _set_spring(ext, joint_bones, center_bone):
 def _set_look_at_bone(ext, offset_from_head):
     """Bone-driven gaze (WI 1362). `type` accepts 'bone' | 'expression' (probed live on v4.4.0); bone mode
     is the discovery's preferred option — universally supported, trivially parametric, and it turns the
-    eight `eyeLook*` ARKit clips into legitimate free stubs. `offset_from_head_bone` is the gaze origin
-    relative to the head bone, in Blender's Z-up frame; the add-on converts it on export."""
+    eight `eyeLook*` ARKit clips into legitimate free stubs.
+
+    `offset_from_head_bone` is the gaze origin relative to the head bone, **in the glTF frame
+    (x, up, forward)** — the add-on writes it VERBATIM and does not convert from Blender's Z-up.
+    This comment previously claimed the opposite, and WI 1362 shipped a gaze origin with y and z
+    transposed as a result (WI 1372). Blender (x, y, z) maps to glTF (x, z, -y)."""
     la = ext.vrm1.look_at
     la.type = "bone"
     la.offset_from_head_bone = tuple(offset_from_head)
