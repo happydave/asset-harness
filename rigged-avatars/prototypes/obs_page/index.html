@@ -95,6 +95,8 @@ const DELEGATE = (qs.get('delegate') ?? 'GPU').toUpperCase();
 // guess at over a round trip:  ?pitch=1&yaw=-1&roll=-1
 const SIGN = { pitch: +(qs.get('pitch') ?? -1), yaw: +(qs.get('yaw') ?? -1), roll: +(qs.get('roll') ?? -1) };
 const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadier but laggier
+const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? 1),
+               deg: +(qs.get('gazedeg') ?? 22) };
 const hud = document.getElementById('hud');
 const errBox = document.getElementById('err');
 const fail = (where, e) => {
@@ -122,7 +124,7 @@ const resize = () => {
 addEventListener('resize', resize); resize();
 
 // ---------------------------------------------------------------- the avatar
-let vrm = null, headBone = null, expressionNames = new Set(), facingZ = 1;
+let vrm = null, headBone = null, eyeL = null, eyeR = null, expressionNames = new Set(), facingZ = 1;
 // Mouse wheel = zoom, drag = orbit, right-drag = pan. Requested by the owner mid-run.
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.dampingFactor = 0.08;
@@ -136,6 +138,8 @@ try {
   VRMUtils.rotateVRM0(vrm);                      // no-op on a 1.0 file; correct for a 0.x one
   scene.add(vrm.scene);
   headBone = vrm.humanoid?.getNormalizedBoneNode('head') ?? null;
+  eyeL = vrm.humanoid?.getNormalizedBoneNode('leftEye') ?? null;
+  eyeR = vrm.humanoid?.getNormalizedBoneNode('rightEye') ?? null;
   for (const n of Object.keys(vrm.expressionManager?.expressionMap ?? {})) expressionNames.add(n);
   // Frame the head, on whichever side the face actually IS.
   //
@@ -264,6 +268,24 @@ function driveFromBlendshapes(categories) {
 }
 
 const _e = new THREE.Euler(0, 0, 0, 'YXZ'), _q = new THREE.Quaternion(), _m = new THREE.Matrix4();
+const _e2 = new THREE.Euler(0, 0, 0, 'YXZ'), _q2 = new THREE.Quaternion();
+
+// WI 1362 made gaze bone-driven so the eight eyeLook* clips could be legitimate free stubs. That only
+// pays off if something actually TURNS the eye bones — and nothing here did, so the irises sat dead
+// ahead and read as shading. MediaPipe emits all eight scores, so drive the bones from them directly.
+// This is the first test of whether 1362's gaze decision pays off against a real tracker.
+function driveGaze(cats) {
+  if (!eyeL || !eyeR) return;
+  const g = n => cats.find(c => c.categoryName === n)?.score ?? 0;
+  const MAX = GAZE.deg * Math.PI / 180;
+  for (const [bone, side] of [[eyeL, 'Left'], [eyeR, 'Right']]) {
+    // "In" is toward the nose, so its screen direction depends on which eye it is.
+    const horiz = (side === 'Left' ? 1 : -1) * (g('eyeLookIn' + side) - g('eyeLookOut' + side));
+    const vert  = g('eyeLookDown' + side) - g('eyeLookUp' + side);
+    _e2.set(vert * MAX * GAZE.pitch, horiz * MAX * GAZE.yaw, 0, 'YXZ');
+    bone.quaternion.slerp(_q2.setFromEuler(_e2), SMOOTH);
+  }
+}
 function driveHeadPose(matrixes) {
   if (!headBone || !matrixes?.facialTransformationMatrixes?.length) return;
   _m.fromArray(matrixes.facialTransformationMatrixes[0].data);
@@ -291,7 +313,7 @@ function frame() {
     stats.trackFrames++;
     const shapes = res?.faceBlendshapes?.[0]?.categories;
     stats.faceSeen = !!shapes;                 // <- the falsifiable check: cover the lens, this goes false
-    if (shapes && vrm) { driveFromBlendshapes(shapes); driveHeadPose(res); }
+    if (shapes && vrm) { driveFromBlendshapes(shapes); driveHeadPose(res); driveGaze(shapes); }
     lastCats = shapes ?? [];
     if (!pv.classList.contains('off')) {
       pvx.save(); pvx.clearRect(0, 0, pv.width, pv.height);
@@ -349,7 +371,9 @@ function frame() {
       `           the other 36 are declared stubs and will not visibly move)\n` +
       `unmatched  ${stats.unmatched.size ? '<span class="bad">' + [...stats.unmatched].slice(0,4).join(',') + '</span>' : '<span class="good">none</span>'}\n` +
       `keys       [c] magenta  [h] HUD  [r] reset view  [v] tracker view\n` +
-      `pose       pitch ${SIGN.pitch>0?'+':''}${SIGN.pitch} yaw ${SIGN.yaw>0?'+':''}${SIGN.yaw} roll ${SIGN.roll>0?'+':''}${SIGN.roll}  smooth ${SMOOTH}   (?pitch=1 etc)\n` +
+      `pose       pitch ${SIGN.pitch>0?'+':''}${SIGN.pitch} yaw ${SIGN.yaw>0?'+':''}${SIGN.yaw} roll ${SIGN.roll>0?'+':''}${SIGN.roll}  smooth ${SMOOTH}\n` +
+      `gaze       ${eyeL && eyeR ? `bone-driven, \u00b1${GAZE.deg}\u00b0  (?gazeyaw=-1 ?gazepitch=-1)`
+                                 : '<span class="bad">no eye bones in this VRM</span>'}\n` +
       `mouse      wheel = zoom, drag = orbit, right-drag = pan`;
   }
   // ms clock for the camera-loop latency measurement
