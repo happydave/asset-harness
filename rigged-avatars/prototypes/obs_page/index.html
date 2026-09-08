@@ -98,7 +98,9 @@ const SMOOTH = +(qs.get('smooth') ?? 0.5);   // 1 = no smoothing, lower = steadi
 // ?key=00ff00 etc. Magenta needed ~218 similarity in OBS's Color Key; a different hue may key
 // tighter, and a tight key matters because a loose one starts eating the avatar.
 const KEY = qs.get('key') ?? 'ff00c8';
-const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? 1),
+// gaze pitch defaults inverted: BOTH vertical axes came out backwards on first contact (head pitch,
+// then eye pitch). Treat any new vertical mapping in this pipeline as suspect until seen.
+const GAZE = { yaw: +(qs.get('gazeyaw') ?? 1), pitch: +(qs.get('gazepitch') ?? -1),
                deg: +(qs.get('gazedeg') ?? 22) };
 const hud = document.getElementById('hud');
 const errBox = document.getElementById('err');
@@ -255,6 +257,7 @@ const BOUND = new Set(['eyeBlinkLeft','eyeBlinkRight','eyeWideLeft','eyeWideRigh
   'eyeSquintRight','browInnerUp','browDownLeft','browDownRight','jawOpen','mouthSmileLeft',
   'mouthSmileRight','mouthFrownLeft','mouthFrownRight','mouthFunnel','mouthPucker']);
 let lastCats = [];
+let lastGaze = null;   // what we SEND, as opposed to what the tracker sees
 
 function driveFromBlendshapes(categories) {
   // IDENTITY MAPPING. MediaPipe's category names are the ARKit-52 vocabulary, which is exactly what
@@ -282,13 +285,16 @@ function driveGaze(cats) {
   if (!eyeL || !eyeR) return;
   const g = n => cats.find(c => c.categoryName === n)?.score ?? 0;
   const MAX = GAZE.deg * Math.PI / 180;
+  const g2 = {};
   for (const [bone, side] of [[eyeL, 'Left'], [eyeR, 'Right']]) {
     // "In" is toward the nose, so its screen direction depends on which eye it is.
     const horiz = (side === 'Left' ? 1 : -1) * (g('eyeLookIn' + side) - g('eyeLookOut' + side));
     const vert  = g('eyeLookDown' + side) - g('eyeLookUp' + side);
     _e2.set(vert * MAX * GAZE.pitch, horiz * MAX * GAZE.yaw, 0, 'YXZ');
     bone.quaternion.slerp(_q2.setFromEuler(_e2), SMOOTH);
+    g2[side] = { h: horiz * GAZE.yaw, v: vert * GAZE.pitch };
   }
+  lastGaze = g2;
 }
 function driveHeadPose(matrixes) {
   if (!headBone || !matrixes?.facialTransformationMatrixes?.length) return;
@@ -329,8 +335,32 @@ function frame() {
         // brows highlighted: the owner asked whether they are being seen at all
         draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,  { color: '#ffcc00', lineWidth: 2.5 });
         draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW, { color: '#ffcc00', lineWidth: 2.5 });
+        // what the tracker SEES of the eyes
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,   { color: '#8fd0ff', lineWidth: 1.5 });
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,  { color: '#8fd0ff', lineWidth: 1.5 });
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,  { color: '#00e5ff', lineWidth: 2 });
+        draw.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS, { color: '#00e5ff', lineWidth: 2 });
       }
       pvx.restore();
+      // ...and what we SEND: two eyes with the pupil offset by the rotation actually applied. The
+      // preview is mirrored in CSS, so draw these after restore() and mirror the horizontal by hand,
+      // or left and right read swapped against the face behind them.
+      if (lastGaze) {
+        const R = 13, cy = pv.height - 20;
+        for (const [side, cx] of [['Left', pv.width - 46], ['Right', pv.width - 20]]) {
+          const gz = lastGaze[side]; if (!gz) continue;
+          pvx.save(); pvx.translate(cx, cy); pvx.scale(-1, 1);   // undo the CSS mirror for this widget
+          pvx.beginPath(); pvx.arc(0, 0, R, 0, 6.284);
+          pvx.fillStyle = '#f2f4f8'; pvx.fill();
+          pvx.strokeStyle = '#2b2f3a'; pvx.lineWidth = 1; pvx.stroke();
+          pvx.beginPath();
+          pvx.arc(gz.h * R * 0.55, gz.v * R * 0.55, R * 0.42, 0, 6.284);
+          pvx.fillStyle = '#17284d'; pvx.fill();
+          pvx.restore();
+        }
+        pvx.fillStyle = '#9aa3b2'; pvx.font = '10px monospace'; pvx.textAlign = 'right';
+        pvx.fillText('sent →', pv.width - 62, cy + 4);
+      }
     }
   }
 
