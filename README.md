@@ -40,7 +40,7 @@ API-JSON).
 | [vfx](vfx/) | AI base particle textures + engine particle systems | 🟡 thruster flame sprites (plume/puff/spark) |
 | [audio](audio/) | Generated SFX + music/ambient → ffmpeg post → engine | 🟢 SFX (Stable Audio 3) + ambient music (ACE-Step) → ffmpeg loop post; thruster set in DWA |
 | [music-video](music-video/) | *(composite, not an asset class)* Lyric-driven music video: vocal song + stills + clips → assembled cut | 🟡 [license lane](music-video/license-lane.md) written; lyric timing solved (Demucs→WhisperX, 16/16 lines, 39s CPU) |
-| [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig | 🟡 **Prototypes A + B work** (no AI, clean license): (A) rigid robot walks; (B) Kerbal-tier corn-person + **corn→popcorn failure transform** (reuses A rig). AI-mesh comparison = owner-run recipe |
+| [rigged-avatars](rigged-avatars/) | AI mesh + auto-rig | 🟡 **Prototypes A + B work** (no AI, clean license): (A) rigid robot walks; (B) Kerbal-tier corn-person + **corn→popcorn failure transform** (reuses A rig). AI-mesh comparison = owner-run recipe. **VTuber line:** a skinned stylized head exports as VRM 1.0 + 0.x with 29 authored ARKit morphs and all 52 declared, checked by a headless [validation gate](rigged-avatars/prototypes/vrm_gate/README.md); the look (toon lane) is still to come |
 
 Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
 

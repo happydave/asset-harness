@@ -1,0 +1,142 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>vrm_gate consumer stage</title>
+<!-- Loaded by browser.py in headless Chromium. Results leave through the DOM: #result (JSON) and
+     #sheet (PNG data URL), which `chromium --dump-dom` prints. -->
+<pre id="result">PENDING</pre>
+<pre id="sheet"></pre>
+<script type="importmap">
+{"imports": {"three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/examples/jsm/"}}
+</script>
+<script type="module">
+const resultEl = document.getElementById('result');
+const sheetEl = document.getElementById('sheet');
+
+async function main() {
+  const THREE = await import('three');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { VRMLoaderPlugin } = await import('./vendor/three-vrm.module.js');
+  const job = await (await fetch('./job.json')).json();
+  const size = job.frame;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true });
+  renderer.setClearColor(0x30343c, 1);
+  const gl = renderer.getContext();
+
+  const loader = new GLTFLoader();
+  loader.register((parser) => new VRMLoaderPlugin(parser));
+  const gltf = await loader.loadAsync('./asset.vrm');
+  const vrm = gltf.userData.vrm;
+  if (!vrm) throw new Error('GLTFLoader produced no userData.vrm');
+  const manager = vrm.expressionManager;
+  const names = Object.keys(manager.expressionMap);
+
+  const scene = new THREE.Scene();
+  scene.add(vrm.scene);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(0.4, 0.6, 2.0);           // in front of a +Z-facing avatar, slightly above and to one side
+  scene.add(key);
+
+  vrm.scene.updateMatrixWorld(true);
+  const morphMeshes = [];
+  vrm.scene.traverse((o) => { if (o.isMesh && o.morphTargetInfluences && o.morphTargetInfluences.length) morphMeshes.push(o); });
+  if (!morphMeshes.length) throw new Error('no mesh with morph targets in the loaded scene');
+
+  // Frame the face from the eyes, which every archetype has as humanoid bones: a mesh bounding box
+  // takes in the neck and shoulders and leaves the face a third of the frame. VRM 1.0 faces +Z, so
+  // the camera sits on +Z looking back.
+  const eyeL = vrm.humanoid.getRawBoneNode('leftEye').getWorldPosition(new THREE.Vector3());
+  const eyeR = vrm.humanoid.getRawBoneNode('rightEye').getWorldPosition(new THREE.Vector3());
+  const between = eyeL.distanceTo(eyeR);
+  const centre = eyeL.clone().add(eyeR).multiplyScalar(0.5);
+  centre.y -= between * job.dropBelowEyes;
+  const fov = 24;
+  const reach = between * job.heightInEyeSpans / 2 / Math.tan(THREE.MathUtils.degToRad(fov / 2));
+  const camera = new THREE.PerspectiveCamera(fov, 1, 0.05, 20);
+  camera.position.set(centre.x, centre.y, centre.z + reach);
+  camera.lookAt(centre);
+
+  function drive(weights) {
+    for (const n of names) manager.setValue(n, 0);
+    for (const [n, w] of Object.entries(weights)) manager.setValue(n, w);
+    manager.update();
+  }
+  function influences() {
+    // three.js splits a multi-primitive mesh into one Mesh per primitive; they must agree.
+    const byIndex = {};
+    let agree = true;
+    for (const m of morphMeshes) {
+      m.morphTargetInfluences.forEach((v, i) => {
+        if (v === 0 && !(i in byIndex)) return;
+        if (i in byIndex && byIndex[i] !== v) agree = false;
+        byIndex[i] = v;
+      });
+    }
+    for (const i of Object.keys(byIndex)) if (byIndex[i] === 0) delete byIndex[i];
+    return { byIndex, agree };
+  }
+  function frame() {
+    renderer.render(scene, camera);
+    const px = new Uint8Array(4 * size * size);
+    gl.readPixels(0, 0, size, size, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    return px;
+  }
+  function changed(a, b) {
+    let n = 0;
+    for (let i = 0; i < a.length; i += 4) if (a[i] !== b[i] || a[i + 1] !== b[i + 1] || a[i + 2] !== b[i + 2]) n++;
+    return n;
+  }
+
+  // The background reference is a frame with the avatar hidden, not a corner pixel: a corner can be
+  // covered by the model, and then "not background" counts the wrong thing.
+  vrm.scene.visible = false;
+  const empty = frame();
+  vrm.scene.visible = true;
+  drive({});
+  const neutral = frame();
+  const neutralAgain = frame();
+  const lit = changed(neutral, empty);
+
+  const onSheet = ['neutral', ...job.sheet];
+  const cols = job.columns, label = 22;
+  const rows = Math.ceil(onSheet.length / cols);
+  const sheet = document.createElement('canvas');
+  sheet.width = cols * size; sheet.height = rows * (size + label);
+  const ctx = sheet.getContext('2d');
+  ctx.fillStyle = '#16181c'; ctx.fillRect(0, 0, sheet.width, sheet.height);
+  ctx.font = '15px sans-serif'; ctx.textBaseline = 'middle';
+
+  const expressions = {};
+  for (const n of names) {
+    drive({ [n]: 1 });
+    const inf = influences();
+    const px = frame();
+    expressions[n] = { influences: inf.byIndex, primitivesAgree: inf.agree, changedPixels: changed(px, neutral) };
+    const slot = onSheet.indexOf(n);
+    if (slot > 0) place(slot, n);
+  }
+  drive({});
+  frame();
+  place(0, 'neutral');
+
+  function place(slot, text) {
+    const x = (slot % cols) * size, y = Math.floor(slot / cols) * (size + label);
+    ctx.drawImage(canvas, x, y);
+    ctx.fillStyle = '#e8e8e8';
+    ctx.fillText(text, x + 6, y + size + label / 2);
+  }
+
+  sheetEl.textContent = sheet.toDataURL('image/png');
+  resultEl.textContent = JSON.stringify({
+    ok: true, renderer: gl.getParameter(gl.VERSION), three: THREE.REVISION, frame: size,
+    names, neutralRepeatChangedPixels: changed(neutral, neutralAgain), neutralLitPixels: lit,
+    sheet: { columns: cols, rows, width: sheet.width, height: sheet.height, frames: onSheet },
+    expressions,
+  });
+}
+
+main().catch((e) => { resultEl.textContent = JSON.stringify({ ok: false, error: String((e && e.stack) || e) }); });
+</script>

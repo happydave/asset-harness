@@ -1,5 +1,15 @@
 # Track: rigged-avatars
 
+**Headless VRM validation gate (WI 1367, 2026-09-17) — ladder step 11:**
+[`prototypes/vrm_gate/`](prototypes/vrm_gate/README.md) is the one command an avatar work item runs on
+its export: `python3 vrm_gate.py AVATAR.vrm --vrm0 AVATAR.vrm0.vrm`. Three stages — Khronos glTF-Validator,
+the archetype contract read straight from the file (stdlib Python), and three-vrm in headless Chromium — and
+it exits non-zero unless every stage asked for ran and passed. **An authored clip must displace, measured
+from the buffer; a declared stub must displace by exactly zero.** It also renders a per-expression contact
+sheet for human review and asserts the coordinate frame of both the 1.0 and the 0.x file. 253 rows on a
+fresh pair; fifteen defects seen to fail it, five of them through the real exporter. `mrxz/vrm-validator`
+was **not** adopted (no release ever, last commit 2024-11-13). [findings](findings/2026-09-17-vrm-gate.md).
+
 **v1 stylized face rig — the archetype contract is frozen (WI 1362, 2026-09-07):**
 [`blender_v1_face_rig.py`](prototypes/blender_v1_face_rig.py) delivers **ladder step 6** and settles the
 topology question WI 936 left open. Each eye and the mouth is a real **aperture with concentric loops**

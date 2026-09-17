@@ -40,6 +40,14 @@ VRM1_PRESETS = (
     "neutral",
 )
 
+
+def vrm1_json_key(preset_attr):
+    """The key a VRM 1.0 file uses for a preset: the add-on's attributes are snake_case
+    (`blink_left`), the exported JSON is camelCase (`blinkLeft`)."""
+    head, *rest = preset_attr.split("_")
+    return head + "".join(part.capitalize() for part in rest)
+
+
 # ---------------------------------------------------------------------------
 # The stylized head archetype's authored set (WI 1362).
 #
@@ -68,6 +76,15 @@ STYLIZED_V1_AUTHORED = (
     "mouthLeft", "mouthRight", "mouthClose",
     "jawLeft", "jawRight",
 )
+
+# Archetype name -> authored set. The name is what a manifest records as `head_variant`; a file-only
+# checker selects its expectations by it.
+ARCHETYPES = {"stylized-v1": STYLIZED_V1_AUTHORED}
+
+# Archetype name -> the mesh-bearing nodes an export carries, and which of them holds the morphs. The VRM
+# exporter is scene-global, so anything else in the file is a stray that rode along.
+ARCHETYPE_MESHES = {"stylized-v1": {"morph_mesh": "face",
+                                    "all": ("eyeball.L", "eyeball.R", "face", "torso")}}
 
 # Why each unauthored clip is a stub. Every one of the 52 is either authored or has a reason here.
 STUB_REASONS = {
@@ -175,6 +192,9 @@ def check_contract(authored=STYLIZED_V1_AUTHORED):
         problems.append("ARKIT_52 contains duplicates")
     if len(VRM1_PRESETS) != 18:
         problems.append(f"VRM1_PRESETS has {len(VRM1_PRESETS)} slots, expected 18")
+    json_keys = [vrm1_json_key(p) for p in VRM1_PRESETS]
+    if len(set(json_keys)) != len(VRM1_PRESETS) or any("_" in k for k in json_keys):
+        problems.append(f"VRM 1.0 JSON preset keys are not 18 distinct camelCase names: {json_keys}")
 
     known = set(ARKIT_52)
     for name in authored:
@@ -209,6 +229,8 @@ def check_contract(authored=STYLIZED_V1_AUTHORED):
     for name in authored:
         if name not in NOMINAL_MM:
             problems.append(f"authored shape {name!r} has no NOMINAL_MM entry to be checked against")
+    if set(ARCHETYPE_MESHES) != set(ARCHETYPES):
+        problems.append(f"ARCHETYPE_MESHES covers {sorted(ARCHETYPE_MESHES)}, ARCHETYPES {sorted(ARCHETYPES)}")
     for preset in PRESET_OVERRIDES:
         if preset not in PRESET_COMPOSITION:
             problems.append(f"override set on {preset!r}, which composes nothing")

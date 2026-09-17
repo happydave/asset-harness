@@ -1,0 +1,1534 @@
+{
+ "file": "../../../tmp/1367/gen/out-none/v1_face_rig.vrm",
+ "vrm0": "../../../tmp/1367/gen/out-none/v1_face_rig.vrm0.vrm",
+ "archetype": "stylized-v1",
+ "stages": {
+  "validator": "ran",
+  "contract": "ran",
+  "consumer": "ran"
+ },
+ "passed": 253,
+ "failed": 0,
+ "not_run": 0,
+ "ok": true,
+ "checks": [
+  {
+   "stage": "validator",
+   "check": "v1_face_rig.vrm has no glTF errors",
+   "status": "pass",
+   "detail": "validator 2.0.0-dev.3.10: 0 errors, 0 warnings, 10 infos, 0 hints; expected for any VRM ['UNSUPPORTED_EXTENSION'], other ['UNUSED_OBJECT']"
+  },
+  {
+   "stage": "validator",
+   "check": "v1_face_rig.vrm0.vrm has no glTF errors",
+   "status": "pass",
+   "detail": "validator 2.0.0-dev.3.10: 0 errors, 1 warnings, 10 infos, 87 hints; expected for any VRM ['UNSUPPORTED_EXTENSION'], other ['BUFFER_VIEW_TARGET_MISSING', 'INVALID_EXTENSION_NAME_FORMAT', 'UNUSED_OBJECT']"
+  },
+  {
+   "stage": "contract",
+   "check": "v1_face_rig.vrm is a readable GLB",
+   "status": "pass",
+   "detail": "chunks ['JSON', 'BIN'], 28,744,532 payload bytes"
+  },
+  {
+   "stage": "contract",
+   "check": "the file declares VRMC_vrm 1.0",
+   "status": "pass",
+   "detail": "extensionsUsed ['VRMC_vrm'], specVersion '1.0'"
+  },
+  {
+   "stage": "contract",
+   "check": "presets are exactly the 18 VRM 1.0 slots",
+   "status": "pass",
+   "detail": "18 names"
+  },
+  {
+   "stage": "contract",
+   "check": "customs are exactly the 52 ARKit names, exact case",
+   "status": "pass",
+   "detail": "52 names"
+  },
+  {
+   "stage": "contract",
+   "check": "the morph mesh names every target once",
+   "status": "pass",
+   "detail": "29 targetNames, per-primitive target counts [29]"
+  },
+  {
+   "stage": "contract",
+   "check": "every morphTargetBind resolves",
+   "status": "pass",
+   "detail": "63 binds resolve to a mesh node and an in-range target"
+  },
+  {
+   "stage": "contract",
+   "check": "the bound customs are exactly the archetype's authored set",
+   "status": "pass",
+   "detail": "29 bound; 29 names"
+  },
+  {
+   "stage": "contract",
+   "check": "the remaining customs are exactly the declared stubs",
+   "status": "pass",
+   "detail": "23 without binds; 23 names"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeBlinkLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeBlinkLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeBlinkRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeBlinkRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeWideLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeWideLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeWideRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeWideRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeSquintLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeSquintLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeSquintRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'eyeSquintRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "browInnerUp binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'browInnerUp' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "browDownLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'browDownLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "browDownRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'browDownRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "jawOpen binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'jawOpen' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthSmileLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthSmileLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthSmileRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthSmileRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFrownLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthFrownLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFrownRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthFrownRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFunnel binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthFunnel' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthPucker binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthPucker' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "browOuterUpLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'browOuterUpLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "browOuterUpRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'browOuterUpRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthUpperUpLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthUpperUpLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthUpperUpRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthUpperUpRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLowerDownLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthLowerDownLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLowerDownRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthLowerDownRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthStretchLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthStretchLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthStretchRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthStretchRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthClose binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'mouthClose' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "jawLeft binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'jawLeft' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "jawRight binds its own morph, 1:1",
+   "status": "pass",
+   "detail": "binds target 'jawRight' at weight 1.0"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeBlinkLeft displaces (authored)",
+   "status": "pass",
+   "detail": "19.02 mm in the file; floor 11.4 mm (19 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeBlinkRight displaces (authored)",
+   "status": "pass",
+   "detail": "19.02 mm in the file; floor 11.4 mm (19 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeWideLeft displaces (authored)",
+   "status": "pass",
+   "detail": "15.00 mm in the file; floor 9.0 mm (15 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeWideRight displaces (authored)",
+   "status": "pass",
+   "detail": "15.00 mm in the file; floor 9.0 mm (15 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeSquintLeft displaces (authored)",
+   "status": "pass",
+   "detail": "13.00 mm in the file; floor 7.8 mm (13 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeSquintRight displaces (authored)",
+   "status": "pass",
+   "detail": "13.00 mm in the file; floor 7.8 mm (13 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "browInnerUp displaces (authored)",
+   "status": "pass",
+   "detail": "28.61 mm in the file; floor 18.0 mm (30 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "browDownLeft displaces (authored)",
+   "status": "pass",
+   "detail": "24.37 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "browDownRight displaces (authored)",
+   "status": "pass",
+   "detail": "24.37 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "jawOpen displaces (authored)",
+   "status": "pass",
+   "detail": "43.48 mm in the file; floor 25.8 mm (43 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthSmileLeft displaces (authored)",
+   "status": "pass",
+   "detail": "28.44 mm in the file; floor 16.8 mm (28 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthSmileRight displaces (authored)",
+   "status": "pass",
+   "detail": "28.44 mm in the file; floor 16.8 mm (28 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFrownLeft displaces (authored)",
+   "status": "pass",
+   "detail": "26.46 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFrownRight displaces (authored)",
+   "status": "pass",
+   "detail": "26.46 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthFunnel displaces (authored)",
+   "status": "pass",
+   "detail": "22.14 mm in the file; floor 13.2 mm (22 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthPucker displaces (authored)",
+   "status": "pass",
+   "detail": "30.03 mm in the file; floor 18.0 mm (30 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "browOuterUpLeft displaces (authored)",
+   "status": "pass",
+   "detail": "24.44 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "browOuterUpRight displaces (authored)",
+   "status": "pass",
+   "detail": "24.44 mm in the file; floor 15.6 mm (26 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthUpperUpLeft displaces (authored)",
+   "status": "pass",
+   "detail": "16.00 mm in the file; floor 9.6 mm (16 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthUpperUpRight displaces (authored)",
+   "status": "pass",
+   "detail": "16.00 mm in the file; floor 9.6 mm (16 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLowerDownLeft displaces (authored)",
+   "status": "pass",
+   "detail": "18.00 mm in the file; floor 10.8 mm (18 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLowerDownRight displaces (authored)",
+   "status": "pass",
+   "detail": "18.00 mm in the file; floor 10.8 mm (18 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthStretchLeft displaces (authored)",
+   "status": "pass",
+   "detail": "20.00 mm in the file; floor 12.0 mm (20 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthStretchRight displaces (authored)",
+   "status": "pass",
+   "detail": "20.00 mm in the file; floor 12.0 mm (20 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthLeft displaces (authored)",
+   "status": "pass",
+   "detail": "16.00 mm in the file; floor 9.6 mm (16 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthRight displaces (authored)",
+   "status": "pass",
+   "detail": "16.00 mm in the file; floor 9.6 mm (16 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthClose displaces (authored)",
+   "status": "pass",
+   "detail": "11.17 mm in the file; floor 8.4 mm (14 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "jawLeft displaces (authored)",
+   "status": "pass",
+   "detail": "13.53 mm in the file; floor 8.4 mm (14 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "jawRight displaces (authored)",
+   "status": "pass",
+   "detail": "13.53 mm in the file; floor 8.4 mm (14 mm nominal)"
+  },
+  {
+   "stage": "contract",
+   "check": "cheekPuff displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "cheekSquintLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "cheekSquintRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookDownLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookDownRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookInLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookInRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookOutLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookOutRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookUpLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "eyeLookUpRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "jawForward displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthDimpleLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthDimpleRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthPressLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthPressRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthRollLower displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthRollUpper displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthShrugLower displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "mouthShrugUpper displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "noseSneerLeft displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "noseSneerRight displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "tongueOut displaces by exactly zero (stub)",
+   "status": "pass",
+   "detail": "0.0 mm over 0 bind(s)"
+  },
+  {
+   "stage": "contract",
+   "check": "every morph target is an authored shape",
+   "status": "pass",
+   "detail": "29 targets"
+  },
+  {
+   "stage": "contract",
+   "check": "preset blink is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"eyeBlinkLeft\": 1.0, \"eyeBlinkRight\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset blinkLeft is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"eyeBlinkLeft\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset blinkRight is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"eyeBlinkRight\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset aa is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"jawOpen\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset ih is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"jawOpen\": 0.3, \"mouthSmileLeft\": 0.4, \"mouthSmileRight\": 0.4}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset ee is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"jawOpen\": 0.15, \"mouthSmileLeft\": 0.7, \"mouthSmileRight\": 0.7}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset ou is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"jawOpen\": 0.25, \"mouthPucker\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset oh is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"jawOpen\": 0.6, \"mouthFunnel\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset happy is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"eyeSquintLeft\": 0.35, \"eyeSquintRight\": 0.35, \"mouthSmileLeft\": 1.0, \"mouthSmileRight\": 1.0}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset angry is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"browDownLeft\": 1.0, \"browDownRight\": 1.0, \"mouthFrownLeft\": 0.45, \"mouthFrownRight\": 0.45}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset sad is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"browInnerUp\": 1.0, \"mouthFrownLeft\": 0.8, \"mouthFrownRight\": 0.8}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset relaxed is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"eyeSquintLeft\": 0.55, \"eyeSquintRight\": 0.55, \"mouthSmileLeft\": 0.45, \"mouthSmileRight\": 0.45}"
+  },
+  {
+   "stage": "contract",
+   "check": "preset surprised is composed as the contract says",
+   "status": "pass",
+   "detail": "{\"browInnerUp\": 0.85, \"eyeWideLeft\": 1.0, \"eyeWideRight\": 1.0, \"jawOpen\": 0.6}"
+  },
+  {
+   "stage": "contract",
+   "check": "neutral and the look presets are empty (gaze is bone-driven)",
+   "status": "pass",
+   "detail": "['lookDown', 'lookLeft', 'lookRight', 'lookUp', 'neutral'] carry no binds"
+  },
+  {
+   "stage": "contract",
+   "check": "override modes match the contract",
+   "status": "pass",
+   "detail": "8 presets carry overrides"
+  },
+  {
+   "stage": "contract",
+   "check": "the 15 required humanoid bones and both eyes name a node",
+   "status": "pass",
+   "detail": "21 bones mapped"
+  },
+  {
+   "stage": "contract",
+   "check": "no node fills two humanoid slots",
+   "status": "pass",
+   "detail": "21 distinct nodes"
+  },
+  {
+   "stage": "contract",
+   "check": "lookAt is bone-driven",
+   "status": "pass",
+   "detail": "type 'bone'"
+  },
+  {
+   "stage": "contract",
+   "check": "the avatar faces +Z (VRM 1.0)",
+   "status": "pass",
+   "detail": "eyes at z = 107.0 / 107.0 mm, head bone at 0.0 mm"
+  },
+  {
+   "stage": "contract",
+   "check": "leftEye is on the character's left (+X)",
+   "status": "pass",
+   "detail": "leftEye.x = 68.0 mm, rightEye.x = -68.0 mm"
+  },
+  {
+   "stage": "contract",
+   "check": "the gaze origin matches the eye bones",
+   "status": "pass",
+   "detail": "offsetFromHeadBone [0.0, 0.185, 0.107] vs eye midpoint [0.0, 0.185, 0.107] (tolerance 1 mm)"
+  },
+  {
+   "stage": "contract",
+   "check": "the file carries only the avatar's meshes",
+   "status": "pass",
+   "detail": "mesh nodes ['eyeball.L', 'eyeball.R', 'face', 'torso']"
+  },
+  {
+   "stage": "contract",
+   "check": "file displacement agrees with the generator's own measurement",
+   "status": "pass",
+   "detail": "29 shapes within 0.1 mm of the generator's figures"
+  },
+  {
+   "stage": "contract",
+   "check": "v1_face_rig.vrm0.vrm is a readable GLB",
+   "status": "pass",
+   "detail": "chunks ['JSON', 'BIN'], 29,004,468 payload bytes"
+  },
+  {
+   "stage": "contract",
+   "check": "the 0.x file declares the VRM extension",
+   "status": "pass",
+   "detail": "specVersion '0.0', exporter 'saturday06_blender_vrm_exporter_experimental_4.4.0'"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group blink is bound and displaces",
+   "status": "pass",
+   "detail": "2 binds, 38.0 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group blink_l is bound and displaces",
+   "status": "pass",
+   "detail": "1 binds, 19.0 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group blink_r is bound and displaces",
+   "status": "pass",
+   "detail": "1 binds, 19.0 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group a is bound and displaces",
+   "status": "pass",
+   "detail": "1 binds, 43.5 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group i is bound and displaces",
+   "status": "pass",
+   "detail": "3 binds, 100.4 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group e is bound and displaces",
+   "status": "pass",
+   "detail": "3 binds, 100.4 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group u is bound and displaces",
+   "status": "pass",
+   "detail": "2 binds, 73.5 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group o is bound and displaces",
+   "status": "pass",
+   "detail": "2 binds, 65.6 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group joy is bound and displaces",
+   "status": "pass",
+   "detail": "4 binds, 82.9 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group angry is bound and displaces",
+   "status": "pass",
+   "detail": "4 binds, 101.7 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group sorrow is bound and displaces",
+   "status": "pass",
+   "detail": "3 binds, 81.5 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "0.x group fun is bound and displaces",
+   "status": "pass",
+   "detail": "4 binds, 82.9 mm of target displacement behind them"
+  },
+  {
+   "stage": "contract",
+   "check": "the 0.x humanoid names the 15 required bones",
+   "status": "pass",
+   "detail": "21 bones"
+  },
+  {
+   "stage": "contract",
+   "check": "the 0.x avatar faces -Z with leftEye at -X",
+   "status": "pass",
+   "detail": "eyes at z = -107.0 / -107.0 mm, leftEye.x = -68.0 mm"
+  },
+  {
+   "stage": "consumer",
+   "check": "three-vrm loads the file in headless Chromium",
+   "status": "pass",
+   "detail": "WebGL 2.0 (OpenGL ES 3.0 Chromium), three r169"
+  },
+  {
+   "stage": "consumer",
+   "check": "three-vrm exposes exactly the contract's 70 expressions",
+   "status": "pass",
+   "detail": "70 expressions"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeBlinkLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'0': 1}, the file binds {'0': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeBlinkRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'1': 1}, the file binds {'1': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeWideLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'2': 1}, the file binds {'2': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeWideRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'3': 1}, the file binds {'3': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeSquintLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'4': 1}, the file binds {'4': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeSquintRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'5': 1}, the file binds {'5': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "browInnerUp: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'6': 1}, the file binds {'6': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "browDownLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'7': 1}, the file binds {'7': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "browDownRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'8': 1}, the file binds {'8': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawOpen: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 1}, the file binds {'9': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthSmileLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'10': 1}, the file binds {'10': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthSmileRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'11': 1}, the file binds {'11': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFrownLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'12': 1}, the file binds {'12': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFrownRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'13': 1}, the file binds {'13': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFunnel: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'14': 1}, the file binds {'14': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPucker: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'15': 1}, the file binds {'15': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "browOuterUpLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'16': 1}, the file binds {'16': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "browOuterUpRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'17': 1}, the file binds {'17': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthUpperUpLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'18': 1}, the file binds {'18': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthUpperUpRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'19': 1}, the file binds {'19': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLowerDownLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'20': 1}, the file binds {'20': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLowerDownRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'21': 1}, the file binds {'21': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthStretchLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'22': 1}, the file binds {'22': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthStretchRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'23': 1}, the file binds {'23': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'24': 1}, the file binds {'24': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'25': 1}, the file binds {'25': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthClose: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'26': 1}, the file binds {'26': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawLeft: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'27': 1}, the file binds {'27': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawRight: three-vrm drives the target the file binds",
+   "status": "pass",
+   "detail": "three-vrm drives {'28': 1}, the file binds {'28': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekPuff: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekSquintLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekSquintRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookDownLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookDownRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookInLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookInRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookOutLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookOutRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookUpLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookUpRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawForward: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthDimpleLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthDimpleRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPressLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPressRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRollLower: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRollUpper: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthShrugLower: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthShrugUpper: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "noseSneerLeft: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "noseSneerRight: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "tongueOut: three-vrm drives only what the file binds (stub)",
+   "status": "pass",
+   "detail": "three-vrm drives {}, the file binds {}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset blink: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'0': 1, '1': 1}, the file binds {'0': 1.0, '1': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset blinkLeft: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'0': 1}, the file binds {'0': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset blinkRight: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'1': 1}, the file binds {'1': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset aa: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 1}, the file binds {'9': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset ih: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 0.30000001192092896, '10': 0.4000000059604645, '11': 0.4000000059604645}, the file binds {'9': 0.30000001192092896, '10': 0.4000000059604645, '11': 0.4000000059604645}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset ee: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 0.15000000596046448, '10': 0.699999988079071, '11': 0.699999988079071}, the file binds {'9': 0.15000000596046448, '10': 0.699999988079071, '11': 0.699999988079071}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset ou: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 0.25, '15': 1}, the file binds {'9': 0.25, '15': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset oh: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'9': 0.6000000238418579, '14': 1}, the file binds {'9': 0.6000000238418579, '14': 1.0}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset happy: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'4': 0.3499999940395355, '5': 0.3499999940395355, '10': 1, '11': 1}, the file binds {'10': 1.0, '11': 1.0, '4': 0.3499999940395355, '5': 0.3499999940395355}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset angry: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'7': 1, '8': 1, '12': 0.44999998807907104, '13': 0.44999998807907104}, the file binds {'7': 1.0, '8': 1.0, '12': 0.44999998807907104, '13': 0.44999998807907104}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset sad: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'6': 1, '12': 0.800000011920929, '13': 0.800000011920929}, the file binds {'6': 1.0, '12': 0.800000011920929, '13': 0.800000011920929}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset relaxed: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'4': 0.550000011920929, '5': 0.550000011920929, '10': 0.44999998807907104, '11': 0.44999998807907104}, the file binds {'10': 0.44999998807907104, '11': 0.44999998807907104, '4': 0.550000011920929, '5': 0.550000011920929}"
+  },
+  {
+   "stage": "consumer",
+   "check": "preset surprised: three-vrm drives its composition",
+   "status": "pass",
+   "detail": "three-vrm drives {'2': 1, '3': 1, '6': 0.8500000238418579, '9': 0.6000000238418579}, the file binds {'2': 1.0, '3': 1.0, '6': 0.8500000238418579, '9': 0.6000000238418579}"
+  },
+  {
+   "stage": "consumer",
+   "check": "the renderer is deterministic within a run (neutral rendered twice)",
+   "status": "pass",
+   "detail": "0 pixels differ between two neutral frames"
+  },
+  {
+   "stage": "consumer",
+   "check": "the neutral frame shows the avatar",
+   "status": "pass",
+   "detail": "51018 of 102400 pixels differ from the same frame with the avatar hidden"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeBlinkLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2489 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeBlinkRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2329 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeWideLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1081 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeWideRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1151 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeSquintLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1173 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeSquintRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1153 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "browInnerUp: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "3118 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "browDownLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1707 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "browDownRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1713 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawOpen: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "7405 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthSmileLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1056 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthSmileRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1119 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFrownLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1110 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFrownRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1073 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthFunnel: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2340 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPucker: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2325 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "browOuterUpLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1143 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "browOuterUpRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1249 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthUpperUpLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "633 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthUpperUpRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "632 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLowerDownLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "647 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLowerDownRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "665 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthStretchLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "975 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthStretchRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "1030 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2168 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2218 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthClose: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "2224 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawLeft: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "5028 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawRight: the rendered frame differs from neutral",
+   "status": "pass",
+   "detail": "5032 pixels changed (floor 100)"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekPuff: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekSquintLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "cheekSquintRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookDownLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookDownRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookInLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookInRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookOutLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookOutRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookUpLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "eyeLookUpRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "jawForward: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthDimpleLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthDimpleRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPressLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthPressRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRollLower: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthRollUpper: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthShrugLower: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "mouthShrugUpper: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "noseSneerLeft: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "noseSneerRight: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "tongueOut: the rendered frame is identical to neutral (stub)",
+   "status": "pass",
+   "detail": "0 pixels changed"
+  },
+  {
+   "stage": "consumer",
+   "check": "the contact sheet has one frame per authored expression",
+   "status": "pass",
+   "detail": "../../../tmp/1367/gen/out-none/gate/contact_sheet.png \u2014 2560x2052, 43 frames (neutral, 29 authored, 13 composed presets)"
+  }
+ ]
+}

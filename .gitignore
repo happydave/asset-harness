@@ -43,3 +43,7 @@ tmp/
 
 # WI 1370 spike: vendored web deps (~27 MB wasm + model), re-fetchable via fetch_vendor.sh
 rigged-avatars/prototypes/obs_page/vendor/
+
+# rigged-avatars VRM gate: fetched tools (fetch_vendor.sh), and the report directory it writes beside a checked sample
+rigged-avatars/prototypes/vrm_gate/vendor/
+rigged-avatars/findings/**/vrm_gate/
