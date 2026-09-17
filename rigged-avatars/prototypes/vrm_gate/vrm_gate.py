@@ -309,7 +309,90 @@ def check_vrm1(report, glb, archetype, evidence):
     report.guarded(st, "the file carries only the avatar's meshes", scene_set)
 
     _check_evidence(report, v, custom, authored, evidence)
+    check_springs1(report, glb, v, archetype)
     return v
+
+
+def _names(glb):
+    return [n.get("name") for n in glb.json.get("nodes", [])]
+
+
+def _parent_of(glb):
+    return {c: i for i, n in enumerate(glb.json.get("nodes", [])) for c in n.get("children", [])}
+
+
+def collider_world(glb, collider):
+    """World-space centre and radius of a VRM 1.0 sphere collider. Its offset is in the node's own frame."""
+    m = glb.world_matrix(collider["node"])
+    o = collider["shape"]["sphere"]["offset"]
+    centre = tuple(sum(m[r][c] * o[c] for c in range(3)) + m[r][3] for r in range(3))
+    return centre, collider["shape"]["sphere"]["radius"]
+
+
+def check_springs1(report, glb, v, archetype):
+    st = "contract"
+    want = arkit52.ARCHETYPE_SPRINGS.get(archetype)
+    if want is None:
+        return
+    j = glb.json
+    sb = (j.get("extensions") or {}).get("VRMC_springBone")
+    if not report.add(st, "the file declares VRMC_springBone", isinstance(sb, dict)
+                      and "VRMC_springBone" in j.get("extensionsUsed", []),
+                      f"extensionsUsed {j.get('extensionsUsed')}"):
+        report.not_run(st, "spring-bone chains, centre and collider", "no VRMC_springBone extension to read")
+        return
+    names, parent = _names(glb), _parent_of(glb)
+    springs = {s.get("name"): s for s in sb.get("springs", [])}
+    report.add(st, "the spring chains are exactly the archetype's", sorted(springs) == sorted(want["chains"]),
+               _set_diff(springs, want["chains"]))
+
+    for chain, bones in want["chains"].items():
+        def joints(chain=chain, bones=bones):
+            nodes = [jt["node"] for jt in springs[chain]["joints"]]
+            got = [names[n] for n in nodes]
+            linked = all(parent.get(b) == a for a, b in zip(nodes, nodes[1:]))
+            return got == list(bones) and linked, f"joints {got}" + ("" if linked else "; not parent-to-child")
+        report.guarded(st, f"{chain}: joints are the expected bones, root first, each the child of the last", joints)
+
+        def centre(chain=chain):
+            c = springs[chain].get("center")
+            return (c is not None and names[c] == want["center"],
+                    f"center {names[c]!r}" if c is not None else "no center")
+        report.guarded(st, f"{chain}: inertia is measured against {want['center']}", centre)
+
+        def collides(chain=chain):
+            groups = [sb["colliderGroups"][g] for g in springs[chain].get("colliderGroups", [])]
+            got = [g.get("name") for g in groups]
+            return want["collider_group"] in got, f"collider groups {got}"
+        report.guarded(st, f"{chain}: collides with the {want['collider_group']} group", collides)
+
+        def hit(chain=chain):
+            radii = [jt.get("hitRadius", 0.0) for jt in springs[chain]["joints"]]
+            return all(r > 0 for r in radii), f"hitRadius {[round(r, 4) for r in radii]}"
+        report.guarded(st, f"{chain}: every joint has a hit radius", hit)
+
+    def collider():
+        group = next(g for g in sb["colliderGroups"] if g.get("name") == want["collider_group"])
+        cols = [sb["colliders"][i] for i in group["colliders"]]
+        ok = (len(cols) == 1 and names[cols[0]["node"]] == want["collider_bone"]
+              and cols[0]["shape"]["sphere"]["radius"] > 0)
+        return ok, f"{len(cols)} collider(s) on {[names[c['node']] for c in cols]}"
+    report.guarded(st, f"the {want['collider_group']} group is one sphere on the {want['collider_bone']} bone",
+                   collider)
+
+    def frame():
+        group = next(g for g in sb["colliderGroups"] if g.get("name") == want["collider_group"])
+        centre, radius = collider_world(glb, sb["colliders"][group["colliders"][0]])
+        bones = v.vrm["humanoid"]["humanBones"]
+        far = {b: _dist(glb.world_position(bones[b]["node"]), centre) for b in ("leftEye", "rightEye")}
+        return (all(d < radius for d in far.values()),
+                f"sphere at {[round(c, 3) for c in centre]} r {radius * 1000:.0f} mm; eyes "
+                f"{far['leftEye'] * 1000:.1f} / {far['rightEye'] * 1000:.1f} mm from its centre")
+    report.guarded(st, "the head collider contains both eye bones (its offset is in the right frame)", frame)
+
+
+def _dist(a, b):
+    return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
 
 
 def _check_evidence(report, v, custom, authored, evidence):
@@ -341,7 +424,7 @@ def _check_evidence(report, v, custom, authored, evidence):
     report.guarded(st, "file displacement agrees with the generator's own measurement", agree)
 
 
-def check_vrm0(report, glb):
+def check_vrm0(report, glb, archetype=None, glb1=None):
     st = "contract"
     j = glb.json
     vrm = (j.get("extensions") or {}).get("VRM")
@@ -378,6 +461,56 @@ def check_vrm0(report, glb):
         return (le[2] < hd[2] and re_[2] < hd[2] and le[0] < 0 < re_[0],
                 f"eyes at z = {le[2] * 1000:.1f} / {re_[2] * 1000:.1f} mm, leftEye.x = {le[0] * 1000:.1f} mm")
     report.guarded(st, "the 0.x avatar faces -Z with leftEye at -X", frame0)
+    check_springs0(report, glb, vrm, archetype, glb1)
+
+
+def check_springs0(report, glb, vrm, archetype, glb1):
+    st = "contract"
+    want = arkit52.ARCHETYPE_SPRINGS.get(archetype)
+    if want is None:
+        return
+    names = _names(glb)
+    sa = vrm.get("secondaryAnimation") or {}
+    groups = {g.get("comment"): g for g in sa.get("boneGroups", [])}
+    if not report.add(st, "the 0.x bone groups are exactly the archetype's chains",
+                      sorted(groups) == sorted(want["chains"]), _set_diff(groups, want["chains"])):
+        return
+    sb1 = ((glb1.json.get("extensions") or {}).get("VRMC_springBone") if glb1 else None) or {}
+    springs1 = {s.get("name"): s for s in sb1.get("springs", [])}
+    for chain, bones in want["chains"].items():
+        def group(chain=chain, bones=bones):
+            g = groups[chain]
+            roots = [names[b] for b in g["bones"]]
+            centre = names[g["center"]] if g.get("center", -1) >= 0 else None
+            on = [names[sa["colliderGroups"][i]["node"]] for i in g.get("colliderGroups", [])]
+            ok = roots == [bones[0]] and centre == want["center"] and on == [want["collider_bone"]]
+            return ok, f"root {roots}, center {centre!r}, collider groups on {on}"
+        report.guarded(st, f"0.x {chain}: root bone, centre and collider group", group)
+
+        def same(chain=chain):
+            g, j1 = groups[chain], springs1[chain]["joints"][0]
+            pairs = {"stiffiness": "stiffness", "gravityPower": "gravityPower", "dragForce": "dragForce",
+                     "hitRadius": "hitRadius"}
+            off = {k0: (g[k0], j1[k1]) for k0, k1 in pairs.items() if abs(g[k0] - j1[k1]) > 1e-6}
+            return not off, f"differs from the 1.0 file: {off}" if off else "equal to the 1.0 joints' parameters"
+        if glb1 is not None:
+            report.guarded(st, f"0.x {chain}: parameters equal the 1.0 file's", same)
+
+    def collider0():
+        cg = next(c for c in sa["colliderGroups"] if names[c["node"]] == want["collider_bone"])
+        col = cg["colliders"][0]
+        head = glb.world_position(cg["node"])
+        # VRM 0.x offsets are in Unity's frame, which mirrors glTF's z; the 0.x file is the 1.0 file turned
+        # half way round, so the same sphere sits at (-x, y, -z).
+        centre0 = (head[0] + col["offset"]["x"], head[1] + col["offset"]["y"], head[2] - col["offset"]["z"])
+        group1 = next(g for g in sb1["colliderGroups"] if g.get("name") == want["collider_group"])
+        centre1, radius1 = collider_world(glb1, sb1["colliders"][group1["colliders"][0]])
+        turned = (-centre1[0], centre1[1], -centre1[2])
+        ok = _dist(centre0, turned) < 0.001 and abs(col["radius"] - radius1) < 0.001
+        return ok, (f"0.x sphere at {[round(c, 3) for c in centre0]} r {col['radius']:.3f}; the 1.0 sphere "
+                    f"turned half way round is at {[round(c, 3) for c in turned]} r {radius1:.3f}")
+    if glb1 is not None:
+        report.guarded(st, "the 0.x head collider is the 1.0 collider, turned half way round", collider0)
 
 
 def _morph_mesh(v, archetype):
@@ -449,7 +582,7 @@ def main(argv=None):
     if args.vrm0:
         glb0 = check_container(report, args.vrm0)
         if glb0:
-            check_vrm0(report, glb0)
+            check_vrm0(report, glb0, archetype, glb1)
         else:
             report.not_run("contract", "VRM 0.x checks", "the file could not be read")
 

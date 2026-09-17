@@ -31,6 +31,14 @@ DROP_BELOW_EYES = 0.45
 # changes 0, so the floor sits far from both.
 MIN_CHANGED_PIXELS = 100
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+# Spring simulation, tip movement relative to the head, in metres. Measured on the v1 rig in three-vrm 3.5.5
+# at a 1/60 s step: a 35 degree head turn swings the tips 49-92 mm with `center` on the hips and 0.0-0.3 mm
+# with it on the head; an eased 3 m move of the whole avatar moves them 0.0-0.3 mm with a centre and
+# 181-305 mm without one; a 55 degree head roll leaves the nearest joint 1.4 mm inside the collider surface
+# with the collider and 29.0 mm inside without it.
+SWAY_FLOOR = 0.010
+TRANSLATE_CEILING = 0.005
+PENETRATION_TOLERANCE = 0.002
 
 
 class _Quiet(http.server.SimpleHTTPRequestHandler):
@@ -94,6 +102,54 @@ def _render(vrm_path, job):
     return result, png
 
 
+def _springs_job(v1, archetype):
+    """What the page needs to find the chains and the collider: node indices, since three.js renames nodes."""
+    want = arkit52.ARCHETYPE_SPRINGS.get(archetype)
+    sb = (v1.glb.json.get("extensions") or {}).get("VRMC_springBone")
+    if want is None or not sb:
+        return None
+    try:
+        chains = {s["name"]: {"joints": [j["node"] for j in s["joints"]],
+                              "hitRadius": max(j.get("hitRadius", 0.0) for j in s["joints"])}
+                  for s in sb["springs"] if s.get("name") in want["chains"]}
+        group = next(g for g in sb["colliderGroups"] if g.get("name") == want["collider_group"])
+        sphere = sb["colliders"][group["colliders"][0]]["shape"]["sphere"]
+        return {"chains": chains, "collider": {"offset": sphere["offset"], "radius": sphere["radius"]}}
+    except (KeyError, IndexError, StopIteration, TypeError):
+        return None
+
+
+def _spring_rows(report, sim, asked, archetype):
+    st = "consumer"
+    if arkit52.ARCHETYPE_SPRINGS.get(archetype) is None:
+        return
+    if not asked or not sim:
+        report.add(st, "three-vrm simulates the spring chains", False,
+                   "the file's VRMC_springBone block could not be handed to the page" if not asked
+                   else "the page returned no simulation")
+        return
+    mm = lambda scenario: {k: round(v * 1000, 1) for k, v in sim[scenario]["peakTipMoveVsHead"].items()}
+    expected_joints = sum(len(c["joints"]) - 1 for c in asked["chains"].values())
+    report.add(st, "three-vrm simulates every joint but each chain's end marker",
+               sim["joints"] == expected_joints, f"{sim['joints']} spring joints, {expected_joints} expected")
+    report.add(st, "at rest the chains stay finite and still",
+               sim["settle"]["finite"] and max(sim["settle"]["peakTipMoveVsHead"].values()) < 0.001,
+               f"tip movement over 120 steps {mm('settle')} mm")
+    # Presence before absence: the two rows after this one assert that the hair does NOT move or penetrate,
+    # which a rig whose springs never run would also satisfy.
+    report.add(st, "a head turn swings every chain",
+               min(sim["sway"]["peakTipMoveVsHead"].values()) >= SWAY_FLOOR,
+               f"tips move {mm('sway')} mm relative to the head (floor {SWAY_FLOOR * 1000:.0f} mm)")
+    report.add(st, "moving the whole avatar does not throw the chains",
+               sim["translate"]["finite"] and max(sim["translate"]["peakTipMoveVsHead"].values()) <= TRANSLATE_CEILING,
+               f"tips move {mm('translate')} mm during an eased 3 m move (ceiling {TRANSLATE_CEILING * 1000:.0f} mm)")
+    worst = min(sim["tilt"]["minClearance"], sim["tiltOther"]["minClearance"])
+    report.add(st, "rolling the head onto either shoulder leaves the hair outside the head collider",
+               worst >= -PENETRATION_TOLERANCE,
+               f"nearest joint {worst * 1000:+.1f} mm from the collider surface, hit radius included "
+               f"(tolerance {PENETRATION_TOLERANCE * 1000:.0f} mm)")
+
+
 def run(report, vrm_path, v1, archetype, out_dir):
     """Returns False when the stage could not run at all."""
     st = "consumer"
@@ -101,7 +157,8 @@ def run(report, vrm_path, v1, archetype, out_dir):
     stubs = arkit52.stub_names(authored)
     composed = [arkit52.vrm1_json_key(p) for p in arkit52.PRESET_COMPOSITION]
     job = {"frame": FRAME, "columns": COLUMNS, "sheet": list(authored) + composed,
-           "heightInEyeSpans": HEIGHT_IN_EYE_SPANS, "dropBelowEyes": DROP_BELOW_EYES}
+           "heightInEyeSpans": HEIGHT_IN_EYE_SPANS, "dropBelowEyes": DROP_BELOW_EYES,
+           "springs": _springs_job(v1, archetype)}
     try:
         result, png = _render(vrm_path, job)
     except (RuntimeError, OSError, subprocess.TimeoutExpired, json.JSONDecodeError) as e:
@@ -156,6 +213,8 @@ def run(report, vrm_path, v1, archetype, out_dir):
     for name in stubs:
         n = seen.get(name, {}).get("changedPixels", -1)
         report.add(st, f"{name}: the rendered frame is identical to neutral (stub)", n == 0, f"{n} pixels changed")
+
+    _spring_rows(report, result.get("springs"), job["springs"], archetype)
 
     sheet_path = Path(out_dir) / "contact_sheet.png"
     want_frames = 1 + len(job["sheet"])

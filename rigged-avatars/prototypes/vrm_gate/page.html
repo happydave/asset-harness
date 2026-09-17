@@ -129,13 +129,77 @@ async function main() {
     ctx.fillText(text, x + 6, y + size + label / 2);
   }
 
+  const springs = job.springs ? await simulateSprings(THREE, gltf, vrm, job.springs) : null;
+
   sheetEl.textContent = sheet.toDataURL('image/png');
   resultEl.textContent = JSON.stringify({
     ok: true, renderer: gl.getParameter(gl.VERSION), three: THREE.REVISION, frame: size,
     names, neutralRepeatChangedPixels: changed(neutral, neutralAgain), neutralLitPixels: lit,
     sheet: { columns: cols, rows, width: sheet.width, height: sheet.height, frames: onSheet },
-    expressions,
+    expressions, springs,
   });
+}
+
+// Runs three-vrm's own spring simulation at a fixed step and measures it. Poses go through the NORMALIZED
+// humanoid bone: vrm.update() copies the normalized pose onto the raw bones, so a pose set on a raw bone
+// would be overwritten before the springs saw it.
+async function simulateSprings(THREE, gltf, vrm, spec) {
+  const dt = 1 / 60;
+  const manager = vrm.springBoneManager;
+  if (!manager || !manager.joints || manager.joints.size === 0) throw new Error('three-vrm built no spring joints');
+  const node = (i) => gltf.parser.getDependency('node', i);
+  const chains = {};
+  for (const [name, c] of Object.entries(spec.chains)) chains[name] = await Promise.all(c.joints.map(node));
+  const headRaw = vrm.humanoid.getRawBoneNode('head');
+  const headPose = vrm.humanoid.getNormalizedBoneNode('head');
+  const colliderOffset = new THREE.Vector3(...spec.collider.offset);
+  const v = new THREE.Vector3();
+
+  const tipLocal = (name) => headRaw.worldToLocal(chains[name][chains[name].length - 1].getWorldPosition(new THREE.Vector3()));
+  function reset() {
+    headPose.rotation.set(0, 0, 0);
+    vrm.scene.position.set(0, 0, 0);
+    vrm.update(dt);
+    manager.reset();
+    for (let i = 0; i < 30; i++) vrm.update(dt);
+  }
+  function run(steps, pose) {
+    const rest = {}, peak = {};
+    for (const name of Object.keys(chains)) { rest[name] = tipLocal(name); peak[name] = 0; }
+    let finite = true, clearance = Infinity;
+    for (let i = 0; i < steps; i++) {
+      pose(i);
+      vrm.update(dt);
+      vrm.scene.updateMatrixWorld(true);
+      const centre = headRaw.localToWorld(colliderOffset.clone());
+      for (const [name, joints] of Object.entries(chains)) {
+        peak[name] = Math.max(peak[name], tipLocal(name).distanceTo(rest[name]));
+        for (let k = 1; k < joints.length; k++) {           // joint k's position is joint k-1's simulated tail
+          joints[k].getWorldPosition(v);
+          if (!Number.isFinite(v.x + v.y + v.z)) finite = false;
+          clearance = Math.min(clearance, v.distanceTo(centre) - spec.collider.radius - spec.chains[name].hitRadius);
+        }
+      }
+    }
+    return { peakTipMoveVsHead: peak, finite, minClearance: clearance };
+  }
+  const ramp = (i, n) => Math.min(1, (i + 1) / n);
+
+  const out = { joints: manager.joints.size, step: dt };
+  reset();
+  out.settle = run(120, () => {});
+  reset();
+  out.sway = run(18, (i) => { headPose.rotation.y = THREE.MathUtils.degToRad(35) * ramp(i, 12); });
+  reset();
+  // 3 m with an eased start and stop, peaking near 7 m/s. An INSTANT stop from 15 m/s is not used: with a
+  // centre set, three-vrm 3.5.5 throws the chain to its exact antipode, and it was still there 27 steps later.
+  out.translate = run(60, (i) => { const t = Math.min(1, (i + 1) / 40); vrm.scene.position.x = 3 * t * t * (3 - 2 * t); });
+  reset();
+  out.tilt = run(180, (i) => { headPose.rotation.z = THREE.MathUtils.degToRad(55) * ramp(i, 20); });
+  reset();
+  out.tiltOther = run(180, (i) => { headPose.rotation.z = -THREE.MathUtils.degToRad(55) * ramp(i, 20); });
+  reset();
+  return out;
 }
 
 main().catch((e) => { resultEl.textContent = JSON.stringify({ ok: false, error: String((e && e.stack) || e) }); });

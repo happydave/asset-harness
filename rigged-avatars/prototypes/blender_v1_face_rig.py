@@ -51,6 +51,7 @@ import vrm_export                                                 # noqa: E402
 
 HEAD, BODY = "face", "torso"
 EYE_L, EYE_R = "eyeball.L", "eyeball.R"
+HAIR = "hair"
 
 # ---- head frame (armature/world space) --------------------------------------
 # WI 1372. FACE_Y is the ONLY statement of which way the character points, and everything
@@ -93,6 +94,40 @@ MOUTH_INSET_T = 0.008
 CAVITY_DEPTH = 0.075
 
 AUTHORED = list(arkit52.STYLIZED_V1_AUTHORED)
+
+# ---- hair (WI 1366) ----------------------------------------------------------
+# Placeholder shapes: what hair LOOKS like is the toon lane's job. What matters here is where the chains
+# sit. The side tails hang outside the head's x semi-axis (0.160) at ear height, so a sideways head tilt
+# drives one into the head, which is the case the collider exists for.
+HAIR_SEG = 0.08                                   # bone length
+HAIR_SIDE_X, HAIR_SIDE_Z = 0.178, 1.19            # side tail root; back of the ear, so it clears the face
+HAIR_SIDE_DEPTH = -0.03                           # behind the head's mid-plane (negative depth = away from the face)
+HAIR_TOP_Z = HZ + HR * HS[2] - 0.004              # just inside the crown, so the lock has no visible gap
+HAIR_R0, HAIR_R1 = 0.030, 0.010                   # tube radius, root -> tip
+HAIR_HIT_RADIUS = 0.02
+HEAD_COLLIDER_R = 0.160                           # the head ellipsoid's x semi-axis
+SPRING_CENTER = "hips"
+
+
+HAIR_END = 0.03                                   # length of the end-marker bone
+
+
+def hair_chains():
+    """{chain name: [(bone, head, tail), ...]} root first, in armature space.
+
+    The LAST bone of each chain is an end marker and carries no mesh. A VRM 1.0 runtime swings joint k
+    toward joint k+1, so the last joint listed is only ever a target: without a marker the final hair
+    segment would never bend at its own joint (three-vrm builds n-1 spring joints from n)."""
+    y = HAIR_SIDE_DEPTH * FACE_Y
+    chains = {}
+    for suffix, sx in (("L", 1), ("R", -1)):
+        zs = [HAIR_SIDE_Z - HAIR_SEG * i for i in range(4)] + [HAIR_SIDE_Z - HAIR_SEG * 3 - HAIR_END]
+        chains[f"hair.{suffix}"] = [(f"hair.{suffix}.{i}", (sx * HAIR_SIDE_X, y, zs[i]), (sx * HAIR_SIDE_X, y, zs[i + 1]))
+                                    for i in range(4)]
+    pts = [(0.0, y * i, HAIR_TOP_Z + 0.06 * i) for i in range(3)]
+    pts.append((0.0, y * 2, HAIR_TOP_Z + 0.12 + HAIR_END))
+    chains["hair.top"] = [(f"hair.top.{i}", pts[i], pts[i + 1]) for i in range(3)]
+    return chains
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +335,82 @@ def add_eye_bones(arm):
         b.use_connect = False
         b.parent = eb["head"]
     bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def add_hair_bones(arm):
+    """After auto-weighting, like the eye bones: the head and body cannot pick up hair-bone influence."""
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='EDIT')
+    eb = arm.data.edit_bones
+    for chain in hair_chains().values():
+        parent = eb["head"]
+        for name, head, tail in chain:
+            b = eb.new(name)
+            b.head, b.tail = head, tail
+            b.use_connect = False
+            b.parent = parent
+            parent = b
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def build_hair(mats, arm):
+    """One mesh, a tapered tube per chain with a ring at every joint. Ring k sits at the tail of bone k-1,
+    so it is weighted to that bone and each segment stays rigid while the tube bends at the joints."""
+    sides = 8
+    bm = bmesh.new()
+    owner = []                                     # vertex index -> bone name
+    for chain in hair_chains().values():
+        chain = chain[:-1]                         # the end marker carries no mesh
+        points = [chain[0][1]] + [tail for _, _, tail in chain]
+        rings = []
+        for k, (px, py, pz) in enumerate(points):
+            r = HAIR_R0 + (HAIR_R1 - HAIR_R0) * k / (len(points) - 1)
+            ring = [bm.verts.new((px + r * math.cos(2 * math.pi * i / sides),
+                                  py + r * math.sin(2 * math.pi * i / sides), pz)) for i in range(sides)]
+            owner += [chain[max(k - 1, 0)][0]] * sides
+            rings.append(ring)
+        # side tails run downward, the top lock upward; wind the quads so the normals face out either way
+        down = points[-1][2] < points[0][2]
+        for a, b in zip(rings, rings[1:]):
+            for i in range(sides):
+                quad = (a[i], a[(i + 1) % sides], b[(i + 1) % sides], b[i])
+                bm.faces.new(quad if down else quad[::-1])
+        bm.faces.new(rings[0][::-1] if down else rings[0])
+        bm.faces.new(rings[-1] if down else rings[-1][::-1])
+    me = bpy.data.meshes.new(HAIR)
+    bm.to_mesh(me)
+    bm.free()
+    me.materials.append(mats["hair"])
+    o = bpy.data.objects.new(HAIR, me)
+    bpy.context.scene.collection.objects.link(o)
+    for bone in sorted(set(owner)):
+        o.vertex_groups.new(name=bone).add([i for i, b in enumerate(owner) if b == bone], 1.0, 'REPLACE')
+    md = o.modifiers.new("Armature", 'ARMATURE')
+    md.object = arm
+    o.parent = arm
+    o.matrix_parent_inverse = arm.matrix_world.inverted()
+    return o
+
+
+def springs_spec():
+    """The table vrm_export writes to both VRM specs. The collider centre is in armature space."""
+    chains = hair_chains()
+    center = {"center-head": "head", "no-center": None}.get(NEGATIVE, SPRING_CENTER)
+    collider_centre = (0.0, 0.0, HZ)
+    if NEGATIVE == "collider-blender-frame":
+        # what writing the Blender-frame offset un-converted into the add-on's glTF-frame property does:
+        # the centre lands at head + (dx, -dz, dy)
+        dz = HZ - 1.00
+        collider_centre = (0.0, -dz, 1.00)
+    return {
+        "colliders": [{"name": "head", "bone": "head", "center": collider_centre, "radius": HEAD_COLLIDER_R}],
+        "collider_groups": {"head": ["head"]},
+        "chains": [{"name": name, "joints": [b for b, _, _ in bones], "center": center,
+                    "collider_groups": [] if NEGATIVE == "no-collider" else ["head"],
+                    "hit_radius": HAIR_HIT_RADIUS, "stiffness": 0.6, "gravity_power": 0.35,
+                    "drag_force": 0.45}
+                   for name, bones in chains.items()],
+    }
 
 
 def rigid_skin(obj, arm, bone):
@@ -770,10 +881,33 @@ def check_export_reimport(ck, out, name):
         # WI 938 shipped a demo carrying Blender's startup `Cube` because the VRM exporter is
         # scene-global. Assert the object SET, not a count: a count passes if one stray replaces one
         # expected object.
-        objs = sorted(o.name for o in bpy.context.scene.objects)
-        expected_objs = sorted([arms[0].name, HEAD, BODY, EYE_L, EYE_R])
+        # collider Empties are the importer's own scaffolding for the spring bones, not strays
+        objs = sorted(o.name for o in bpy.context.scene.objects if o.type != 'EMPTY')
+        expected_objs = sorted([arms[0].name, HEAD, BODY, HAIR, EYE_L, EYE_R])
         ck.add(f"VRM {spec} carries only the avatar", objs == expected_objs, f"objects: {objs}")
 
+        want = springs_spec()
+        if spec == "1.0":
+            sb = ext.spring_bone1
+            got = {sp.vrm_name: ([j.node.bone_name for j in sp.joints], sp.center.bone_name or None,
+                                 len(sp.collider_groups)) for sp in sb.springs}
+            exp = {c["name"]: (c["joints"], c["center"], len(c["collider_groups"])) for c in want["chains"]}
+            ck.add("VRM 1.0 re-imports with the hair chains, their centre and their collider group",
+                   got == exp, json.dumps(got))
+            ck.add("VRM 1.0 re-imports with the head sphere collider",
+                   [(c.node.bone_name, round(c.shape.sphere.radius, 4)) for c in sb.colliders]
+                   == [(c["bone"], c["radius"]) for c in want["colliders"]],
+                   str([(c.node.bone_name, round(c.shape.sphere.radius, 4)) for c in sb.colliders]))
+        else:
+            sa = ext.vrm0.secondary_animation
+            got = sorted(([b.bone_name for b in g.bones], g.center.bone_name or None, len(g.collider_groups))
+                         for g in sa.bone_groups)
+            exp = sorted(([c["joints"][0]], c["center"], len(c["collider_groups"])) for c in want["chains"])
+            ck.add("VRM 0.x re-imports with the hair bone groups, their centre and their collider group",
+                   got == exp, json.dumps(got))
+            ck.add("VRM 0.x re-imports with the head collider group",
+                   [(g.node.bone_name, len(g.colliders)) for g in sa.collider_groups] == [("head", 1)],
+                   str([(g.node.bone_name, len(g.colliders)) for g in sa.collider_groups]))
         if spec == "1.0":
             customs = {c.custom_name: len(c.morph_target_binds) for c in ext.vrm1.expressions.custom}
             ck.add("VRM 1.0 declares all 52 ARKit clips, exact names",
@@ -914,6 +1048,62 @@ SHOTS = {
 }
 
 
+def check_hair(ck, arm, head, body, hair):
+    chains = hair_chains()
+    bones = arm.data.bones
+    ok = all(b in bones for chain in chains.values() for b, _, _ in chain)
+    ck.add("hair bones exist", ok, f"{sum(len(c) for c in chains.values())} bones in {len(chains)} chains")
+    if not ok:
+        return
+    lineage = all(bones[chain[0][0]].parent.name == "head"
+                  and all(bones[b].parent.name == chain[i][0] for i, (b, _, _) in enumerate(chain[1:]))
+                  for chain in chains.values())
+    ck.add("each hair chain hangs from the head bone, joint under joint", lineage)
+    hair_bones = {b for chain in chains.values() for b, _, _ in chain[:-1]}
+    markers = {chain[-1][0] for chain in chains.values()}
+    ck.add("the end markers carry no mesh weight", not (markers & {g.name for g in hair.vertex_groups}),
+           f"markers {sorted(markers)}")
+    names = {g.index: g.name for g in hair.vertex_groups}
+    single = all(len(v.groups) == 1 and names[v.groups[0].group] in hair_bones
+                 and abs(v.groups[0].weight - 1.0) < 1e-6 for v in hair.data.vertices)
+    ck.add("every hair vertex is weighted 1.0 to exactly one hair bone", single,
+           f"{len(hair.data.vertices)} verts")
+    for o in (head, body):
+        ck.add(f"{o.name} has no hair-bone weight", not (hair_bones & {g.name for g in o.vertex_groups}))
+
+    base_hair, base_head = _evaluated_coords(hair), _evaluated_coords(head)
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='POSE')
+    pb = arm.pose.bones["hair.L.0"]
+    pb.rotation_mode = 'XYZ'
+    pb.rotation_euler = (math.radians(25), 0.0, 0.0)
+    bpy.context.view_layer.update()
+    moved = sum(1 for a, b in zip(base_hair, _evaluated_coords(hair)) if (a - b).length > 1e-5)
+    still = all((a - b).length < 1e-6 for a, b in zip(base_head, _evaluated_coords(head)))
+    ck.add("posing hair.L.0 moves the hair and leaves the face alone", moved > 0 and still,
+           f"{moved} hair verts moved")
+    pb.rotation_euler = (0.0, 0.0, 0.0)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.context.view_layer.update()
+
+    contract = arkit52.ARCHETYPE_SPRINGS["stylized-v1"]
+    spec = springs_spec()
+    ck.add("the hair chains are the ones the archetype contract names",
+           {c["name"]: tuple(c["joints"]) for c in spec["chains"]} == contract["chains"])
+    ck.add("every chain measures its inertia against the contract's centre bone",
+           all(c["center"] == contract["center"] for c in spec["chains"]),
+           str(sorted({str(c["center"]) for c in spec["chains"]})))
+    ck.add("every chain collides with the contract's collider group",
+           all(c["collider_groups"] == [contract["collider_group"]] for c in spec["chains"]),
+           str([c["collider_groups"] for c in spec["chains"]]))
+
+    clear = min(math.dist(tail, (0.0, 0.0, HZ)) for chain in chains.values() for _, _, tail in chain
+                if tail[2] < HAIR_TOP_Z)
+    ck.add("the side tails rest outside the head collider", clear >= HEAD_COLLIDER_R + HAIR_HIT_RADIUS,
+           f"nearest joint tail {clear * 1000:.1f} mm from the collider centre; "
+           f"collider {HEAD_COLLIDER_R * 1000:.0f} mm + hit radius {HAIR_HIT_RADIUS * 1000:.0f} mm")
+
+
 def render_previews(head, out):
     """WI 936's two recorded gotchas, both fixed here by construction: the camera goes on the +Y (front)
     side because the face is at +Y, and view_layer.update() runs before every render or the shape-key
@@ -979,6 +1169,7 @@ def main():
         "sclera": _mat("sclera", (0.95, 0.95, 0.95), rough=0.25),
         "iris": _mat("iris", (0.09, 0.16, 0.30), rough=0.15),
         "suit": _mat("suit", (0.30, 0.42, 0.66)),
+        "hair": _mat("hair", (0.22, 0.13, 0.07), cull=False),
     }
 
     arm = build_armature(corn_bone_defs(), "v1_face_rig")
@@ -990,6 +1181,8 @@ def main():
     eyeballs = [build_eyeball(EYE_L, EYE_CX, mats), build_eyeball(EYE_R, -EYE_CX, mats)]
     for o, bone in zip(eyeballs, ("eye.L", "eye.R")):
         rigid_skin(o, arm, bone)
+    add_hair_bones(arm)
+    hair = build_hair(mats, arm)
 
     # --- topology is frozen from here on ---
     if NEGATIVE == "stray-object":
@@ -1001,10 +1194,11 @@ def main():
     check_geometry(ck, head)
     check_morph_contract(ck, head)
     check_eye_bones(ck, arm, head, eyeballs)
+    check_hair(ck, arm, head, body, hair)
 
     name = "v1_face_rig"
     bpy.ops.object.select_all(action='DESELECT')
-    for o in [arm, head, body, *eyeballs]:
+    for o in [arm, head, body, hair, *eyeballs]:
         o.select_set(True)
     bpy.context.view_layer.objects.active = arm
     bpy.ops.export_scene.gltf(filepath=str(OUT / f"{name}.glb"), export_format='GLB',
@@ -1026,6 +1220,7 @@ def main():
         # leaving the purge on would only demonstrate that the purge works, which the normal run
         # already shows
         purge_non_avatar=(NEGATIVE != "stray-object"),
+        springs=springs_spec(),
     )
 
     previews = None
@@ -1063,6 +1258,7 @@ def main():
         },
         "gaze": {"mode": "bone", "bones": ["eye.L", "eye.R"],
                  "humanoid_slots": ["left_eye", "right_eye"]},
+        "springs": springs_spec(),
         "licence": {
             "head geometry / rig / morphs": "authored (ours) — commercial yes, redistribute yes",
             "Blender + saturday06 VRM add-on": "GPL-3.0-or-later + MIT — tool only, imposes nothing "
@@ -1078,7 +1274,8 @@ def main():
     }
     (OUT / f"{name}_evidence.json").write_text(json.dumps(evidence, indent=2))
     (OUT / f"{name}_manifest.json").write_text(json.dumps({
-        "asset": "WI 1362 stylized v1 face rig (ARKit-52 declared, 16 authored, bone gaze)",
+        "asset": f"stylized v1 face rig (ARKit-52 declared, {len(AUTHORED)} authored, bone gaze, "
+                 f"{len(hair_chains())} spring-bone hair chains)",
         "generator_script": "blender_v1_face_rig.py",
         "bind": "SKINNED: armature modifier + auto weights; eyeballs rigid to eye.L/eye.R",
         "authored_morphs": AUTHORED,

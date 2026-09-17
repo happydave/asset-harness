@@ -37,6 +37,36 @@ stub bound to a genuinely flat target passes this row (and fails the bound-set r
 Where `<name>_evidence.json` sits beside the file, the gate's 29 figures must also agree within 0.1 mm with
 the ones the generator measured inside Blender: two independent readings of one quantity.
 
+## Spring bones
+
+For an archetype with an entry in `arkit52.ARCHETYPE_SPRINGS`, the `contract` stage checks the chains, that
+each joint is the child of the last, the `center` bone, the collider group, and that the head collider
+**contains both eye bones** — a frame check, because a sphere offset written in the wrong axis order still
+validates. With `--vrm0` it also checks the 0.x bone groups, that their parameters equal the 1.0 joints',
+and that the 0.x collider is the 1.0 collider turned half way round.
+
+The `consumer` stage then **runs three-vrm's own spring simulation** at a fixed 1/60 s step and measures it:
+
+| Scenario | Asserts | v1 rig, measured |
+|---|---|---|
+| 120 steps at rest | finite and still | ≤ 0.3 mm |
+| head turns 35° | every chain's tip moves at least 10 mm relative to the head | 49–92 mm |
+| whole avatar moves 3 m, eased | tips move at most 5 mm | 0.0–0.3 mm (181–305 mm with no `center`) |
+| head rolls 55° onto each shoulder | no joint more than 2 mm inside the collider surface | 1.4 mm (29.0 mm with no collider) |
+
+The turn comes first on purpose: the last two rows assert that something does *not* happen, which a rig
+whose springs never run would also satisfy. `center` is the hips, not the head — with the head as centre the
+same turn moves the tips 0.0 mm. The roll row measures against the collider the file declares, so it cannot
+see a misplaced collider; the eye-containment row is what catches that.
+
+Each chain's last joint is an **end marker** with no mesh: a VRM 1.0 runtime swings joint k toward joint
+k+1, so three-vrm builds n−1 spring joints from n, and without a marker the last segment never bends.
+
+Not used as a scenario: an **instant** stop from 15 m/s. With a centre set, three-vrm 3.5.5 throws the chain
+to its exact antipode, where it stayed for the rest of the run (27 steps observed). Stiffness and gravity
+both act along the bone at that point, which would explain why nothing tips it back; the cause of the throw
+itself was not established. An eased stop from the same distance does not do it.
+
 ## The contact sheet
 
 Neutral, every authored expression, and every composed preset, framed from the eye bones. It is an
@@ -50,12 +80,12 @@ Left and right are the character's: an avatar facing +Z has its left eye on the 
 ## Negative controls
 
 [`mutate.py`](mutate.py) writes a broken copy of a VRM, one named defect at a time, and re-reads the copy to
-confirm the defect landed. `test_vrm_gate.py` applies all eleven to the committed sample and pins the exact
+confirm the defect landed. `test_vrm_gate.py` applies all sixteen to the committed sample and pins the exact
 set of rows each one fails.
 
-Five more come through the real exporter rather than a file edit — `blender_v1_face_rig.py
---negative-control old-facing | flat-morph | nonzero-stub | stray-object | blender-frame-offset` on a host
-with Blender — and the gate catches each. They need Blender, so they are a Test-time run, not part of
+Nine more come through the real exporter rather than a file edit — `blender_v1_face_rig.py
+--negative-control old-facing | flat-morph | nonzero-stub | stray-object | blender-frame-offset |
+no-collider | center-head | no-center | collider-blender-frame` on a host with Blender — and the gate catches each. They need Blender, so they are a Test-time run, not part of
 `test_vrm_gate.py`.
 
 ## Dependencies and their liveness (2026-09-17)

@@ -186,6 +186,134 @@ def _set_spring(ext, joint_bones, center_bone):
         j.gravity_dir = (0.0, 0.0, -1.0); j.drag_force = 0.4
 
 
+def _op(result, what):
+    if result != {'FINISHED'}:
+        raise SystemExit(f"VRM add-on operator {what} returned {result}")
+
+
+def _set_springs(arm, ext, spec):
+    """Colliders, collider groups and spring chains on BOTH specs from one table (WI 1366).
+
+    spec = {
+      "colliders": [{"name", "bone", "center": (x, y, z) Blender world, "radius"}],
+      "collider_groups": {group_name: [collider_name, ...]},
+      "chains": [{"name", "joints": [bone, ...] root first, "center": bone, "collider_groups": [group_name, ...],
+                  "hit_radius", "stiffness", "gravity_power", "drag_force"}],
+    }
+
+    Colliders go through the add-on's operators: one assigned as raw properties has no backing Empty and
+    the exporter drops it silently. The two specs place a sphere differently —
+      1.0  `shape.sphere.offset` is written VERBATIM as the glTF node-local offset (x, up, forward) from
+           the bone's head, so Blender world (x, y, z) relative to the bone head becomes (x, z, -y);
+      0.x  the collider IS an Empty parented to the bone, its radius is `empty_display_size`, and its
+           default location is the bone's TAIL — so it is placed by world matrix.
+    0.x parameters are per bone group and the group lists only the chain's root bone."""
+    from mathutils import Matrix
+    bones = {b.name: b for b in arm.data.bones}
+    colliders = {c["name"]: c for c in spec.get("colliders", [])}
+    groups = spec.get("collider_groups", {})
+    for c in colliders.values():
+        if c["bone"] not in bones:
+            raise SystemExit(f"spring collider {c['name']!r} names missing bone {c['bone']!r}")
+    for gname, members in groups.items():
+        for m in members:
+            if m not in colliders:
+                raise SystemExit(f"collider group {gname!r} names unknown collider {m!r}")
+    for ch in spec.get("chains", []):
+        for b in list(ch["joints"]) + ([ch["center"]] if ch.get("center") else []):
+            if b not in bones:
+                raise SystemExit(f"spring chain {ch['name']!r} names missing bone {b!r}")
+        for g in ch.get("collider_groups", []):
+            if g not in groups:
+                raise SystemExit(f"spring chain {ch['name']!r} names unknown collider group {g!r}")
+
+    name = arm.name
+    sb = ext.spring_bone1
+    sa = ext.vrm0.secondary_animation
+
+    uuid1 = {}
+    for c in colliders.values():
+        _op(bpy.ops.vrm.add_spring_bone1_collider(armature_object_name=name), "add_spring_bone1_collider")
+        col = sb.colliders[len(sb.colliders) - 1]
+        col.node.bone_name = c["bone"]
+        col.shape_type = "Sphere"
+        head = arm.matrix_world @ bones[c["bone"]].head_local
+        dx, dy, dz = (c["center"][i] - head[i] for i in range(3))
+        col.shape.sphere.offset = (dx, dz, -dy)
+        col.shape.sphere.radius = c["radius"]
+        uuid1[c["name"]] = col.uuid
+    group_uuid1 = {}
+    for gi, (gname, members) in enumerate(groups.items()):
+        _op(bpy.ops.vrm.add_spring_bone1_collider_group(armature_object_name=name), "add_spring_bone1_collider_group")
+        grp = sb.collider_groups[gi]
+        grp.vrm_name = gname
+        for mi, m in enumerate(members):
+            _op(bpy.ops.vrm.add_spring_bone1_collider_group_collider(
+                armature_object_name=name, collider_group_index=gi), "add_spring_bone1_collider_group_collider")
+            grp.colliders[mi].collider_uuid = uuid1[m]
+        group_uuid1[gname] = grp.uuid
+    for ch in spec.get("chains", []):
+        _op(bpy.ops.vrm.add_spring_bone1_spring(armature_object_name=name), "add_spring_bone1_spring")
+        sp = sb.springs[len(sb.springs) - 1]
+        sp.vrm_name = ch["name"]
+        if ch.get("center"):
+            sp.center.bone_name = ch["center"]
+        for b in ch["joints"]:
+            j = sp.joints.add()
+            j.node.bone_name = b
+            j.hit_radius = ch["hit_radius"]; j.stiffness = ch["stiffness"]
+            j.gravity_power = ch["gravity_power"]; j.gravity_dir = (0.0, 0.0, -1.0)
+            j.drag_force = ch["drag_force"]
+        for gi, g in enumerate(ch.get("collider_groups", [])):
+            _op(bpy.ops.vrm.add_spring_bone1_spring_collider_group(
+                armature_object_name=name, spring_index=len(sb.springs) - 1), "add_spring_bone1_spring_collider_group")
+            sp.collider_groups[gi].collider_group_uuid = group_uuid1[g]
+
+    # VRM 0.x: a collider group belongs to ONE bone, so a named group becomes one 0.x group per bone it touches.
+    group_uuid0 = {}
+    for gname, members in groups.items():
+        by_bone = {}
+        for m in members:
+            by_bone.setdefault(colliders[m]["bone"], []).append(colliders[m])
+        group_uuid0[gname] = []
+        for bone, cols in by_bone.items():
+            _op(bpy.ops.vrm.add_vrm0_secondary_animation_collider_group(armature_object_name=name),
+                "add_vrm0_secondary_animation_collider_group")
+            gi = len(sa.collider_groups) - 1
+            cg = sa.collider_groups[gi]
+            cg.node.bone_name = bone
+            for ci, c in enumerate(cols):
+                _op(bpy.ops.vrm.add_vrm0_secondary_animation_collider_group_collider(
+                    armature_object_name=name, collider_group_index=gi, bone_name=bone),
+                    "add_vrm0_secondary_animation_collider_group_collider")
+                empty = cg.colliders[ci].bpy_object
+                empty.empty_display_size = c["radius"]
+                bpy.context.view_layer.update()
+                empty.matrix_world = Matrix.Translation(c["center"])
+            group_uuid0[gname].append(cg.uuid)
+    bpy.context.view_layer.update()
+    for ch in spec.get("chains", []):
+        _op(bpy.ops.vrm.add_vrm0_secondary_animation_group(armature_object_name=name),
+            "add_vrm0_secondary_animation_group")
+        bi = len(sa.bone_groups) - 1
+        bg = sa.bone_groups[bi]
+        bg.comment = ch["name"]
+        bg.stiffiness = ch["stiffness"]          # the add-on's own spelling, as VRM 0.x spells it
+        bg.gravity_power = ch["gravity_power"]; bg.gravity_dir = (0.0, 0.0, -1.0)
+        bg.drag_force = ch["drag_force"]; bg.hit_radius = ch["hit_radius"]
+        if ch.get("center"):
+            bg.center.bone_name = ch["center"]
+        root = bg.bones.add(); root.bone_name = ch["joints"][0]
+        k = 0
+        for g in ch.get("collider_groups", []):
+            for uuid in group_uuid0[g]:
+                _op(bpy.ops.vrm.add_vrm0_secondary_animation_group_collider_group(
+                    armature_object_name=name, bone_group_index=bi),
+                    "add_vrm0_secondary_animation_group_collider_group")
+                bg.collider_groups[k].collider_group_uuid = uuid
+                k += 1
+
+
 def _set_look_at_bone(ext, offset_from_head):
     """Bone-driven gaze (WI 1362). `type` accepts 'bone' | 'expression' (probed live on v4.4.0); bone mode
     is the discovery's preferred option — universally supported, trivially parametric, and it turns the
@@ -203,9 +331,11 @@ def _set_look_at_bone(ext, offset_from_head):
 def _purge_non_avatar(arm):
     """The VRM exporter is scene-global — unlike glTF it does not honour selection — so anything left in
     the scene rides along (WI 938 shipped a demo carrying Blender's startup `Cube`). Remove every object
-    that is not the armature or one of its meshes. Opt-in: callers predating WI 1362 keep their exact
-    prior output."""
+    that is not the armature, one of its meshes, or one of its spring-bone collider Empties (which the
+    add-on parents to the armature, and without which the exporter drops the collider). Opt-in: callers
+    predating WI 1362 keep their exact prior output."""
     keep = {arm}
+    keep.update(o for o in bpy.context.scene.objects if o.type == 'EMPTY' and o.parent is arm)
     for o in bpy.context.scene.objects:
         if o.type == 'MESH' and (o.parent is arm or any(
                 getattr(md, "object", None) is arm for md in o.modifiers if md.type == 'ARMATURE')):
@@ -219,11 +349,12 @@ def _purge_non_avatar(arm):
 
 def export_vrm(arm, out_dir, name, author="asset-harness (WI 925)",
                humanoid=None, spring_joint_bones=(), center_bone="head", expressions=None,
-               look_at_offset=None, purge_non_avatar=False):
+               look_at_offset=None, purge_non_avatar=False, springs=None):
     """Configure VRM data on `arm` and export {name}.vrm (1.0) + {name}.vrm0.vrm (0.x) into out_dir.
     `expressions` (WI 926) is the optional ARKit shape-key binding spec passed to _set_expressions.
     `look_at_offset` (WI 1362) switches gaze to bone mode with that head-relative offset.
     `purge_non_avatar` (WI 1362) removes non-avatar objects before the scene-global VRM export.
+    `springs` (WI 1366) is the collider / chain table passed to _set_springs, written to both specs.
     Returns the two output paths."""
     from pathlib import Path
     ensure_addon()
@@ -238,6 +369,8 @@ def export_vrm(arm, out_dir, name, author="asset-harness (WI 925)",
         _set_expressions(ext, expressions)
     if look_at_offset is not None:
         _set_look_at_bone(ext, look_at_offset)
+    if springs:
+        _set_springs(arm, ext, springs)
     if purge_non_avatar:
         removed = _purge_non_avatar(arm)
         if removed:

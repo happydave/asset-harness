@@ -175,6 +175,44 @@ def bad_max(d):
     return lambda o: o.json["accessors"][prim["targets"][o.target_index(AUTHORED_A)]["POSITION"]]["max"] == want
 
 
+def _springs(d):
+    return d.json["extensions"]["VRMC_springBone"]["springs"]
+
+
+def drop_center(d):
+    for spring in _springs(d):
+        spring.pop("center", None)
+    return lambda o: all("center" not in spring for spring in _springs(o))
+
+
+def drop_collider_group(d):
+    for spring in _springs(d):
+        spring.pop("colliderGroups", None)
+    return lambda o: all("colliderGroups" not in spring for spring in _springs(o))
+
+
+def center_head(d):
+    head = next(i for i, n in enumerate(d.json["nodes"]) if n.get("name") == "head")
+    for spring in _springs(d):
+        spring["center"] = head
+    return lambda o: all(spring.get("center") == head for spring in _springs(o))
+
+
+def collider_transposed(d):
+    sphere = d.json["extensions"]["VRMC_springBone"]["colliders"][0]["shape"]["sphere"]
+    x, y, z = sphere["offset"]
+    sphere["offset"] = [x, z, y]
+    return lambda o: (o.json["extensions"]["VRMC_springBone"]["colliders"][0]["shape"]["sphere"]["offset"]
+                      == [x, z, y] and y != z)
+
+
+def joint_order(d):
+    joints = _springs(d)[0]["joints"]
+    joints[0], joints[1] = joints[1], joints[0]
+    want = [j["node"] for j in joints]
+    return lambda o: [j["node"] for j in _springs(o)[0]["joints"]] == want
+
+
 def _target_max(draft, index):
     glb = Glb.load(draft.path)
     return max(glb.max_vec3_length(p["targets"][index]["POSITION"]) for p in draft.face_mesh()["primitives"])
@@ -184,6 +222,8 @@ MUTATIONS = {
     "rename-key": rename_key, "drop-bind": drop_bind, "stub-bind": stub_bind, "stub-flat": stub_flat,
     "stub-nonzero": stub_nonzero, "reindex": reindex, "flatten": flatten, "case-drift": case_drift,
     "transpose-gaze": transpose_gaze, "wrong-weight": wrong_weight, "bad-max": bad_max,
+    "drop-center": drop_center, "drop-collider-group": drop_collider_group, "joint-order": joint_order,
+    "center-head": center_head, "collider-transposed": collider_transposed,
 }
 
 

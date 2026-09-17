@@ -84,7 +84,23 @@ ARCHETYPES = {"stylized-v1": STYLIZED_V1_AUTHORED}
 # Archetype name -> the mesh-bearing nodes an export carries, and which of them holds the morphs. The VRM
 # exporter is scene-global, so anything else in the file is a stray that rode along.
 ARCHETYPE_MESHES = {"stylized-v1": {"morph_mesh": "face",
-                                    "all": ("eyeball.L", "eyeball.R", "face", "torso")}}
+                                    "all": ("eyeball.L", "eyeball.R", "face", "hair", "torso")}}
+
+# Archetype name -> the spring-bone chains an export declares (WI 1366): joints root first, the bone each
+# chain's inertia is measured against, and the collider group every chain must reference.
+# `center` is `hips`, not `head`: relative to the head, a head turn would carry the hair rigidly with it.
+ARCHETYPE_SPRINGS = {"stylized-v1": {
+    "center": "hips",
+    "collider_bone": "head",
+    "collider_group": "head",
+    # The last joint of each chain is an end marker with no mesh: a VRM 1.0 runtime swings joint k toward
+    # joint k+1, so the final joint listed is only ever a target.
+    "chains": {
+        "hair.L": ("hair.L.0", "hair.L.1", "hair.L.2", "hair.L.3"),
+        "hair.R": ("hair.R.0", "hair.R.1", "hair.R.2", "hair.R.3"),
+        "hair.top": ("hair.top.0", "hair.top.1", "hair.top.2"),
+    },
+}}
 
 # Why each unauthored clip is a stub. Every one of the 52 is either authored or has a reason here.
 STUB_REASONS = {
@@ -229,6 +245,8 @@ def check_contract(authored=STYLIZED_V1_AUTHORED):
     for name in authored:
         if name not in NOMINAL_MM:
             problems.append(f"authored shape {name!r} has no NOMINAL_MM entry to be checked against")
+    if not set(ARCHETYPE_SPRINGS) <= set(ARCHETYPES):
+        problems.append(f"ARCHETYPE_SPRINGS names unknown archetypes: {sorted(set(ARCHETYPE_SPRINGS) - set(ARCHETYPES))}")
     if set(ARCHETYPE_MESHES) != set(ARCHETYPES):
         problems.append(f"ARCHETYPE_MESHES covers {sorted(ARCHETYPE_MESHES)}, ARCHETYPES {sorted(ARCHETYPES)}")
     for preset in PRESET_OVERRIDES:

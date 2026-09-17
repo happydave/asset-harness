@@ -1,5 +1,15 @@
 # Track: rigged-avatars
 
+**Spring bones (WI 1366, 2026-09-17) — ladder step 10:** the stylized avatar has hair that a VRM runtime
+swings — two side tails and a top lock, **three chains with `center` on the hips and a head sphere collider,
+written to both VRM 1.0 and 0.x from one table** (`vrm_export.export_vrm(springs=…)`). Closes WI 925's F1
+(colliders must go through the add-on's operators) and F2 (no 0.x spring). The behaviour is **measured, not
+eyeballed**: the gate runs three-vrm's simulation headlessly — a head turn swings the tips 49–92 mm, moving
+the whole avatar 3 m moves them under 0.3 mm (181–305 mm with no `center`), and a 55° head roll leaves the
+hair 1.4 mm inside the collider surface against 29 mm without one. With `center` on the *head*, as WI 925
+had it, the same turn moves the hair 0.0 mm. Generator 105/105, gate 282 rows.
+[findings](findings/2026-09-17-spring-bones.md). **`[human]` open:** see it move in the Studio inspector.
+
 **Headless VRM validation gate (WI 1367, 2026-09-17) — ladder step 11:**
 [`prototypes/vrm_gate/`](prototypes/vrm_gate/README.md) is the one command an avatar work item runs on
 its export: `python3 vrm_gate.py AVATAR.vrm --vrm0 AVATAR.vrm0.vrm`. Three stages — Khronos glTF-Validator,

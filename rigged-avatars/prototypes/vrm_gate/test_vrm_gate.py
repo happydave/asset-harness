@@ -22,7 +22,7 @@ sys.path.insert(0, str(HERE))
 import mutate  # noqa: E402
 from glb import Glb, GlbError  # noqa: E402
 
-SAMPLE = HERE.parent.parent / "findings" / "samples-2026-09-07-v1-face-rig" / "v1_face_rig.vrm"
+SAMPLE = HERE.parent.parent / "findings" / "samples-2026-09-17-spring-bones" / "v1_face_rig.vrm"
 GATE = HERE / "vrm_gate.py"
 FAST = "--fast" in sys.argv
 
@@ -152,6 +152,24 @@ EXPECTED = {
                    "contract: the remaining customs are exactly the declared stubs"],
     "transpose-gaze": ["contract: the gaze origin matches the eye bones"],
     "wrong-weight": ["contract: preset ih is composed as the contract says"],
+    "drop-center": ["consumer: moving the whole avatar does not throw the chains",
+                    "contract: hair.L: inertia is measured against hips",
+                    "contract: hair.R: inertia is measured against hips",
+                    "contract: hair.top: inertia is measured against hips"],
+    "drop-collider-group": ["consumer: rolling the head onto either shoulder leaves the hair outside the head collider",
+                            "contract: hair.L: collides with the head group",
+                            "contract: hair.R: collides with the head group",
+                            "contract: hair.top: collides with the head group"],
+    "center-head": ["consumer: a head turn swings every chain",
+                    "contract: hair.L: inertia is measured against hips",
+                    "contract: hair.R: inertia is measured against hips",
+                    "contract: hair.top: inertia is measured against hips"],
+    # Only the frame row sees this one. The tilt row measures against the collider the file DECLARES, so a
+    # misplaced collider keeps it green (+8.4 mm) while the hair would be inside the real head.
+    "collider-transposed": ["contract: the head collider contains both eye bones (its offset is in the right frame)"],
+    # Swapping two joints also wrecks the simulated chain, so the tilt row goes with the order row.
+    "joint-order": ["consumer: rolling the head onto either shoulder leaves the hair outside the head collider",
+                    "contract: hair.L: joints are the expected bones, root first, each the child of the last"],
     # Invisible to the contract stage, which measures from the buffer; this one is the validator's.
     "bad-max": ["validator: bad-max.vrm has no glTF errors"],
 }

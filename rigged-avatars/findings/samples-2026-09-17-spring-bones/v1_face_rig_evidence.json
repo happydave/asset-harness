@@ -1,0 +1,760 @@
+{
+  "work_item": "WI 1362 \u2014 v1 stylized face rig on frozen loop topology (923 ladder step 6)",
+  "generator_script": "blender_v1_face_rig.py",
+  "contract_owner": "arkit52.py",
+  "negative_control": null,
+  "topology": {
+    "head_base": "UV sphere r=0.16 segments=128 rings=72, scaled (1.0, 0.98, 1.14)",
+    "apertures": {
+      "eyes": 2,
+      "mouth": 1
+    },
+    "concentric_loops_per_aperture": 3,
+    "eye_inset_thickness_m": 0.008,
+    "mouth_inset_thickness_m": 0.008,
+    "mouth_cavity_depth_m": 0.075
+  },
+  "morphs": {
+    "authored": [
+      "eyeBlinkLeft",
+      "eyeBlinkRight",
+      "eyeWideLeft",
+      "eyeWideRight",
+      "eyeSquintLeft",
+      "eyeSquintRight",
+      "browInnerUp",
+      "browDownLeft",
+      "browDownRight",
+      "jawOpen",
+      "mouthSmileLeft",
+      "mouthSmileRight",
+      "mouthFrownLeft",
+      "mouthFrownRight",
+      "mouthFunnel",
+      "mouthPucker",
+      "browOuterUpLeft",
+      "browOuterUpRight",
+      "mouthUpperUpLeft",
+      "mouthUpperUpRight",
+      "mouthLowerDownLeft",
+      "mouthLowerDownRight",
+      "mouthStretchLeft",
+      "mouthStretchRight",
+      "mouthLeft",
+      "mouthRight",
+      "mouthClose",
+      "jawLeft",
+      "jawRight"
+    ],
+    "authored_count": 29,
+    "declared": 52,
+    "stub_count": 23,
+    "stub_reasons": {
+      "gaze-is-bone-driven": [
+        "eyeLookDownLeft",
+        "eyeLookDownRight",
+        "eyeLookInLeft",
+        "eyeLookInRight",
+        "eyeLookOutLeft",
+        "eyeLookOutRight",
+        "eyeLookUpLeft",
+        "eyeLookUpRight"
+      ],
+      "no-visual-referent-on-a-stylized-face": [
+        "cheekSquintLeft",
+        "cheekSquintRight",
+        "mouthDimpleLeft",
+        "mouthDimpleRight",
+        "mouthPressLeft",
+        "mouthPressRight",
+        "mouthRollLower",
+        "mouthRollUpper",
+        "mouthShrugLower",
+        "mouthShrugUpper",
+        "noseSneerLeft",
+        "noseSneerRight"
+      ],
+      "not-webcam-driveable": [
+        "cheekPuff",
+        "jawForward",
+        "tongueOut"
+      ]
+    }
+  },
+  "presets": {
+    "slots": 18,
+    "morph_composed": [
+      "aa",
+      "angry",
+      "blink",
+      "blink_left",
+      "blink_right",
+      "ee",
+      "happy",
+      "ih",
+      "oh",
+      "ou",
+      "relaxed",
+      "sad",
+      "surprised"
+    ],
+    "empty_by_design": [
+      "neutral",
+      "look_up",
+      "look_down",
+      "look_left",
+      "look_right"
+    ],
+    "overrides": {
+      "blink": {
+        "override_look_at": "block"
+      },
+      "blink_left": {
+        "override_look_at": "block"
+      },
+      "blink_right": {
+        "override_look_at": "block"
+      },
+      "happy": {
+        "override_mouth": "blend",
+        "override_blink": "blend"
+      },
+      "relaxed": {
+        "override_mouth": "blend",
+        "override_blink": "blend"
+      },
+      "angry": {
+        "override_mouth": "blend"
+      },
+      "sad": {
+        "override_mouth": "blend"
+      },
+      "surprised": {
+        "override_mouth": "blend",
+        "override_blink": "block"
+      }
+    }
+  },
+  "gaze": {
+    "mode": "bone",
+    "bones": [
+      "eye.L",
+      "eye.R"
+    ],
+    "humanoid_slots": [
+      "left_eye",
+      "right_eye"
+    ]
+  },
+  "springs": {
+    "colliders": [
+      {
+        "name": "head",
+        "bone": "head",
+        "center": [
+          0.0,
+          0.0,
+          1.15
+        ],
+        "radius": 0.16
+      }
+    ],
+    "collider_groups": {
+      "head": [
+        "head"
+      ]
+    },
+    "chains": [
+      {
+        "name": "hair.L",
+        "joints": [
+          "hair.L.0",
+          "hair.L.1",
+          "hair.L.2",
+          "hair.L.3"
+        ],
+        "center": "hips",
+        "collider_groups": [
+          "head"
+        ],
+        "hit_radius": 0.02,
+        "stiffness": 0.6,
+        "gravity_power": 0.35,
+        "drag_force": 0.45
+      },
+      {
+        "name": "hair.R",
+        "joints": [
+          "hair.R.0",
+          "hair.R.1",
+          "hair.R.2",
+          "hair.R.3"
+        ],
+        "center": "hips",
+        "collider_groups": [
+          "head"
+        ],
+        "hit_radius": 0.02,
+        "stiffness": 0.6,
+        "gravity_power": 0.35,
+        "drag_force": 0.45
+      },
+      {
+        "name": "hair.top",
+        "joints": [
+          "hair.top.0",
+          "hair.top.1",
+          "hair.top.2"
+        ],
+        "center": "hips",
+        "collider_groups": [
+          "head"
+        ],
+        "hit_radius": 0.02,
+        "stiffness": 0.6,
+        "gravity_power": 0.35,
+        "drag_force": 0.45
+      }
+    ]
+  },
+  "licence": {
+    "head geometry / rig / morphs": "authored (ours) \u2014 commercial yes, redistribute yes",
+    "Blender + saturday06 VRM add-on": "GPL-3.0-or-later + MIT \u2014 tool only, imposes nothing on exported assets",
+    "ARKit names": "Apple public API vocabulary used as an interop convention; Google ships the identical 52 names under Apache-2.0. Describe as ARKit-compatible.",
+    "effective output licence": "clean"
+  },
+  "artifacts": {
+    "vrm1": "/home/notdave/tmp/1366/out-final/v1_face_rig.vrm",
+    "vrm0": "/home/notdave/tmp/1366/out-final/v1_face_rig.vrm0.vrm",
+    "glb": "/home/notdave/tmp/1366/out-final/v1_face_rig.glb",
+    "previews": null
+  },
+  "checks": [
+    {
+      "check": "eyeball.L carries both sclera and iris",
+      "ok": true,
+      "detail": "material indices used: [0, 1] of 2 slots"
+    },
+    {
+      "check": "eyeball.R carries both sclera and iris",
+      "ok": true,
+      "detail": "material indices used: [0, 1] of 2 slots"
+    },
+    {
+      "check": "no vertex escapes the head volume",
+      "ok": true,
+      "detail": "0 verts beyond 186.0 mm from the head centre"
+    },
+    {
+      "check": "the left eyeball stays inside the head shell",
+      "ok": true,
+      "detail": "0 shell verts sit behind the eyeball surface"
+    },
+    {
+      "check": "eyelid loops exist (Left)",
+      "ok": true,
+      "detail": "58 lid verts in the centre column of the aperture"
+    },
+    {
+      "check": "eyeBlinkLeft closes the aperture",
+      "ok": true,
+      "detail": "vertical gap 17.8 mm open -> 0.0 mm shut"
+    },
+    {
+      "check": "eyeBlinkLeft does not disturb the brow",
+      "ok": true,
+      "detail": "0 displaced verts at or above the brow band"
+    },
+    {
+      "check": "eyeBlinkLeft lid covers the eyeball",
+      "ok": true,
+      "detail": "0 of 8 rim verts sink into the eyeball"
+    },
+    {
+      "check": "eyeBlinkLeft leaves the right eye alone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the right eyeball stays inside the head shell",
+      "ok": true,
+      "detail": "0 shell verts sit behind the eyeball surface"
+    },
+    {
+      "check": "eyelid loops exist (Right)",
+      "ok": true,
+      "detail": "58 lid verts in the centre column of the aperture"
+    },
+    {
+      "check": "eyeBlinkRight closes the aperture",
+      "ok": true,
+      "detail": "vertical gap 17.8 mm open -> 0.0 mm shut"
+    },
+    {
+      "check": "eyeBlinkRight does not disturb the brow",
+      "ok": true,
+      "detail": "0 displaced verts at or above the brow band"
+    },
+    {
+      "check": "eyeBlinkRight lid covers the eyeball",
+      "ok": true,
+      "detail": "0 of 8 rim verts sink into the eyeball"
+    },
+    {
+      "check": "eyeBlinkRight leaves the left eye alone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the mouth aperture exists",
+      "ok": true,
+      "detail": "9 upper-rim / 15 lower-rim verts in the centre column"
+    },
+    {
+      "check": "jawOpen opens the mouth",
+      "ok": true,
+      "detail": "aperture 3.2 mm shut -> 35.1 mm open"
+    },
+    {
+      "check": "jawOpen leaves the upper lip in place",
+      "ok": true,
+      "detail": "an open mouth drops the lower lip; the upper lip is not part of the jaw"
+    },
+    {
+      "check": "mouthSmileLeft lifts that corner",
+      "ok": true,
+      "detail": "mean corner lift 13.7 mm over 69 verts"
+    },
+    {
+      "check": "mouthSmileLeft leaves the cheek alone",
+      "ok": true,
+      "detail": "902 cheek verts checked"
+    },
+    {
+      "check": "mouthSmileRight lifts that corner",
+      "ok": true,
+      "detail": "mean corner lift 13.7 mm over 69 verts"
+    },
+    {
+      "check": "mouthSmileRight leaves the cheek alone",
+      "ok": true,
+      "detail": "902 cheek verts checked"
+    },
+    {
+      "check": "authored shape keys are exactly the contract's authored set",
+      "ok": true,
+      "detail": "29 keys"
+    },
+    {
+      "check": "authored morph eyeBlinkLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "19.0 mm of 19.0 mm nominal (floor 11.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph eyeBlinkRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "19.0 mm of 19.0 mm nominal (floor 11.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph eyeWideLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "15.0 mm of 15.0 mm nominal (floor 9.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph eyeWideRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "15.0 mm of 15.0 mm nominal (floor 9.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph eyeSquintLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.0 mm of 13.0 mm nominal (floor 7.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph eyeSquintRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.0 mm of 13.0 mm nominal (floor 7.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph browInnerUp reaches its nominal amplitude",
+      "ok": true,
+      "detail": "28.6 mm of 30.0 mm nominal (floor 18.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph browDownLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph browDownRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph jawOpen reaches its nominal amplitude",
+      "ok": true,
+      "detail": "43.5 mm of 43.0 mm nominal (floor 25.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthSmileLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "28.4 mm of 28.0 mm nominal (floor 16.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthSmileRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "28.4 mm of 28.0 mm nominal (floor 16.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthFrownLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "26.5 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthFrownRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "26.5 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthFunnel reaches its nominal amplitude",
+      "ok": true,
+      "detail": "22.1 mm of 22.0 mm nominal (floor 13.2 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthPucker reaches its nominal amplitude",
+      "ok": true,
+      "detail": "30.0 mm of 30.0 mm nominal (floor 18.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph browOuterUpLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph browOuterUpRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "24.4 mm of 26.0 mm nominal (floor 15.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthUpperUpLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthUpperUpRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLowerDownLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "18.0 mm of 18.0 mm nominal (floor 10.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLowerDownRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "18.0 mm of 18.0 mm nominal (floor 10.8 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthStretchLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "20.0 mm of 20.0 mm nominal (floor 12.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthStretchRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "20.0 mm of 20.0 mm nominal (floor 12.0 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "16.0 mm of 16.0 mm nominal (floor 9.6 mm = 60%)"
+    },
+    {
+      "check": "authored morph mouthClose reaches its nominal amplitude",
+      "ok": true,
+      "detail": "11.2 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph jawLeft reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.5 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "authored morph jawRight reaches its nominal amplitude",
+      "ok": true,
+      "detail": "13.5 mm of 14.0 mm nominal (floor 8.4 mm = 60%)"
+    },
+    {
+      "check": "browOuterUpLeft is one-sided",
+      "ok": true,
+      "detail": "120 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "browOuterUpRight is one-sided",
+      "ok": true,
+      "detail": "120 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthUpperUpLeft is one-sided",
+      "ok": true,
+      "detail": "40 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthUpperUpRight is one-sided",
+      "ok": true,
+      "detail": "40 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthLowerDownLeft is one-sided",
+      "ok": true,
+      "detail": "49 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthLowerDownRight is one-sided",
+      "ok": true,
+      "detail": "49 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthStretchLeft is one-sided",
+      "ok": true,
+      "detail": "89 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "mouthStretchRight is one-sided",
+      "ok": true,
+      "detail": "89 verts on its own side, 0 on the other"
+    },
+    {
+      "check": "eye bones exist on the rig",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "face has no eye-bone weight",
+      "ok": true,
+      "detail": "auto-weighting ran before the eye bones existed"
+    },
+    {
+      "check": "eyeball.L is rigidly skinned to its gaze bone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "eyeball.R is rigidly skinned to its gaze bone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "rotating eye.L moves the left eyeball",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "rotating eye.L moves neither the right eyeball nor the head",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "hair bones exist",
+      "ok": true,
+      "detail": "11 bones in 3 chains"
+    },
+    {
+      "check": "each hair chain hangs from the head bone, joint under joint",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the end markers carry no mesh weight",
+      "ok": true,
+      "detail": "markers ['hair.L.3', 'hair.R.3', 'hair.top.2']"
+    },
+    {
+      "check": "every hair vertex is weighted 1.0 to exactly one hair bone",
+      "ok": true,
+      "detail": "88 verts"
+    },
+    {
+      "check": "face has no hair-bone weight",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "torso has no hair-bone weight",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "posing hair.L.0 moves the hair and leaves the face alone",
+      "ok": true,
+      "detail": "30 hair verts moved"
+    },
+    {
+      "check": "the hair chains are the ones the archetype contract names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "every chain measures its inertia against the contract's centre bone",
+      "ok": true,
+      "detail": "['hips']"
+    },
+    {
+      "check": "every chain collides with the contract's collider group",
+      "ok": true,
+      "detail": "[['head'], ['head'], ['head']]"
+    },
+    {
+      "check": "the side tails rest outside the head collider",
+      "ok": true,
+      "detail": "nearest joint tail 184.9 mm from the collider centre; collider 160 mm + hit radius 20 mm"
+    },
+    {
+      "check": "glb re-imports with every authored morph",
+      "ok": true,
+      "detail": "29 morph targets"
+    },
+    {
+      "check": "glb re-imports with an armature",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "VRM 1.0 re-imports with an armature",
+      "ok": true,
+      "detail": "1 armatures"
+    },
+    {
+      "check": "VRM 1.0 carries only the avatar",
+      "ok": true,
+      "detail": "objects: ['Armature', 'eyeball.L', 'eyeball.R', 'face', 'hair', 'torso']"
+    },
+    {
+      "check": "VRM 1.0 re-imports with the hair chains, their centre and their collider group",
+      "ok": true,
+      "detail": "{\"hair.L\": [[\"hair.L.0\", \"hair.L.1\", \"hair.L.2\", \"hair.L.3\"], \"hips\", 1], \"hair.R\": [[\"hair.R.0\", \"hair.R.1\", \"hair.R.2\", \"hair.R.3\"], \"hips\", 1], \"hair.top\": [[\"hair.top.0\", \"hair.top.1\", \"hair.top.2\"], \"hips\", 1]}"
+    },
+    {
+      "check": "VRM 1.0 re-imports with the head sphere collider",
+      "ok": true,
+      "detail": "[('head', 0.16)]"
+    },
+    {
+      "check": "VRM 1.0 declares all 52 ARKit clips, exact names",
+      "ok": true,
+      "detail": "52 customs"
+    },
+    {
+      "check": "the authored clips are bound 1:1",
+      "ok": true,
+      "detail": "29 bound, each with exactly one morph target"
+    },
+    {
+      "check": "one morph per ARKit clip",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the remaining clips are declared empty stubs",
+      "ok": true,
+      "detail": "23 stubs"
+    },
+    {
+      "check": "the 13 morph-composed presets are bound",
+      "ok": true,
+      "detail": "['aa', 'angry', 'blink', 'blink_left', 'blink_right', 'ee', 'happy', 'ih', 'oh', 'ou', 'relaxed', 'sad', 'surprised']"
+    },
+    {
+      "check": "bind counts match the composition table",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "fractional preset weights survive the round trip",
+      "ok": true,
+      "detail": "a viseme needs a partial jaw; hard-coded 1.0 could not express one"
+    },
+    {
+      "check": "the four look_* presets are empty (gaze is bone-driven)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "neutral is empty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "15/15 required humanoid slots bound",
+      "ok": true,
+      "detail": "15/15"
+    },
+    {
+      "check": "both optional eye slots bound",
+      "ok": true,
+      "detail": "eye.L / eye.R"
+    },
+    {
+      "check": "look_at is in bone mode",
+      "ok": true,
+      "detail": "bone"
+    },
+    {
+      "check": "the avatar faces +Z (VRM 1.0)",
+      "ok": true,
+      "detail": "left eye at glTF z = 107.0 mm; VRM 1.0 requires the face at +Z"
+    },
+    {
+      "check": "handedness survives the turn (.L is the character's left)",
+      "ok": true,
+      "detail": "leftEye.x = 68.0 mm, rightEye.x = -68.0 mm"
+    },
+    {
+      "check": "the gaze origin matches the eye bones",
+      "ok": true,
+      "detail": "offsetFromHeadBone [0.0, 0.185, 0.107] vs measured [0.0, 0.185, 0.107] (tolerance 1 mm)"
+    },
+    {
+      "check": "expression override modes survive the round trip",
+      "ok": true,
+      "detail": "{\"angry\": {\"override_mouth\": \"blend\"}, \"blink\": {\"override_look_at\": \"block\"}, \"blink_left\": {\"override_look_at\": \"block\"}, \"blink_right\": {\"override_look_at\": \"block\"}, \"happy\": {\"override_blink\": \"blend\", \"override_mouth\": \"blend\"}, \"relaxed\": {\"override_blink\": \"blend\", \"override_mouth\": \"blend\"}, \"sad\": {\"override_mouth\": \"blend\"}, \"surprised\": {\"override_blink\": \"block\", \"override_mouth\": \"blend\"}}"
+    },
+    {
+      "check": "VRM 0.x re-imports with an armature",
+      "ok": true,
+      "detail": "1 armatures"
+    },
+    {
+      "check": "VRM 0.x carries only the avatar",
+      "ok": true,
+      "detail": "objects: ['Armature', 'eyeball.L', 'eyeball.R', 'face', 'hair', 'torso']"
+    },
+    {
+      "check": "VRM 0.x re-imports with the hair bone groups, their centre and their collider group",
+      "ok": true,
+      "detail": "[[[\"hair.L.0\"], \"hips\", 1], [[\"hair.R.0\"], \"hips\", 1], [[\"hair.top.0\"], \"hips\", 1]]"
+    },
+    {
+      "check": "VRM 0.x re-imports with the head collider group",
+      "ok": true,
+      "detail": "[('head', 1)]"
+    },
+    {
+      "check": "VRM 0.x carries every preset blend-shape group we wrote",
+      "ok": true,
+      "detail": "12 written, 13 present: ['Neutral', 'aa', 'angry', 'blink', 'blink_left', 'blink_right', 'ee', 'happy', 'ih', 'oh', 'ou', 'relaxed', 'sad']"
+    },
+    {
+      "check": "VRM 0.x omits `surprised` (a 1.0-only preset)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "summary": "105/105"
+}
