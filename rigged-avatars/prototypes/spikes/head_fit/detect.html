@@ -1,0 +1,21 @@
+<!doctype html><meta charset=utf-8><pre id=result>PENDING</pre>
+<script type=module>
+const out = document.getElementById('result');
+try {
+  const { FaceLandmarker, FilesetResolver } = await import('./vendor/mediapipe/vision_bundle.mjs');
+  const files = await FilesetResolver.forVisionTasks('./vendor/mediapipe/wasm');
+  const lm = await FaceLandmarker.createFromOptions(files, {
+    baseOptions: { modelAssetPath: './vendor/face_landmarker.task', delegate: 'CPU' },
+    runningMode: 'IMAGE', numFaces: 1, outputFaceBlendshapes: true,
+    minFaceDetectionConfidence: 0.1, minFacePresenceConfidence: 0.1 });
+  const names = new URLSearchParams(location.search).get('images').split(',');
+  const res = {};
+  for (const n of names) {
+    const img = new Image(); img.src = './' + n; await img.decode();
+    const r = lm.detect(img);
+    res[n] = { w: img.naturalWidth, h: img.naturalHeight, faces: r.faceLandmarks.length,
+               landmarks: r.faceLandmarks[0] ? r.faceLandmarks[0].map(p => [+(p.x).toFixed(5), +(p.y).toFixed(5)]) : null };
+  }
+  await fetch('./result', { method: 'POST', body: JSON.stringify({ ok: true, res }) });
+} catch (e) { await fetch('./result', { method: 'POST', body: JSON.stringify({ ok: false, error: String(e && e.stack || e) }) }); }
+</script>

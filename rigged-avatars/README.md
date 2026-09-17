@@ -1,5 +1,12 @@
 # Track: rigged-avatars
 
+**Spike — fit the head to a reference still (WI 1371, 2026-09-17): not yet.** MediaPipe reads our mouth
+(gain 1.0) and imposes a human face on everything that makes a character — eye size ≈ 0, eye spacing 0.30,
+brows negative — and on a chibi still puts the mouth on the nose. The head's constants *are* its landmarks, so
+fitting is closed-form once something reads the reference; nothing tested does. And the head cannot take anime
+proportions today: the eyeball, inset thickness, brow band and morph amplitudes are absolute constants
+(→ WI 1529). [findings](findings/2026-09-17-head-fit-spike.md).
+
 **Spring bones (WI 1366, 2026-09-17) — ladder step 10:** the stylized avatar has hair that a VRM runtime
 swings — two side tails and a top lock, **three chains with `center` on the hips and a head sphere collider,
 written to both VRM 1.0 and 0.x from one table** (`vrm_export.export_vrm(springs=…)`). Closes WI 925's F1

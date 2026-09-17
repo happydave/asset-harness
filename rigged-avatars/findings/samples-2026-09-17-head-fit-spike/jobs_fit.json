@@ -1,0 +1,27 @@
+[
+ {
+  "name": "zanime_fit2",
+  "params": {
+   "EYE_AZ": 0.072,
+   "EYE_AX": 0.0507,
+   "MOUTH_CZ": 1.09,
+   "MOUTH_AX": 0.048,
+   "MOUTH_AZ": 0.022,
+   "BROW_CZ": 1.292,
+   "MOUTH_INSET_T": 0.006
+  }
+ },
+ {
+  "name": "zanime_fit2_ball",
+  "params": {
+   "EYE_AZ": 0.072,
+   "EYE_AX": 0.0507,
+   "MOUTH_CZ": 1.09,
+   "MOUTH_AX": 0.048,
+   "MOUTH_AZ": 0.022,
+   "BROW_CZ": 1.292,
+   "MOUTH_INSET_T": 0.006,
+   "EYE_BALL_R": 0.058
+  }
+ }
+]
