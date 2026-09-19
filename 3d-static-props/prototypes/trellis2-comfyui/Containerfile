@@ -1,0 +1,16 @@
+ARG BASE=docker.io/rocm/pytorch@sha256:4449f856653602317e4101a76fce599c7fcd58ccec2e539951fce5f73083179e
+FROM ${BASE}
+
+ENV TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1
+ENV PYTORCH_HIP_ALLOC_CONF=expandable_segments:False
+ENV PYTORCH_CUDA_ALLOC_CONF=expandable_segments:False
+
+RUN python -c "import torch,json;open('/opt/torch-base.json','w').write(json.dumps({'v':torch.__version__,'hip':torch.version.hip}))" && cat /opt/torch-base.json
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY check_torch.py /opt/check_torch.py
+RUN python /opt/check_torch.py
+
+WORKDIR /opt/comfyui
