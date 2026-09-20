@@ -35,10 +35,14 @@ test observed to fail — a guard whose test has never failed proves nothing.
 Plain `python3`, no pytest, non-zero exit on failure — the track's convention.
 
 ```
-python3 test_provenance.py   # 15 checks — the guard
-python3 test_roster.py       # 11 checks — loading, validation, the not-deliverable rule
-python3 test_tokens.py       # 10 checks — sizes, formats, the no-baked-border rule
+python3 test_provenance.py   # the master guard
+python3 test_roster.py       # loading, validation, the not-deliverable rule
+python3 test_tokens.py       # sizes, formats, the no-baked-border rule, alpha polarity
+python3 test_chain.py        # the inert-detector and matte-polarity decisions, and graph shape
 ```
+
+A token-suite fixture must be **RGBA with a transparent background**. An RGB source is promoted to
+alpha 255 everywhere, and every polarity assertion then passes vacuously.
 
 ## Traps
 
@@ -49,5 +53,9 @@ python3 test_tokens.py       # 10 checks — sizes, formats, the no-baked-border
 - **Never point the detail pass at InsightFace.** Every ArcFace-family method either fails to
   detect a dragonborn or silently erodes its snout toward a human face. The YOLO bbox detectors
   here need no identity embedding.
-- **`RemoveBackground` returns a MASK**, not a cut-out.
+- **`RemoveBackground` and `JoinImageWithAlpha` disagree about what a MASK is.** The first emits a
+  *foreground* mask; the second follows ComfyUI's convention that a mask marks what is masked out,
+  and computes `alpha = 1.0 - mask`. Wired directly the negations compose and the figure becomes
+  the hole — which is what shipped, in every matte and every token, until WI 1636. An `InvertMask`
+  between them is the fix, and `chain.figure_is_opaque` refuses the output if it ever returns.
 - **Impact Pack needs `segment-anything` but not `sam2`** — see the findings.

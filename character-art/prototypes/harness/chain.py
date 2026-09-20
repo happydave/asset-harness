@@ -132,17 +132,20 @@ def matte(image_name: str, prefix: str) -> dict:
     Core 0.34.6 ships LoadBackgroundRemovalModel + RemoveBackground and WI 1600 already proved them
     on this hardware, so the chain carries one fewer custom node than the work item assumed.
     """
-    # RemoveBackground returns a MASK, not an image -- it says what is foreground, it does not cut
-    # it out. JoinImageWithAlpha applies it as the alpha channel, which is what a VTT token needs.
+    # The InvertMask reconciles two nodes that disagree about what a MASK means (WI 1636).
+    # `RemoveBackground` emits a *foreground* mask; `JoinImageWithAlpha` follows ComfyUI's
+    # convention that a mask marks what is masked *out*, and computes `alpha = 1.0 - mask`. Wired
+    # directly the two negations compose rather than cancel, and the figure becomes the hole.
     g = {
         "1": {"class_type": "LoadImage", "inputs": {"image": image_name}},
         "2": {"class_type": "LoadBackgroundRemovalModel",
               "inputs": {"bg_removal_name": "birefnet.safetensors"}},
         "3": {"class_type": "RemoveBackground",
               "inputs": {"bg_removal_model": ["2", 0], "image": ["1", 0]}},
-        "4": {"class_type": "JoinImageWithAlpha",
-              "inputs": {"image": ["1", 0], "alpha": ["3", 0]}},
-        "5": {"class_type": "SaveImage", "inputs": {"images": ["4", 0], "filename_prefix": prefix}},
+        "4": {"class_type": "InvertMask", "inputs": {"mask": ["3", 0]}},
+        "5": {"class_type": "JoinImageWithAlpha",
+              "inputs": {"image": ["1", 0], "alpha": ["4", 0]}},
+        "6": {"class_type": "SaveImage", "inputs": {"images": ["5", 0], "filename_prefix": prefix}},
     }
     return g
 
@@ -159,3 +162,68 @@ def is_inert(before: bytes, after: bytes) -> bool:
     from the driver so the decision can be tested — and negatively controlled — without a GPU.
     """
     return digest(before) == digest(after)
+
+
+def figure_is_opaque(data: bytes, *, border_frac: float = 0.02,
+                     min_transparent: float = 0.02) -> bool:
+    """True when `data` decodes to a cut-out with the figure opaque and the background not.
+
+    Matting is the one stage whose failure no other check can see: an inverted alpha is still the
+    right size, the right format and borderless, so size, format and border assertions all pass on
+    a token that is a character-shaped hole (WI 1636).
+
+    Pure -- it decodes bytes and returns a verdict, never writing, so a test can hand it a real
+    inverted artifact.
+
+    Both degenerate directions are refused. No transparency at all means background removal
+    produced nothing usable, which is the inert-detailer failure (I4) in another stage.
+
+    Assumes the subject does not reach the frame edge, so a cut-out's border is mostly transparent
+    and its middle mostly not. A full-bleed subject is refused; `explain_alpha` reports the
+    fractions it measured.
+    """
+    border, interior, transparent = _alpha_stats(data)
+    if border is None:
+        return False
+    return transparent >= min_transparent and border < 0.5 and interior > 0.5
+
+
+def explain_alpha(data: bytes) -> str:
+    """What `figure_is_opaque` saw, for a failure message that can be acted on."""
+    border, interior, transparent = _alpha_stats(data)
+    if border is None:
+        return "image has no alpha channel"
+    return (f"border opaque {border:.1%} (want <50%), interior opaque {interior:.1%} (want >50%), "
+            f"fully transparent {transparent:.1%} (want >=2%); assumes the subject does not reach "
+            f"the frame edge")
+
+
+def _alpha_stats(data: bytes):
+    """(border opaque fraction, interior opaque fraction, fully-transparent fraction).
+
+    Returns (None, None, None) for an image with no alpha rather than raising, so a caller's
+    failure message is about the matte instead of about a traceback.
+    """
+    import io
+
+    from PIL import Image
+
+    img = Image.open(io.BytesIO(data))
+    if "A" not in img.getbands():
+        return None, None, None
+    a = img.getchannel("A")
+
+    w, h = a.size
+    inset = max(1, round(min(w, h) * 0.02))
+    edge = [a.getpixel((x, y))
+            for x in range(0, w, max(1, w // 64))
+            for y in (0, inset, h - 1 - inset, h - 1)]
+    mid = a.crop((w // 4, h // 4, w - w // 4, h - h // 4))
+    mid = mid.resize((max(1, mid.width // 8), max(1, mid.height // 8)))
+    mid_px = list(mid.getdata())
+
+    hist = a.histogram()
+    total = sum(hist)
+    return (sum(1 for v in edge if v > 127) / len(edge),
+            sum(1 for v in mid_px if v > 127) / len(mid_px),
+            hist[0] / total)

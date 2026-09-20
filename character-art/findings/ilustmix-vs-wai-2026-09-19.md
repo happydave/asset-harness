@@ -8,7 +8,7 @@
 
 Owner direction (2026-09-19): try `ilustmix_v9` alongside the checkpoint WI 1599 generated its
 source portraits with, on the read that it is "similar to illustrious but less cartoonish and
-better detail". Evidence for [WI 1598](../../../tickets/docs/pending/1598-ah-character-art-track-design/workitem.md)'s
+better detail". Evidence for WI 1598 (`tickets/docs/pending/1598-ah-character-art-track-design/workitem.md`)'s
 choice of generation-lane checkpoint. **No decision is recorded here** — the choice is WI 1598's.
 
 It bears on architecture, not taste: if the generation lane arrives closer to the house style on its

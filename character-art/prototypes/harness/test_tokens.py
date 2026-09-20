@@ -12,7 +12,10 @@ def check(name, cond, detail=""):
 
 def main():
     print("token export")
-    src = Image.new("RGB", (600, 1080), (200, 40, 40))
+    # The fixture must carry alpha: an RGB source is promoted to alpha 255 everywhere, which makes
+    # every polarity assertion below vacuously true rather than failing (WI 1636).
+    src = Image.new("RGBA", (600, 1080), (0, 0, 0, 0))
+    src.paste((200, 40, 40, 255), (150, 120, 450, 980))
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         out = T.export(src, root, "tiefling", ["roll20", "foundry", "foundry_rings"])
@@ -27,15 +30,31 @@ def main():
         check("no token is written inside masters/",
               all(P.MASTERS_DIR not in Path(p).parts for p in out.values()))
 
-        # no baked border: the outermost ring of pixels must not be a drawn frame. With a flat
-        # source, a border would show as an edge colour differing from the interior.
-        im = Image.open(out["foundry_rings"]).convert("RGB")
+        # no baked border: the outermost ring of pixels must not be a drawn frame. Read on the
+        # alpha channel rather than on colour -- with a cut-out fixture the edge is transparent, so
+        # comparing edge colour against an opaque centre would fail for the wrong reason.
+        #
+        # Sampled on the left and right columns only. A border encircles the whole perimeter, so
+        # any stretch of it that the subject does not occupy is enough to detect one -- and the
+        # top row is not such a stretch: the crop biases upward, so the figure reaches it, exactly
+        # as a real head-and-shoulders token does.
+        im = Image.open(out["foundry_rings"]).convert("RGBA")
         w, h = im.size
-        edge = [im.getpixel((x, 0)) for x in range(0, w, 32)] + [im.getpixel((0, y)) for y in range(0, h, 32)]
-        centre = im.getpixel((w//2, h//2))
-        check("no baked border in ring mode",
-              all(abs(e[0]-centre[0])+abs(e[1]-centre[1])+abs(e[2]-centre[2]) < 30 for e in edge),
-              f"edge={edge[:3]} centre={centre}")
+        a = im.getchannel("A")
+        sides = [a.getpixel((x, y)) for x in (0, w - 1) for y in range(0, h, 16)]
+        check("no baked border in ring mode", all(v == 0 for v in sides),
+              f"side alpha sample={[v for v in sides if v != 0][:6]}")
+
+        # WI 1636: polarity. The figure is opaque and the background is not -- a token is drawn
+        # over a VTT map, so an inverted one renders as the map showing through a coloured tile.
+        for name in ("roll20", "foundry_rings"):
+            tok = Image.open(out[name]).convert("RGBA")
+            ta = tok.getchannel("A")
+            tw, th = tok.size
+            corners = [ta.getpixel(c) for c in ((0, 0), (tw-1, 0), (0, th-1), (tw-1, th-1))]
+            centre_a = ta.getpixel((tw//2, th//2))
+            check(f"{name}: background is transparent", all(v == 0 for v in corners), corners)
+            check(f"{name}: figure is opaque", centre_a == 255, centre_a)
 
         try:
             T.export(src, root, "x", ["roll20", "nosuchvtt"])

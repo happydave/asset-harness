@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests for the chain's testable decisions. Plain `python3 test_chain.py`, no pytest."""
-import sys
+import io, sys
+from pathlib import Path
+from PIL import Image
 import chain
 
 FAILS = []
@@ -42,6 +44,39 @@ def main():
     m = chain.matte("x.png", "pre")
     check("matte applies the mask as alpha (RemoveBackground returns a MASK)",
           any(n["class_type"] == "JoinImageWithAlpha" for n in m.values()))
+
+    # WI 1636. A regression guard on the wiring, not evidence of polarity: it would pass unchanged
+    # if ComfyUI's mask convention moved. The evidence is figure_is_opaque on a real matte.
+    rm = next(k for k, n in m.items() if n["class_type"] == "RemoveBackground")
+    inv = [k for k, n in m.items() if n["class_type"] == "InvertMask"]
+    join = next(n for n in m.values() if n["class_type"] == "JoinImageWithAlpha")
+    check("matte inverts the mask before joining it as alpha", len(inv) == 1, inv)
+    check("the inversion reads the background-removal node",
+          bool(inv) and m[inv[0]]["inputs"]["mask"][0] == rm)
+    check("the join's alpha is the inversion, not the raw removal mask",
+          bool(inv) and join["inputs"]["alpha"][0] == inv[0], join["inputs"]["alpha"])
+
+    # --- the polarity predicate -------------------------------------------------------------
+    def enc(im):
+        b = io.BytesIO(); im.save(b, format="PNG"); return b.getvalue()
+
+    cut = Image.new("RGBA", (400, 700), (0, 0, 0, 0))
+    cut.paste((200, 40, 40, 255), (100, 80, 300, 640))
+    good = enc(cut)
+    flipped = cut.copy(); flipped.putalpha(cut.getchannel("A").point(lambda v: 255 - v))
+
+    check("a figure-opaque cut-out passes", chain.figure_is_opaque(good))
+    check("the same image with alpha inverted fails", not chain.figure_is_opaque(enc(flipped)))
+    check("a fully opaque image fails (background removal produced nothing)",
+          not chain.figure_is_opaque(enc(Image.new("RGBA", (400, 700), (200, 40, 40, 255)))))
+    check("an image with no alpha channel fails rather than raising",
+          not chain.figure_is_opaque(enc(Image.new("RGB", (400, 700), (200, 40, 40)))))
+    check("the predicate does not write", not any(
+        Path(n).exists() for n in ("out.png", "matte.png")))
+    check("explain_alpha names the assumption it applied",
+          "frame edge" in chain.explain_alpha(good), chain.explain_alpha(good))
+    check("explain_alpha says so when there is no alpha",
+          "no alpha channel" in chain.explain_alpha(enc(Image.new("RGB", (8, 8), (1, 2, 3)))))
 
     print()
     if FAILS: print(f"{len(FAILS)} FAILED: {', '.join(FAILS)}"); return 1

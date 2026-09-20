@@ -4,6 +4,15 @@
 **Track:** character-art
 **Verdict:** works
 
+> **Correction, 2026-09-20 (WI 1636).** The tokens this run produced were **alpha-inverted** — the
+> figure transparent, the background opaque — so the claim below that the chain reached VTT-ready
+> tokens is false, and was false when written. The matte stage fed a foreground mask to
+> `JoinImageWithAlpha`, which computes `alpha = 1.0 - mask`. Fixed by an `InvertMask` between them;
+> the cast was re-exported and the polarity is now enforced by `chain.figure_is_opaque`. A second,
+> unrelated framing defect the corrected tokens then revealed is
+> WI 1638 (`tickets/docs/pending/1638-ah-token-crop-decapitates-the-figure/workitem.md`).
+> Everything from the master through the house-style pass is unaffected.
+
 ## Goal
 
 WI 1611: turn one CSV of characters into VTT-ready tokens through the finishing chain, so the track

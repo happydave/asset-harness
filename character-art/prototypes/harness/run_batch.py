@@ -60,12 +60,17 @@ def process(ch: R.Character, *, server, root: Path, input_dir: Path, scratch: Pa
     cur_name = _stage_into_input(produced, input_dir, f"{ch.id}_master.png")
     cur_bytes = produced.read_bytes()
 
-    def stage(name, graph, *, diff_required=False):
+    def stage(name, graph, *, diff_required=False, cutout_required=False):
         nonlocal cur_name, cur_bytes
         out = _run(server, graph, f"{ch.id}:{name}", work / name)
         data = out.read_bytes()
         changed = not chain.is_inert(cur_bytes, data)
         entry = {"stage": name, "changed": changed, "sha": chain.digest(data)}
+        if cutout_required and not chain.figure_is_opaque(data):
+            # The matte's polarity is the one stage failure no later check can see (WI 1636).
+            entry["error"] = f"matte is not a figure-opaque cut-out -- {chain.explain_alpha(data)}"
+            record["stages"].append(entry)
+            raise SystemExit(f"{ch.id}: {entry['error']}")
         if diff_required and not changed:
             # I4: a detail pass whose detector did not load runs, reports success, and changes
             # nothing. A bit-identical output is that failure's observable.
@@ -89,7 +94,8 @@ def process(ch: R.Character, *, server, root: Path, input_dir: Path, scratch: Pa
                                f"wi1611/{ch.id}_hand"))
     stage("style", chain.house_style(cur_name, prompt, ch.seed, f"wi1611/{ch.id}_style",
                                      style_denoise))
-    matted = stage("matte", chain.matte(cur_name, f"wi1611/{ch.id}_matte"))
+    matted = stage("matte", chain.matte(cur_name, f"wi1611/{ch.id}_matte"),
+                   cutout_required=True)
 
     # --- tokens ------------------------------------------------------------------------------
     if ch.targets:

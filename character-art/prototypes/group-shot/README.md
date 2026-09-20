@@ -1,6 +1,6 @@
 # group-shot route spike
 
-Throwaway scaffolding for [WI 1626](../../../../tickets/docs/pending/1626-ah-spike-group-shot-route/spike.md),
+Throwaway scaffolding for WI 1626 (`tickets/docs/pending/1626-ah-spike-group-shot-route/spike.md`),
 which settled how the `character-art` track produces group shots. The verdict and the reasoning are
 in that `spike.md`; the images and scored tables are in
 [`../../findings/group-shot-routes-2026-09-20.md`](../../findings/group-shot-routes-2026-09-20.md).
@@ -39,7 +39,7 @@ control and direct generation are rejected. Design decision record **D8**.
 ## Traps
 
 - **WI 1611's mattes are alpha-inverted** — figure transparent, background opaque
-  ([WI 1636](../../../../tickets/docs/pending/1636-ah-character-art-mattes-and-tokens-inverted/workitem.md)).
+  (WI 1636 (`tickets/docs/pending/1636-ah-character-art-mattes-and-tokens-inverted/workitem.md`)).
   `composite.load_cutout` reads the polarity from the image and *announces* an inversion rather than
   performing one silently, so it keeps working once that is fixed.
 - **Shoulder span is about 0.23 of figure height.** Four figures on a 1344 px canvas cannot exceed

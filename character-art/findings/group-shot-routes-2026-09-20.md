@@ -4,7 +4,7 @@
 **Track:** character-art
 **Verdict:** partial — one route adopted, one kept as a scoped fallback, two rejected
 
-Evidence for [WI 1626](../../../tickets/docs/pending/1626-ah-spike-group-shot-route/spike.md), which
+Evidence for WI 1626 (`tickets/docs/pending/1626-ah-spike-group-shot-route/spike.md`), which
 holds the design, the falsifiable checks and the verdict. This file is the artifact record: what was
 run, what came out, and which image shows it.
 
@@ -87,7 +87,7 @@ Route 4's misses are specific and consistent, not random:
 WAI at exactly half-orc tusks while beating it everywhere else, and WI 1616 found the discreteness
 rule has a size floor. Route 4 regenerates from tags, so it inherits the checkpoint's weaknesses;
 route 2 carries pixels, so it does not. This is the clearest evidence yet for
-[WI 1630](../../../tickets/docs/pending/1630-ah-character-lane-checkpoint-search/workitem.md)'s
+WI 1630 (`tickets/docs/pending/1630-ah-character-lane-checkpoint-search/workitem.md`)'s
 premise that race-feature legibility is a distinct axis from general quality.
 
 ### Axis B — layout control
