@@ -1,0 +1,14 @@
+ARG BASE=docker.io/pytorch/pytorch@sha256:417bd75df6365104c283ea4c1651fb3530d9eb5a4c2fafa51943cff2a94e6385
+FROM ${BASE}
+
+# The host driver is 580.173.02 / CUDA 12.4, which predates the card's sm_120;
+# the container's cu128 torch is what makes the GPU usable. Do not unpin it.
+RUN python -c "import torch,json;open('/opt/torch-base.json','w').write(json.dumps({'v':torch.__version__,'cuda':torch.version.cuda}))" && cat /opt/torch-base.json
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY check_cuda_torch.py /opt/check_cuda_torch.py
+RUN python /opt/check_cuda_torch.py
+
+WORKDIR /opt/comfyui
