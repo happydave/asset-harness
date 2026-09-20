@@ -17,15 +17,18 @@ under `docs/projects/asset-harness/research/`). Start with the digest:
 - **`3d-static-props`** owns image-to-3D. Character meshes use its tooling; the portrait that feeds
   them comes from here.
 
-## The architecture (design pending — WI 1598)
+## The architecture (designed and approved, 2026-09-19 — WI 1598)
 
-**Split generation lane, single finishing lane.**
+**Split generation lane, single finishing lane.** The design lives in the tickets repo at
+`docs/projects/asset-harness/design-character-art.md`; a working implementation of it is at
+[`prototypes/harness/`](prototypes/harness/), with findings in
+[`findings/2026-09-20-harness-prototype.md`](findings/2026-09-20-harness-prototype.md).
 
 | Lane | Model | Why |
 |---|---|---|
 | Characters, tokens, sheets | SDXL booru-tag checkpoint | Framing and body-attribute tags are a precision instrument; `multiple_views` is a 272k-example token no prose model has an equivalent for |
 | Environments, interiors, text | Z-Image | Natural-language encoder; the only family in scope that renders legible text |
-| Re-projection (turnarounds, new angles, LoRA datasets) | Qwen-Image-Edit-2511 | Apache-2.0; the only candidate with a published Apache turnaround LoRA |
+| Re-projection (turnarounds, new angles, LoRA datasets) | Qwen-Image-Edit-2511 | Apache-2.0; the only candidate with a published Apache turnaround LoRA. **Measured 2026-09-19 (WI 1599): it preserves non-human race features** — nothing was humanised across 11 runs, and base 2511 re-pose needs no turnaround LoRA at all |
 | **Finishing — every image from every lane** | one nominated house-style model + one house-style LoRA, img2img at **denoise 0.20–0.30** | Coherence is a *rendering* problem, not a generation one. One dataset, one style LoRA |
 
 ## Model lanes and licence
