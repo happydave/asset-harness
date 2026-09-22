@@ -12,15 +12,77 @@ def check(name, cond, detail=""):
 
 def main():
     print("chain decisions")
-    # I4: the inert-detector observable.
-    check("identical bytes are inert (a detail pass that changed nothing)",
-          chain.is_inert(b"same", b"same") is True)
-    check("differing bytes are not inert",
-          chain.is_inert(b"before", b"after") is False)
-    check("a one-byte difference is enough to be non-inert",
-          chain.is_inert(b"a"*1000, b"a"*999 + b"b") is False)
-    check("empty vs empty is inert (a stage that produced nothing new)",
-          chain.is_inert(b"", b"") is True)
+
+    def enc(im, text=None):
+        """PNG bytes; `text` becomes a `tEXt` chunk named `prompt`, as ComfyUI's SaveImage writes."""
+        b = io.BytesIO()
+        info = None
+        if text is not None:
+            from PIL.PngImagePlugin import PngInfo
+            info = PngInfo(); info.add_text("prompt", text)
+        im.save(b, format="PNG", pnginfo=info)
+        return b.getvalue()
+
+    # I4: the inert-detector observable is the *pixels* (WI 1732). The fixtures carry real tEXt
+    # chunks, because a stage's embedded graph is exactly what differs between an inert pass's
+    # input and output.
+    pic = Image.new("RGB", (64, 96), (10, 20, 30))
+    pic.putpixel((5, 5), (200, 200, 200))
+    same_pixels_a = enc(pic, '{"1": {"class_type": "LoadImage"}}')
+    same_pixels_b = enc(pic, '{"1": {"class_type": "LoadImage"}, "7": {"class_type": "FaceDetailer"}}')
+    check("fixture: the two files really differ in bytes", same_pixels_a != same_pixels_b)
+    check("identical pixels with different embedded graphs are inert",
+          chain.is_inert(same_pixels_a, same_pixels_b) is True)
+    check("identical bytes are inert", chain.is_inert(same_pixels_a, same_pixels_a) is True)
+    moved = pic.copy(); moved.putpixel((6, 5), (201, 200, 200))
+    check("a one-pixel difference is not inert", chain.is_inert(same_pixels_a, enc(moved)) is False)
+    solid = Image.new("RGB", (64, 96), (9, 9, 9))
+    raw = bytes(range(64)) * 96
+    l_img = Image.frombytes("L", (64, 96), raw)
+    p_img = Image.frombytes("P", (64, 96), raw); p_img.putpalette([0, 0, 0] * 256)
+    check("fixture: L and P carry identical raw bytes", l_img.tobytes() == p_img.tobytes())
+    check("same raw bytes in different modes is not inert (mode is compared, not only bytes)",
+          chain.is_inert(enc(l_img), enc(p_img)) is False)
+    check("same bytes at a transposed size is not inert (size is compared, not only bytes)",
+          chain.is_inert(enc(solid), enc(solid.transpose(Image.Transpose.ROTATE_90))) is False)
+    check("same pixels, RGB vs RGBA, is not inert (an added channel is a change)",
+          chain.is_inert(same_pixels_a, enc(pic.convert("RGBA"))) is False)
+    try:
+        chain.is_inert(same_pixels_a, b"not a png at all")
+        check("non-image bytes raise rather than judging", False, "no ValueError")
+    except ValueError as e:
+        check("non-image bytes raise rather than judging", "not a decodable image" in str(e), str(e))
+
+    # The detector's mask: any pixel above zero means it found something.
+    zero = Image.new("RGB", (64, 96), (0, 0, 0))
+    check("an all-zero mask means nothing detected", chain.mask_detected(enc(zero)) is False)
+    one = zero.copy(); one.putpixel((30, 40), (255, 255, 255))
+    check("a single lit pixel means detected", chain.mask_detected(enc(one)) is True)
+
+    # The verdict: four cells, three outcomes, each reason naming its case.
+    v = chain.detail_verdict
+    check("detected + changed -> pass", v(True, True).outcome == "pass")
+    check("not detected + unchanged -> skip", v(False, False).outcome == "skip"
+          and "found nothing" in v(False, False).reason)
+    check("detected + unchanged -> fail (inert, I4)", v(True, False).outcome == "fail"
+          and "inert" in v(True, False).reason)
+    check("not detected + changed -> fail (not a detail pass)", v(False, True).outcome == "fail"
+          and "found nothing yet the pixels changed" in v(False, True).reason)
+
+    # The embedded recipe a master carries.
+    graph = {"1": {"class_type": "CheckpointLoaderSimple", "inputs": {}},
+             "3": {"class_type": "CLIPTextEncode", "inputs": {"text": "1boy, tusks", "clip": ["2", 0]}},
+             "4": {"class_type": "CLIPTextEncode", "inputs": {"text": "bad", "clip": ["2", 0]}},
+             "6": {"class_type": "KSampler", "inputs": {"seed": 202, "positive": ["3", 0],
+                                                       "negative": ["4", 0]}}}
+    import json as _json
+    rec = chain.embedded_recipe(enc(pic, _json.dumps(graph)))
+    check("embedded recipe reads the KSampler seed and the positive prompt",
+          rec == {"seed": 202, "prompt": "1boy, tusks"}, rec)
+    check("a PNG with no prompt chunk has no recipe (provenance absent)",
+          chain.embedded_recipe(enc(pic)) is None)
+    check("a prompt chunk with no KSampler has no recipe",
+          chain.embedded_recipe(enc(pic, '{"1": {"class_type": "LoadImage", "inputs": {}}}')) is None)
 
     # The graphs must carry the settings the findings claim, or the findings are wrong.
     g = chain.detail("x.png", chain.FACE_DETECTOR, "p", 1, "pre")
@@ -28,6 +90,15 @@ def main():
     fd = [n for n in g.values() if n["class_type"] == "FaceDetailer"][0]
     check("detail graph provides a bbox detector", len(det) == 1 and det[0]["inputs"]["model_name"] == chain.FACE_DETECTOR)
     check("FaceDetailer is wired to that detector", fd["inputs"]["bbox_detector"][0] in g)
+    fd_id = next(k for k, n in g.items() if n["class_type"] == "FaceDetailer")
+    m2i = [k for k, n in g.items() if n["class_type"] == "MaskToImage"]
+    saves = [n for n in g.values() if n["class_type"] == "SaveImage"]
+    mask_saves = [n for n in saves if n["inputs"]["filename_prefix"].endswith(chain.MASK_SUFFIX)]
+    check("detail graph saves the detector mask under a _mask prefix", len(mask_saves) == 1, len(mask_saves))
+    check("the mask save is fed by MaskToImage reading the FaceDetailer's mask output (index 3)",
+          len(m2i) == 1 and mask_saves and mask_saves[0]["inputs"]["images"][0] == m2i[0]
+          and g[m2i[0]]["inputs"]["mask"] == [fd_id, 3], (m2i, mask_saves))
+    check("the image save keeps the plain prefix", any(n["inputs"]["filename_prefix"] == "pre" for n in saves))
     check("detail graph sets clip skip -2 (silent failure when omitted)",
           any(n["class_type"] == "CLIPSetLastLayer" and n["inputs"]["stop_at_clip_layer"] == -2
               for n in g.values()))
@@ -57,9 +128,6 @@ def main():
           bool(inv) and join["inputs"]["alpha"][0] == inv[0], join["inputs"]["alpha"])
 
     # --- the polarity predicate -------------------------------------------------------------
-    def enc(im):
-        b = io.BytesIO(); im.save(b, format="PNG"); return b.getvalue()
-
     cut = Image.new("RGBA", (400, 700), (0, 0, 0, 0))
     cut.paste((200, 40, 40, 255), (100, 80, 300, 640))
     good = enc(cut)

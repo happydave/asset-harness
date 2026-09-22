@@ -67,6 +67,12 @@ identity features. 5 stages each, 7 tokens.
 
 The chain **sharpened** the two subtle features rather than eroding them.
 
+> **Correction, 2026-09-22 (WI 1732, [2026-09-22-inert-detector.md](2026-09-22-inert-detector.md)).**
+> The face pass did nothing on the dragonborn and the half-orc: its output's pixels are identical to
+> its input, and the anime face detector found no face on either head. "Visibly crisper" and "tusks
+> better defined" are the upscale, hand and house-style passes' work. The inert-detector check that
+> should have caught this compared file bytes, which ComfyUI's embedded graph always changes.
+
 **Design owner-gate 1 is measured (WI 1598 D1, review F5).** The claim was that IlustMix's weaker
 half-orc tusks cannot bite at denoise 0.20–0.30 because the tusks are already fixed in the latent.
 Run at both endpoints from the same input: the tusks are present, the same size, in the same place

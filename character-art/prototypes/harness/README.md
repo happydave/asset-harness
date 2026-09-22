@@ -1,7 +1,8 @@
 # character-art harness
 
 Turns a roster CSV into VTT-ready tokens through the finishing chain. Built for WI 1611 against
-`design-character-art.md`; findings at `../../findings/2026-09-20-harness-prototype.md`.
+`design-character-art.md`; findings at `../../findings/2026-09-20-harness-prototype.md`, corrected
+by `../../findings/2026-09-22-inert-detector.md` (WI 1732).
 
 ```
 python3 run_batch.py --roster ../../roster/cast.csv --root out \
@@ -30,7 +31,30 @@ directory and the `.master.png` suffix) so a misrouted derivative is caught eith
 writer paths it created in a temp dir. The guard's refusal branch has been disabled once and the
 test observed to fail — a guard whose test has never failed proves nothing.
 
-## Tests
+## Detail stages are judged by pixels and by the detector's mask
+
+Each detail graph saves two images: the detailed picture and the `FaceDetailer`'s mask (prefix
+`…_mask`). The driver decides the stage from two booleans — did the mask light up, did the pixels
+change — through `chain.detail_verdict`:
+
+| detected | pixels changed | outcome |
+|---|---|---|
+| yes | yes | pass |
+| no | no | **skip** — recorded on the stage entry, the run continues (a dragonborn's head under the anime detector) |
+| yes | no | **fail** — the inert detector |
+| no | yes | fail — whatever ran was not the detail pass |
+
+Pixels, never file bytes: ComfyUI embeds each stage's graph in the PNG, so two files with the same
+picture never have the same bytes. Face and hand stages both go through this.
+
+## Re-runs
+
+Running again into an existing `--root` reuses each master (after checking the seed and prompt it
+carries against the roster row — a mismatch fails that character) and writes every new derivative,
+token and the records file to `<name>.2.<ext>` beside the first run's. Masters are never
+regenerated or overwritten.
+
+## Tests and tools
 
 Plain `python3`, no pytest, non-zero exit on failure — the track's convention.
 
@@ -38,7 +62,11 @@ Plain `python3`, no pytest, non-zero exit on failure — the track's convention.
 python3 test_provenance.py   # the master guard
 python3 test_roster.py       # loading, validation, the not-deliverable rule
 python3 test_tokens.py       # sizes, formats, the no-baked-border rule, alpha polarity
-python3 test_chain.py        # the inert-detector and matte-polarity decisions, and graph shape
+python3 test_chain.py        # pixel comparison, mask reading, the four-cell verdict, graph shape, matte polarity
+python3 test_run_batch.py    # the driver against a fake ComfyUI: verdicts, re-run, failure paths
+
+python3 compare_stages.py --root <run root>   # re-judge an existing run by pixels, read-only
+python3 probe_detail.py --server … --input-dir … --image … --detector face --prompt … --seed … --out …
 ```
 
 A token-suite fixture must be **RGBA with a transparent background**. An RGB source is promoted to
@@ -47,9 +75,9 @@ alpha 255 everywhere, and every polarity assertion then passes vacuously.
 ## Traps
 
 - **`CLIPSetLastLayer -2` is mandatory** on Illustrious/Pony and fails *silently* when omitted.
-- **A `FaceDetailer` without a loaded `UltralyticsDetectorProvider` is silently inert** — it runs,
-  reports success and changes nothing. The driver diffs each detail stage against its input and
-  fails on a bit-identical result.
+- **A `FaceDetailer` whose detector finds nothing, or never loaded, is silently inert** — it runs,
+  reports success and returns its input. Only the mask tells the two apart; the driver reads it
+  and fails on found-but-unchanged. Comparing file bytes cannot see either case (WI 1732).
 - **Never point the detail pass at InsightFace.** Every ArcFace-family method either fails to
   detect a dragonborn or silently erodes its snout toward a human face. The YOLO bbox detectors
   here need no identity embedding.

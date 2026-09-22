@@ -8,7 +8,9 @@ run where the face is big enough to repair and small enough to control:
 
 Run as separate jobs rather than one graph on purpose: every stage's output is then an artifact on
 disk that can be inspected and diffed. That is what makes the inert-detailer check (I4) possible at
-all — the check is "did these pixels change", and it needs two files.
+all — the check is "did these pixels change", and it needs two files. *Pixels*, not bytes: every
+SaveImage output carries its own graph in a `tEXt` chunk, so two files with the same picture never
+have the same bytes (WI 1732).
 
 The house-style pass runs with **no house-style LoRA**, because none exists yet. The slot is here
 and configured; what runs is the finishing checkpoint alone.
@@ -16,6 +18,12 @@ and configured; what runs is the finishing checkpoint alone.
 from __future__ import annotations
 
 import hashlib
+import io
+import json
+import struct
+from dataclasses import dataclass
+
+from PIL import Image
 
 # Checkpoints, per design-character-art.md D1: WAI generates (better race-feature legibility),
 # IlustMix finishes (less cartoonish, better detail, and its weaker tusks cannot bite at low
@@ -100,6 +108,11 @@ def detail(image_name: str, detector: str, prompt: str, seed: int, prefix: str,
                          "sam_mask_hint_threshold": 0.7, "sam_mask_hint_use_negative": "False",
                          "drop_size": 10, "wildcard": "", "cycle": 1}}
     g["8"] = {"class_type": "SaveImage", "inputs": {"images": ["7", 0], "filename_prefix": prefix}}
+    # The detector's combined mask, saved beside the image. All-zero means it found nothing, which
+    # is the only way to tell a skipped pass from an inert one (WI 1611's edge case, WI 1732).
+    g["9"] = {"class_type": "MaskToImage", "inputs": {"mask": ["7", 3]}}
+    g["10"] = {"class_type": "SaveImage",
+               "inputs": {"images": ["9", 0], "filename_prefix": prefix + MASK_SUFFIX}}
     return g
 
 
@@ -150,18 +163,114 @@ def matte(image_name: str, prefix: str) -> dict:
     return g
 
 
+#: Appended to a detail stage's filename prefix for its mask output; the driver recognises the mask
+#: by this suffix in the filename ComfyUI reports.
+MASK_SUFFIX = "_mask"
+
+
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:16]
 
 
-def is_inert(before: bytes, after: bytes) -> bool:
-    """True when a stage returned its input unchanged.
+def _decode(data: bytes, what: str) -> Image.Image:
+    try:
+        im = Image.open(io.BytesIO(data))
+        im.load()
+        return im
+    except Exception as e:  # PIL raises several types; the caller only needs "not an image"
+        raise ValueError(f"{what} is not a decodable image: {e}") from e
 
-    A `FaceDetailer` without a loaded `UltralyticsDetectorProvider` runs, reports success and
-    changes nothing, so a bit-identical output is that failure's only observable (I4). Extracted
-    from the driver so the decision can be tested — and negatively controlled — without a GPU.
+
+def is_inert(before: bytes, after: bytes) -> bool:
+    """True when a stage returned its input's pixels unchanged.
+
+    A `FaceDetailer` whose detector found nothing, or never loaded, runs, reports success and returns
+    its input, so unchanged pixels are that outcome's observable (I4). Decoded pixels, not file
+    bytes: ComfyUI embeds each stage's own graph in the PNG, so the bytes always differ (WI 1732).
+    Mode and size are part of the comparison — an added alpha channel is a change.
+
+    Raises ValueError when either side is not an image; a stage that produced a non-image has
+    failed, and that is neither inert nor changed.
     """
-    return digest(before) == digest(after)
+    a = _decode(before, "before"); b = _decode(after, "after")
+    return a.mode == b.mode and a.size == b.size and a.tobytes() == b.tobytes()
+
+
+def mask_detected(data: bytes) -> bool:
+    """True when the saved detector mask has any pixel above zero, i.e. the detector found something.
+
+    The mask arrives as an RGB image (SaveImage takes images), so the first channel is read.
+    """
+    im = _decode(data, "mask")
+    lo, hi = im.getchannel(0).getextrema()
+    return hi > 0
+
+
+@dataclass(frozen=True)
+class Verdict:
+    outcome: str   # "pass" | "skip" | "fail"
+    reason: str
+
+
+def detail_verdict(detected: bool, pixels_changed: bool) -> Verdict:
+    """Decide a detail stage from what its detector found and what its pixels did. Pure.
+
+    Four cells, three outcomes. A detector that finds nothing (the anime detector on a dragonborn's
+    head) is a skip: recorded, not fatal. Found-but-unchanged is the inert detector (I4);
+    changed-but-nothing-found is not a detail pass at all.
+    """
+    if detected and pixels_changed:
+        return Verdict("pass", "detector found a region and the pass changed it")
+    if not detected and not pixels_changed:
+        return Verdict("skip", "detector found nothing; pass skipped, image carried forward unchanged")
+    if detected and not pixels_changed:
+        return Verdict("fail", "detector found a region but the output is pixel-identical to the "
+                               "input -- the detail pass was inert (I4)")
+    return Verdict("fail", "detector found nothing yet the pixels changed -- the stage did "
+                           "something other than the detail pass it was asked for")
+
+
+def embedded_recipe(data: bytes) -> dict | None:
+    """The seed and positive prompt a ComfyUI PNG says it was made with, from its `prompt` chunk.
+
+    Returns None when the chunk is absent (a ComfyUI started with `--disable-metadata`) or carries
+    no KSampler; a caller treats that as "provenance absent", not as a mismatch. The positive
+    prompt is the text of the CLIPTextEncode the KSampler's `positive` input points at.
+    """
+    chunk = _png_text(data, "prompt")
+    if chunk is None:
+        return None
+    try:
+        graph = json.loads(chunk)
+    except ValueError:
+        return None
+    for node in graph.values():
+        if not isinstance(node, dict) or node.get("class_type") != "KSampler":
+            continue
+        inputs = node.get("inputs", {})
+        pos = inputs.get("positive")
+        text = None
+        if isinstance(pos, list) and pos and str(pos[0]) in graph:
+            text = graph[str(pos[0])].get("inputs", {}).get("text")
+        return {"seed": inputs.get("seed"), "prompt": text}
+    return None
+
+
+def _png_text(data: bytes, key: str) -> str | None:
+    """The value of the first `tEXt` chunk with `key`, or None. Walks chunks; no decoding."""
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    i = 8
+    while i + 8 <= len(data):
+        n, = struct.unpack(">I", data[i:i + 4])
+        kind = data[i + 4:i + 8]
+        body = data[i + 8:i + 8 + n]
+        if kind == b"tEXt":
+            k, _, v = body.partition(b"\x00")
+            if k.decode("latin-1") == key:
+                return v.decode("latin-1")
+        i += 12 + n
+    return None
 
 
 def figure_is_opaque(data: bytes, *, border_frac: float = 0.02,

@@ -83,3 +83,22 @@ def master_path(root, character_id: str) -> Path:
 def derivative_path(root, character_id: str, stage: str, ext: str = "png") -> Path:
     """Where a named derivative stage lives — always outside masters/."""
     return Path(root) / "derivatives" / character_id / f"{character_id}.{stage}.{ext}"
+
+
+def versioned(dest) -> Path:
+    """`dest` if nothing is there, else the first free `<stem>.<n><suffix>` from n = 2.
+
+    A re-run over an existing root writes beside the earlier run's artifacts rather than over them,
+    so the earlier `records.json` keeps describing files that still have the content it recorded.
+    Reads the filesystem; writes nothing. Never used for a master -- a master is reused, not
+    versioned.
+    """
+    dest = Path(dest)
+    if not dest.exists():
+        return dest
+    n = 2
+    while True:
+        candidate = dest.with_name(f"{dest.stem}.{n}{dest.suffix}")
+        if not candidate.exists():
+            return candidate
+        n += 1

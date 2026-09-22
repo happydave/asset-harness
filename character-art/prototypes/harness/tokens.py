@@ -60,11 +60,15 @@ def render_token(image: Image.Image, spec: TokenSpec) -> bytes:
     return buf.getvalue()
 
 
-def export(image: Image.Image, root, character_id: str, target_names) -> dict[str, Path]:
+def export(image: Image.Image, root, character_id: str, target_names, *,
+           dest_for=None) -> dict[str, Path]:
     """Export the requested targets. Returns {target name: path written}.
 
     An unknown target is refused by name rather than silently skipped — the roster asked for
     something the harness cannot produce, and the operator needs to know which.
+
+    `dest_for(path) -> path` lets a caller redirect each destination -- the driver passes
+    `provenance.versioned` on a re-run. The default writes the plain path.
     """
     written: dict[str, Path] = {}
     unknown = [t for t in target_names if t not in SPECS]
@@ -75,6 +79,8 @@ def export(image: Image.Image, root, character_id: str, target_names) -> dict[st
     for name in target_names:
         spec = SPECS[name]
         dest = P.derivative_path(root, character_id, f"token.{spec.name}", spec.ext)
+        if dest_for is not None:
+            dest = dest_for(dest)
         written[name] = P.write_guarded(dest, f"token:{spec.name}",
                                         render_token(image, spec))
     return written

@@ -6,6 +6,16 @@
 Every write goes through provenance.write_guarded, so the master rule is enforced by the tooling
 rather than by remembering it (WI 1611 AC3). Every stage records what it did on the character's
 record, including what it skipped and why, so the run is auditable after the fact.
+
+A detail stage is judged by two things the job hands back -- the detailed image and the detector's
+mask -- and decided by `chain.detail_verdict`. Pixels are compared, never file bytes: ComfyUI writes
+each stage's graph into the PNG, so bytes differ even when nothing was done (WI 1732).
+
+A re-run over an existing root reuses the master (after checking the seed and prompt it carries
+against the roster) and writes every new artifact to a versioned path beside the old one.
+
+The ComfyUI round trip is injected (`run=`) so the whole driver runs under test with a fake runner;
+`_run_job` is the production default.
 """
 from __future__ import annotations
 
@@ -15,26 +25,42 @@ import shutil
 import sys
 from pathlib import Path
 
+import requests
+
 import chain
 import comfy_client as cc
 import provenance as P
 import roster as R
 from PIL import Image
 
-def _fetch_one(server, hist, dest_stem: Path) -> Path:
-    """Download the single image a stage produced. An empty output list is a failure, not an
-    empty success -- ComfyUI has been seen to report success with no image."""
-    got = cc.download_outputs(server, hist, dest_stem, kinds=("images",))
-    paths = [Path(p) for p in (got or [])]
-    if not paths:
-        raise SystemExit(f"stage produced no image (reported success with empty outputs): {dest_stem}")
-    return paths[0]
+#: What a character's failure is allowed to be. Anything else is a bug in the driver and propagates.
+CHARACTER_FAILURES = (SystemExit, PermissionError, ValueError)
 
 
-def _run(server, graph, label, stem: Path) -> Path:
+def _run_job(server, graph, label, work: Path) -> list[Path]:
+    """Queue `graph`, wait for its terminal state, download every image it produced.
+
+    Each local copy is named after the filename ComfyUI reports for it, so a stage that saves two
+    images (the detail pass and its mask) hands back two distinguishable files. An empty output
+    list is a failure, not an empty success -- ComfyUI has been seen to report success with none.
+    """
     pid = cc.queue(server, graph)
     hist = cc.wait_for_history(server, pid, label=label)
-    return _fetch_one(server, hist, stem)
+    work.mkdir(parents=True, exist_ok=True)
+    saved: list[Path] = []
+    for node in hist.get("outputs", {}).values():
+        for item in node.get("images", []):
+            r = requests.get(f"{server.rstrip('/')}/view",
+                             params={"filename": item["filename"],
+                                     "subfolder": item.get("subfolder", ""),
+                                     "type": item.get("type", "output")}, timeout=600)
+            r.raise_for_status()
+            p = work / Path(item["filename"]).name   # never let a reported name pick a directory
+            p.write_bytes(r.content)
+            saved.append(p)
+    if not saved:
+        raise SystemExit(f"stage produced no image (reported success with empty outputs): {label}")
+    return saved
 
 
 def _stage_into_input(src: Path, input_dir: Path, name: str) -> str:
@@ -44,54 +70,127 @@ def _stage_into_input(src: Path, input_dir: Path, name: str) -> str:
     return name
 
 
+def _one(outputs: list[Path], label: str) -> Path:
+    if len(outputs) != 1:
+        raise SystemExit(f"{label}: expected one image, got {len(outputs)}: "
+                         f"{[p.name for p in outputs]}")
+    return outputs[0]
+
+
+def _split_detail_outputs(outputs: list[Path], label: str, prefix: str) -> tuple[Path, Path]:
+    """(detailed image, mask) from a detail job's outputs, told apart by ComfyUI's filename.
+
+    `prefix` is the graph's filename prefix without its directory; the mask's name starts with
+    `prefix + MASK_SUFFIX + "_"`, the image's with `prefix + "_"`. Matched on the whole prefix so a
+    character id that itself contains "_mask" cannot confuse the two.
+    """
+    base = Path(prefix).name
+    masks = [p for p in outputs if p.name.startswith(f"{base}{chain.MASK_SUFFIX}_")]
+    images = [p for p in outputs if p not in masks and p.name.startswith(f"{base}_")]
+    if len(masks) != 1 or len(images) != 1:
+        raise SystemExit(f"{label}: expected one image and one mask, got "
+                         f"{[p.name for p in outputs]}")
+    return images[0], masks[0]
+
+
+def reuse_or_make_master(ch: R.Character, *, server, root: Path, work: Path, record: dict,
+                         run) -> bytes:
+    """The master's bytes: read from an existing master, or generated and written once.
+
+    An existing master is never regenerated (I1 makes it unwritable anyway). Before it is reused,
+    the seed and prompt it carries are compared with the roster row's; a master made from a
+    different prompt must not front this run. A master with no embedded graph is reused with the
+    absence recorded.
+    """
+    master = P.master_path(root, ch.id)
+    record["master"] = str(master)
+    if master.exists():
+        data = master.read_bytes()
+        record["master_reused"] = True
+        recipe = chain.embedded_recipe(data)
+        if recipe is None:
+            record["master_provenance"] = "absent"
+        else:
+            record["master_provenance"] = recipe
+            mismatch = []
+            if recipe.get("seed") != ch.seed:
+                mismatch.append(f"seed: master {recipe.get('seed')!r}, roster {ch.seed!r}")
+            if recipe.get("prompt") != ch.tags:
+                mismatch.append(f"prompt: master {recipe.get('prompt')!r}, roster {ch.tags!r}")
+            if mismatch:
+                raise SystemExit(f"{ch.id}: existing master was not made from this roster row -- "
+                                 + "; ".join(mismatch)
+                                 + ". Move it aside or run into a fresh root.")
+        return data
+
+    produced = _one(run(server, chain.generate(ch.tags, ch.seed, f"wi1611/{ch.id}_master"),
+                        f"{ch.id}:generate", work / "master"), f"{ch.id}:generate")
+    data = produced.read_bytes()
+    P.write_guarded(master, P.ROLE_MASTER, data)
+    record["master_reused"] = False
+    return data
+
+
 def process(ch: R.Character, *, server, root: Path, input_dir: Path, scratch: Path,
-            style_denoise: float, record: dict) -> dict:
+            style_denoise: float, record: dict, run=_run_job) -> dict:
     prompt = ch.tags
     work = scratch / ch.id
     work.mkdir(parents=True, exist_ok=True)
 
     # --- stage 0: the master -----------------------------------------------------------------
-    produced = _run(server, chain.generate(prompt, ch.seed, f"wi1611/{ch.id}_master"),
-                    f"{ch.id}:generate", work / "master")
-    master = P.master_path(root, ch.id)
-    P.write_guarded(master, P.ROLE_MASTER, produced.read_bytes())
-    record["master"] = str(master)
+    cur_bytes = reuse_or_make_master(ch, server=server, root=root, work=work, record=record, run=run)
     record["stages"] = []
-    cur_name = _stage_into_input(produced, input_dir, f"{ch.id}_master.png")
-    cur_bytes = produced.read_bytes()
+    master_copy = work / "master.png"
+    master_copy.write_bytes(cur_bytes)
+    cur_name = _stage_into_input(master_copy, input_dir, f"{ch.id}_master.png")
 
-    def stage(name, graph, *, diff_required=False, cutout_required=False):
+    def dest_for(path: Path) -> Path:
+        return P.versioned(path)
+
+    def write_stage(name: str, data: bytes, entry: dict, out: Path):
         nonlocal cur_name, cur_bytes
-        out = _run(server, graph, f"{ch.id}:{name}", work / name)
-        data = out.read_bytes()
-        changed = not chain.is_inert(cur_bytes, data)
-        entry = {"stage": name, "changed": changed, "sha": chain.digest(data)}
-        if cutout_required and not chain.figure_is_opaque(data):
-            # The matte's polarity is the one stage failure no later check can see (WI 1636).
-            entry["error"] = f"matte is not a figure-opaque cut-out -- {chain.explain_alpha(data)}"
-            record["stages"].append(entry)
-            raise SystemExit(f"{ch.id}: {entry['error']}")
-        if diff_required and not changed:
-            # I4: a detail pass whose detector did not load runs, reports success, and changes
-            # nothing. A bit-identical output is that failure's observable.
-            entry["error"] = "output identical to input -- detector did not fire or did not load"
-            record["stages"].append(entry)
-            raise SystemExit(
-                f"{ch.id}: {name} produced a bit-identical image. A FaceDetailer without a loaded "
-                f"UltralyticsDetectorProvider is silently inert; refusing to treat that as success.")
-        dest = P.derivative_path(root, ch.id, name)
+        dest = dest_for(P.derivative_path(root, ch.id, name))
         P.write_guarded(dest, name, data)
         entry["path"] = str(dest)
         record["stages"].append(entry)
         cur_name = _stage_into_input(out, input_dir, f"{ch.id}_{name}.png")
         cur_bytes = data
+
+    def stage(name, graph, *, cutout_required=False):
+        out = _one(run(server, graph, f"{ch.id}:{name}", work / name), f"{ch.id}:{name}")
+        data = out.read_bytes()
+        entry = {"stage": name, "pixels_changed": not chain.is_inert(cur_bytes, data),
+                 "sha": chain.digest(data)}
+        if cutout_required and not chain.figure_is_opaque(data):
+            # The matte's polarity is the one stage failure no later check can see (WI 1636).
+            entry["error"] = f"matte is not a figure-opaque cut-out -- {chain.explain_alpha(data)}"
+            record["stages"].append(entry)
+            raise SystemExit(f"{ch.id}: {entry['error']}")
+        write_stage(name, data, entry, out)
         return out
 
+    def detail_stage(name, detector):
+        """A detail pass: judged by what the detector found and what the pixels did (I4)."""
+        prefix = f"wi1611/{ch.id}_{name}"
+        graph = chain.detail(cur_name, detector, prompt, ch.seed, prefix)
+        image, mask = _split_detail_outputs(run(server, graph, f"{ch.id}:{name}", work / name),
+                                            f"{ch.id}:{name}", prefix)
+        data = image.read_bytes()
+        detected = chain.mask_detected(mask.read_bytes())
+        changed = not chain.is_inert(cur_bytes, data)
+        verdict = chain.detail_verdict(detected, changed)
+        entry = {"stage": name, "detected": detected, "pixels_changed": changed,
+                 "outcome": verdict.outcome, "reason": verdict.reason, "sha": chain.digest(data)}
+        if verdict.outcome == "fail":
+            entry["error"] = verdict.reason
+            record["stages"].append(entry)
+            raise SystemExit(f"{ch.id}: {name} -- {verdict.reason}")
+        write_stage(name, data, entry, image)
+        return image
+
     stage("upscale", chain.upscale(cur_name, f"wi1611/{ch.id}_upscale"))
-    stage("face", chain.detail(cur_name, chain.FACE_DETECTOR, prompt, ch.seed,
-                               f"wi1611/{ch.id}_face"), diff_required=True)
-    stage("hand", chain.detail(cur_name, chain.HAND_DETECTOR, prompt, ch.seed,
-                               f"wi1611/{ch.id}_hand"))
+    detail_stage("face", chain.FACE_DETECTOR)
+    detail_stage("hand", chain.HAND_DETECTOR)
     stage("style", chain.house_style(cur_name, prompt, ch.seed, f"wi1611/{ch.id}_style",
                                      style_denoise))
     matted = stage("matte", chain.matte(cur_name, f"wi1611/{ch.id}_matte"),
@@ -99,7 +198,7 @@ def process(ch: R.Character, *, server, root: Path, input_dir: Path, scratch: Pa
 
     # --- tokens ------------------------------------------------------------------------------
     if ch.targets:
-        written = tokens_export(matted, root, ch)
+        written = tokens_export(matted, root, ch, dest_for)
         record["tokens"] = {k: str(v) for k, v in written.items()}
     else:
         record["tokens"] = {}
@@ -107,13 +206,13 @@ def process(ch: R.Character, *, server, root: Path, input_dir: Path, scratch: Pa
     return record
 
 
-def tokens_export(matted: Path, root: Path, ch: R.Character):
+def tokens_export(matted: Path, root: Path, ch: R.Character, dest_for):
     import tokens as T
     with Image.open(matted) as im:
-        return T.export(im, root, ch.id, ch.targets)
+        return T.export(im, root, ch.id, ch.targets, dest_for=dest_for)
 
 
-def main():
+def main(argv=None, run=_run_job):
     ap = argparse.ArgumentParser()
     ap.add_argument("--roster", required=True)
     ap.add_argument("--root", required=True, help="output root; masters/ and derivatives/ live here")
@@ -124,7 +223,7 @@ def main():
                     help="house-style pass denoise; design D3 declines to inherit 0.20-0.30 "
                          "unmeasured, so this is explicit")
     ap.add_argument("--only", help="comma-separated character ids")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     load = R.load(args.roster)
     print("roster:"); print(R.report(load))
@@ -137,6 +236,7 @@ def main():
 
     root = Path(args.root); input_dir = Path(args.input_dir); scratch = Path(args.scratch)
     scratch.mkdir(parents=True, exist_ok=True)
+    input_dir.mkdir(parents=True, exist_ok=True)
     records = {}
     failures = []
     for ch in todo:
@@ -146,17 +246,20 @@ def main():
                "style_denoise": args.style_denoise, "house_style_lora": None}
         try:
             process(ch, server=args.server, root=root, input_dir=input_dir, scratch=scratch,
-                    style_denoise=args.style_denoise, record=rec)
+                    style_denoise=args.style_denoise, record=rec, run=run)
+            skipped = [s["stage"] for s in rec.get("stages", []) if s.get("outcome") == "skip"]
             print(f"  done: {len(rec.get('stages', []))} stages, "
-                  f"{len(rec.get('tokens', {}))} tokens")
-        except SystemExit as e:
-            # One character's failure must not cost the rest of the batch their GPU time.
+                  f"{len(rec.get('tokens', {}))} tokens"
+                  + (f", skipped: {', '.join(skipped)}" if skipped else ""))
+        except CHARACTER_FAILURES as e:
+            # One character's failure must not cost the rest of the batch their GPU time -- and
+            # the guard's refusal is a failure of that character, not of the run (WI 1732).
             rec["failed"] = str(e)
             failures.append(ch.id)
             print(f"  FAILED: {e}")
         records[ch.id] = rec
 
-    rec_path = root / "records.json"
+    rec_path = P.versioned(root / "records.json")
     rec_path.parent.mkdir(parents=True, exist_ok=True)
     rec_path.write_text(json.dumps(records, indent=2), encoding="utf-8")
     print(f"\nrecords -> {rec_path}")
