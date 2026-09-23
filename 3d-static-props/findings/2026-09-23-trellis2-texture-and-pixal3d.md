@@ -22,6 +22,9 @@ ComfyUI v0.34.6, image `localhost/wi1600-comfyui:0.34.6`
     9M vertices, 760–1,140 s to the failure.
   - **Its raw decode is not repeatable.** Two runs with identical settings gave 8,933,506 and
     9,356,046 vertices. TRELLIS.2 gave 12,875,726 on both of its runs. Recorded, not investigated.
+    *2026-09-23, WI 1761:* TRELLIS.2's raw decode varies across runs too: 12,875,726 in four runs
+    and 14,860,255 in two, guard on and off. A count taken at this stage is not a gate on either
+    arm.
 - **No multi-view path exists at v0.34.6.** `Pixal3DMultiViewConditioning` first appears in
   v0.36.0. The multi-view weights are published in Comfy-Org/Pixal3D. Upgrading is WI 1751.
 - **The template's texture resolution is 4096.** A `PrimitiveInt` feeds both
