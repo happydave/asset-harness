@@ -136,8 +136,24 @@ WI 1615 added:
   (the failing node printed), 2 validation refusal, 3 timeout.
 - `side_by_side.py OUT.png "LABEL=img.png" …`: a labelled row of renders.
 
-**The texture tail does not run on gfx1151 yet:** `UnwrapMesh` fails on a hipBLAS fp64
-batched-LU limit (`../../findings/2026-09-23-trellis2-texture-and-pixal3d.md`, WI 1761).
+## The unwrap guard: required for the texture tail on gfx1151
+
+`UnwrapMesh`'s batched fp64 LSCM solve (`comfy_extras/mesh3d/uv_unwrap/parameterize.py`) fails on
+gfx1151 with `HIPBLAS_STATUS_ALLOC_FAILED` when hipBLAS refuses the batch, with memory to spare.
+`rocm_unwrap_guard/` is a second custom-node package: when that one failure is raised, it reruns
+the same call on the function's own CPU branch, and every other error propagates. Install it like
+the GEMM guard: `rocm_unwrap_guard/install.sh $PWD/ComfyUI`. The log shows `rocm_unwrap_guard:
+active`, and a warning the first time it falls back in a process (it counts every fallback in
+`rocm_unwrap_guard.fallbacks`). `ROCM_UNWRAP_GUARD=0` switches it off, `=1` forces it
+on. `test_rocm_unwrap_guard.py` runs on any host with torch.
+
+With both guards, both arms of the shipped template produce a textured GLB on `gtr` (WI 1761):
+- TRELLIS.2: 1,890 s, 699,494 triangles;
+- Pixal3D: 1,090 s, 698,297 triangles.
+
+Each GLB carries base colour, metallic-roughness and occlusion textures at 4096. With the guard
+active, `RemeshMesh` has peaked about 35 GB higher than without it, and the cause is not found (WI
+1766). Give a guarded run the headroom.
 
 ## Gotchas
 

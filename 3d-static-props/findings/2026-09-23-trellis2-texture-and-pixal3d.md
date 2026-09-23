@@ -5,7 +5,8 @@ ComfyUI v0.34.6, image `localhost/wi1600-comfyui:0.34.6`
 
 ## Verdicts
 
-- **The shipped template's texture tail does not run on gfx1151.** Both arms fail at `UnwrapMesh`.
+- **The shipped template's texture tail does not run on gfx1151 unguarded.** Both arms fail at
+  `UnwrapMesh`. With WI 1761's guard it runs (update below).
   - The error is `HIPBLAS_STATUS_ALLOC_FAILED` in `hipblasDgetrfBatched`: the fp64 batched solve
     in the UV parameterization (`comfy_extras/mesh3d/uv_unwrap/parameterize.py`,
     `lscm_charts_batch`), which always runs on the compute device.
@@ -30,11 +31,28 @@ ComfyUI v0.34.6, image `localhost/wi1600-comfyui:0.34.6`
 - **The template's texture resolution is 4096.** A `PrimitiveInt` feeds both
   `UnwrapMesh.resolution` and `BakeTextureFromVoxel.texture_size`, overriding the bake's 2048 widget.
 
+## Update 2026-09-23 (WI 1761): the texture tail runs with a guard
+
+`rocm_unwrap_guard` (a custom node) reruns the refused fp64 batched solve on the parameterization's
+own CPU branch. With it, both arms finish on `gtr`. The fallback fired once in each run.
+
+| Arm | Time | Triangles | Textures | Peak GTT from an empty pool |
+|---|---|---|---|---|
+| TRELLIS.2 | 1,890 s | 699,494 | base colour, metallic-roughness, occlusion (4096) | 61.3 GB |
+| Pixal3D (default) | 1,090 s | 698,297 | same | 40.3 GB |
+
+- Both renders show the crate's orange trim, rust, latches, handle and rivets, with no untextured
+  patches.
+- The Pixal3D asset keeps the camera pose it estimated from the input, so it sits tilted in its
+  frame; TRELLIS.2's is axis-aligned.
+- Neither reproduces the input's small orange label on the front face.
+- With the guard active, `RemeshMesh` peaked about 35 GB higher than without it in 4 of 4 runs.
+  The mechanism is not found (WI 1766).
+
 ## The comparison for WI 1602
 
-`samples-2026-09-23/crate_trellis2_vs_moge.png`: the input, TRELLIS.2's decimated geometry (WI
-1745, untextured), MoGe's relief from its own camera, and MoGe's cleaned 22k mesh from the same
-orbit camera. TripoSR never produced a crate (2026-06-22: blocked at model load), so MoGe is the
+`samples-2026-09-23/crate_trellis2_vs_moge.png`: the input; TRELLIS.2 and Pixal3D textured (WI
+1761); MoGe's relief from its own camera; and MoGe's cleaned 22k mesh from the same orbit camera. TripoSR never produced a crate (2026-06-22: blocked at model load), so MoGe is the
 prior lane's only output. The MoGe mesh is a one-camera relief: from any orbit angle it is shards.
 
 ## Tools
