@@ -1,0 +1,1401 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://asset-studio.local/contracts-3.schema.json",
+  "title": "AssetStudioContracts",
+  "description": "Asset Studio cross-repo contracts, schema_version 3 (adds the VRM avatar sidecar blocks \u2014 humanoid, expressions, presets, gaze, springs, artifacts \u2014 to rigged-avatar entries; schema_version 2 added the sprite-atlas, material-set and audio-collection entry classes; schema_version 1 was the initial set). Cross-field rules the schema cannot state live in contracts_rules.py / rules.ts.",
+  "definitions": {
+    "idSlug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "credentialRef": {
+      "type": "string",
+      "pattern": "^(cred|env)://[A-Za-z0-9_./-]+$"
+    },
+    "safeString": {
+      "type": "string",
+      "not": {
+        "pattern": "(sk-[A-Za-z0-9_-]{16,}|eyJ[A-Za-z0-9_-]{10,}\\.|[Bb][Ee][Aa][Rr][Ee][Rr] [A-Za-z0-9._~+/=-]{16,}|msy_[A-Za-z0-9]{16,})"
+      }
+    },
+    "denylistedName": {
+      "not": {
+        "pattern": "([Tt][Oo][Kk][Ee][Nn]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Aa][Pp][Ii][_-]?[Kk][Ee][Yy]|[Aa][Uu][Tt][Hh][Oo][Rr][Ii][Zz][Aa][Tt][Ii][Oo][Nn]|[Bb][Ee][Aa][Rr][Ee][Rr]|[Pp][Rr][Ii][Vv][Aa][Tt][Ee][_-]?[Kk][Ee][Yy])"
+      }
+    },
+    "safeObject": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/definitions/denylistedName"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/safeValue"
+      }
+    },
+    "safeValue": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/safeString"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/safeObject"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/safeValue"
+          }
+        }
+      ]
+    },
+    "licenseRecord": {
+      "type": "object",
+      "required": [
+        "status",
+        "commercial_in_game",
+        "standalone_redistributable",
+        "source"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "clean",
+            "conditional",
+            "non-commercial",
+            "revoked"
+          ]
+        },
+        "commercial_in_game": {
+          "type": "boolean"
+        },
+        "standalone_redistributable": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "authored",
+                "local-generation",
+                "provider-tos",
+                "mixed"
+              ]
+            },
+            "note": {
+              "$ref": "#/definitions/safeString"
+            },
+            "url": {
+              "$ref": "#/definitions/safeString"
+            },
+            "date": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "expiry": {
+          "type": "string"
+        },
+        "text": {
+          "$ref": "#/definitions/safeString"
+        }
+      },
+      "additionalProperties": true
+    },
+    "recipe": {
+      "type": "object",
+      "required": [
+        "provider",
+        "generator",
+        "params",
+        "salt"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "generator_version": {
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/safeObject"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "content_hash"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "content_hash": {
+                "$ref": "#/definitions/contentHash"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "salt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_of_truth"
+      ],
+      "properties": {
+        "source_of_truth": {
+          "enum": [
+            "recipe",
+            "manual-import",
+            "provider-nondeterministic"
+          ]
+        },
+        "generator_script": {
+          "type": "string"
+        },
+        "recipe": {
+          "$ref": "#/definitions/recipe"
+        }
+      },
+      "additionalProperties": true
+    },
+    "clip": {
+      "type": "object",
+      "properties": {
+        "fps": {
+          "type": "number"
+        },
+        "frame_start": {
+          "type": "integer"
+        },
+        "frame_end": {
+          "type": "integer"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "one_shot": {
+          "type": "boolean"
+        },
+        "nominal_duration_s": {
+          "type": "number"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/safeObject"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "riggedAvatarEntry": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "class",
+        "frame",
+        "license_record",
+        "provenance"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "class": {
+          "const": "rigged-avatar"
+        },
+        "frame": {
+          "type": "string"
+        },
+        "license_record": {
+          "$ref": "#/definitions/licenseRecord"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        },
+        "license": {
+          "$ref": "#/definitions/safeString"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "bind": {
+          "type": "string"
+        },
+        "bones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clips": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/clip"
+          }
+        },
+        "parts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "failure_transform": {
+          "$ref": "#/definitions/safeObject"
+        },
+        "is_failure_state_of": {
+          "type": "string"
+        },
+        "head_variant": {
+          "type": "string"
+        },
+        "generator_script": {
+          "type": "string"
+        },
+        "humanoid": {
+          "$ref": "#/definitions/avatarHumanoid"
+        },
+        "expressions": {
+          "$ref": "#/definitions/avatarExpressions"
+        },
+        "presets": {
+          "$ref": "#/definitions/avatarPresets"
+        },
+        "gaze": {
+          "$ref": "#/definitions/avatarGaze"
+        },
+        "springs": {
+          "$ref": "#/definitions/avatarSprings"
+        },
+        "artifacts": {
+          "$ref": "#/definitions/avatarArtifacts"
+        }
+      },
+      "additionalProperties": true
+    },
+    "mechanicalPart": {
+      "type": "object",
+      "required": [
+        "file"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "orientation": {
+          "type": "string"
+        },
+        "verts": {
+          "type": "integer"
+        },
+        "material_set": {
+          "type": "string"
+        },
+        "embedded_maps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uv_unwrap": {
+          "type": "string"
+        },
+        "split": {
+          "type": "boolean"
+        },
+        "subparts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/safeObject"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "mechanicalCollectionEntry": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "class",
+        "frame",
+        "cell_size",
+        "license_record",
+        "provenance",
+        "parts"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "class": {
+          "const": "mechanical-part-collection"
+        },
+        "frame": {
+          "type": "string"
+        },
+        "cell_size": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reference_cell": {
+          "type": "number"
+        },
+        "textured": {
+          "type": "boolean"
+        },
+        "texture_size": {
+          "type": "number"
+        },
+        "surfaces": {
+          "type": "string"
+        },
+        "license_record": {
+          "$ref": "#/definitions/licenseRecord"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        },
+        "parts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/mechanicalPart"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "frameRect": {
+      "type": "object",
+      "required": [
+        "frame"
+      ],
+      "properties": {
+        "frame": {
+          "type": "object",
+          "required": [
+            "x",
+            "y",
+            "w",
+            "h"
+          ],
+          "properties": {
+            "x": {
+              "type": "integer"
+            },
+            "y": {
+              "type": "integer"
+            },
+            "w": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "h": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": true
+        },
+        "rotated": {
+          "type": "boolean"
+        },
+        "trimmed": {
+          "type": "boolean"
+        },
+        "spriteSourceSize": {
+          "$ref": "#/definitions/safeObject"
+        },
+        "sourceSize": {
+          "$ref": "#/definitions/safeObject"
+        }
+      },
+      "additionalProperties": true
+    },
+    "spriteAtlasEntry": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "class",
+        "license_record",
+        "provenance",
+        "frames",
+        "meta"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "class": {
+          "const": "sprite-atlas"
+        },
+        "license_record": {
+          "$ref": "#/definitions/licenseRecord"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        },
+        "frames": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/frameRect"
+          }
+        },
+        "meta": {
+          "type": "object",
+          "required": [
+            "image"
+          ],
+          "properties": {
+            "app": {
+              "type": "string"
+            },
+            "image": {
+              "type": "string"
+            },
+            "format": {
+              "type": "string"
+            },
+            "size": {
+              "$ref": "#/definitions/safeObject"
+            },
+            "scale": {
+              "type": [
+                "number",
+                "string"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "frame": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "materialRecord": {
+      "type": "object",
+      "required": [
+        "name",
+        "maps"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "maps": {
+          "type": "object",
+          "required": [
+            "albedo"
+          ],
+          "properties": {
+            "albedo": {
+              "type": "string"
+            },
+            "normal": {
+              "type": "string"
+            },
+            "metallic_roughness": {
+              "type": "string"
+            },
+            "occlusion": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "metal": {
+          "type": "number"
+        },
+        "rough_base": {
+          "type": "number"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "normal_strength": {
+          "type": "number"
+        },
+        "flatten": {
+          "type": "boolean"
+        },
+        "tone": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "prompt": {
+          "$ref": "#/definitions/safeString"
+        }
+      },
+      "additionalProperties": true
+    },
+    "materialSetEntry": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "class",
+        "license_record",
+        "provenance",
+        "materials"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "class": {
+          "const": "material-set"
+        },
+        "license_record": {
+          "$ref": "#/definitions/licenseRecord"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        },
+        "materials": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/materialRecord"
+          }
+        },
+        "size": {
+          "type": "number"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "server": {
+          "$ref": "#/definitions/safeString"
+        },
+        "frame": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "audioClip": {
+      "type": "object",
+      "required": [
+        "name",
+        "file"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "duration_s": {
+          "type": "number"
+        },
+        "sample_rate": {
+          "type": "integer"
+        },
+        "channels": {
+          "type": "integer"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "lufs_target": {
+          "type": "number"
+        },
+        "bpm": {
+          "type": "number"
+        },
+        "key": {
+          "$ref": "#/definitions/safeString"
+        },
+        "tags": {
+          "$ref": "#/definitions/safeString"
+        },
+        "prompt": {
+          "$ref": "#/definitions/safeString"
+        }
+      },
+      "additionalProperties": true
+    },
+    "audioCollectionEntry": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "class",
+        "license_record",
+        "provenance",
+        "clips"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "class": {
+          "const": "audio-collection"
+        },
+        "license_record": {
+          "$ref": "#/definitions/licenseRecord"
+        },
+        "provenance": {
+          "$ref": "#/definitions/provenance"
+        },
+        "clips": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/audioClip"
+          }
+        },
+        "frame": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "sidecarManifest": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/riggedAvatarEntry"
+        },
+        {
+          "$ref": "#/definitions/mechanicalCollectionEntry"
+        },
+        {
+          "$ref": "#/definitions/spriteAtlasEntry"
+        },
+        {
+          "$ref": "#/definitions/materialSetEntry"
+        },
+        {
+          "$ref": "#/definitions/audioCollectionEntry"
+        }
+      ]
+    },
+    "providerDescriptor": {
+      "type": "object",
+      "required": [
+        "id",
+        "classes",
+        "operations",
+        "locality",
+        "job_mode",
+        "status_map",
+        "result_ttl_seconds",
+        "rate_limits",
+        "pricing",
+        "param_schema",
+        "license_lanes",
+        "credential"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/idSlug"
+        },
+        "classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "2d",
+              "mesh",
+              "material",
+              "audio",
+              "rig",
+              "clip"
+            ]
+          }
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "generate",
+              "derive",
+              "post-process"
+            ]
+          }
+        },
+        "locality": {
+          "enum": [
+            "local",
+            "remote-paid"
+          ]
+        },
+        "job_mode": {
+          "enum": [
+            "sync",
+            "async_poll",
+            "async_webhook"
+          ]
+        },
+        "status_map": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ]
+          }
+        },
+        "result_ttl_seconds": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "rate_limits": {
+          "type": "object",
+          "required": [
+            "rps",
+            "queue_depth"
+          ],
+          "properties": {
+            "rps": {
+              "type": "number"
+            },
+            "queue_depth": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": true
+        },
+        "pricing": {
+          "type": "object",
+          "required": [
+            "model"
+          ],
+          "properties": {
+            "model": {
+              "enum": [
+                "subscription-credits",
+                "prepaid-credits",
+                "per-generation",
+                "free-local"
+              ]
+            },
+            "unit_cost": {
+              "type": "number"
+            },
+            "currency": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "param_schema": {
+          "type": "object",
+          "required": [
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "enum": [
+                "fetched-openapi",
+                "inline"
+              ]
+            },
+            "url": {
+              "type": "string"
+            },
+            "inline": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": true
+        },
+        "license_lanes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "plan",
+              "endpoint",
+              "commercial_in_game",
+              "standalone_redistributable"
+            ],
+            "properties": {
+              "plan": {
+                "type": "string"
+              },
+              "endpoint": {
+                "type": "string"
+              },
+              "commercial_in_game": {
+                "type": "boolean"
+              },
+              "standalone_redistributable": {
+                "type": "boolean"
+              },
+              "note": {
+                "$ref": "#/definitions/safeString"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "credential": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/credentialRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "lockfileIntent": {
+      "type": "object",
+      "required": [
+        "game",
+        "entries"
+      ],
+      "properties": {
+        "game": {
+          "type": "string"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "constraint": {
+                "$ref": "#/definitions/safeString"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "lockfile": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "game",
+        "resolved"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "game": {
+          "type": "string"
+        },
+        "resolved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "version",
+              "source_of_truth",
+              "representations"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "source_of_truth": {
+                "enum": [
+                  "recipe",
+                  "manual-import",
+                  "provider-nondeterministic"
+                ]
+              },
+              "representations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "format",
+                    "content_hash"
+                  ],
+                  "properties": {
+                    "format": {
+                      "type": "string"
+                    },
+                    "content_hash": {
+                      "$ref": "#/definitions/contentHash"
+                    },
+                    "bytes": {
+                      "type": "integer"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "vrmHumanoidBone": {
+      "description": "A VRM 1.0 humanoid bone name, as the file spells it in humanoid.humanBones.",
+      "enum": [
+        "hips",
+        "spine",
+        "chest",
+        "upperChest",
+        "neck",
+        "head",
+        "leftEye",
+        "rightEye",
+        "jaw",
+        "leftUpperLeg",
+        "leftLowerLeg",
+        "leftFoot",
+        "leftToes",
+        "rightUpperLeg",
+        "rightLowerLeg",
+        "rightFoot",
+        "rightToes",
+        "leftShoulder",
+        "leftUpperArm",
+        "leftLowerArm",
+        "leftHand",
+        "rightShoulder",
+        "rightUpperArm",
+        "rightLowerArm",
+        "rightHand",
+        "leftThumbMetacarpal",
+        "leftThumbProximal",
+        "leftThumbDistal",
+        "leftIndexProximal",
+        "leftIndexIntermediate",
+        "leftIndexDistal",
+        "leftMiddleProximal",
+        "leftMiddleIntermediate",
+        "leftMiddleDistal",
+        "leftRingProximal",
+        "leftRingIntermediate",
+        "leftRingDistal",
+        "leftLittleProximal",
+        "leftLittleIntermediate",
+        "leftLittleDistal",
+        "rightThumbMetacarpal",
+        "rightThumbProximal",
+        "rightThumbDistal",
+        "rightIndexProximal",
+        "rightIndexIntermediate",
+        "rightIndexDistal",
+        "rightMiddleProximal",
+        "rightMiddleIntermediate",
+        "rightMiddleDistal",
+        "rightRingProximal",
+        "rightRingIntermediate",
+        "rightRingDistal",
+        "rightLittleProximal",
+        "rightLittleIntermediate",
+        "rightLittleDistal"
+      ]
+    },
+    "avatarHumanoid": {
+      "description": "Our bone name -> the VRM 1.0 humanoid slot it fills. Keys are the rig's own bone names (listed in `bones`).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/vrmHumanoidBone"
+      }
+    },
+    "avatarExpressions": {
+      "description": "The declared clip vocabulary and the authored-vs-stub split: a declared name is either authored or listed under a stub reason, never both (rule R2 in contracts_rules).",
+      "type": "object",
+      "required": [
+        "vocabulary",
+        "declared",
+        "authored",
+        "stubs"
+      ],
+      "properties": {
+        "vocabulary": {
+          "enum": [
+            "arkit-52"
+          ]
+        },
+        "declared": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "authored": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "stubs": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "nominal_mm": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarPresetBind": {
+      "type": "object",
+      "required": [
+        "shape",
+        "weight"
+      ],
+      "properties": {
+        "shape": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarPresets": {
+      "description": "VRM preset expressions as compositions of authored shapes. The five visemes (aa ee ih oh ou) are entries of `composed`; `empty_by_design` names presets deliberately left unbound (bone-driven gaze); `overrides` are the VRM 1.0 override modes set on a preset.",
+      "type": "object",
+      "required": [
+        "composed",
+        "empty_by_design"
+      ],
+      "properties": {
+        "composed": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/avatarPresetBind"
+            }
+          }
+        },
+        "empty_by_design": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "overrides": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "^override_[a-z_]+$"
+            },
+            "additionalProperties": {
+              "enum": [
+                "none",
+                "block",
+                "blend"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarGaze": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "bone",
+            "expression"
+          ]
+        },
+        "bones": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "humanoid_slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vrmHumanoidBone"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarSpringCollider": {
+      "type": "object",
+      "required": [
+        "name",
+        "bone",
+        "center",
+        "radius"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bone": {
+          "type": "string",
+          "minLength": 1
+        },
+        "center": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "number"
+          }
+        },
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarSpringChain": {
+      "type": "object",
+      "required": [
+        "name",
+        "joints"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "joints": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "center": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "collider_groups": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "hit_radius": {
+          "type": "number",
+          "minimum": 0
+        },
+        "stiffness": {
+          "type": "number",
+          "minimum": 0
+        },
+        "gravity_power": {
+          "type": "number",
+          "minimum": 0
+        },
+        "drag_force": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarSprings": {
+      "description": "The VRMC_springBone declaration: colliders on bones, named collider groups, and chains whose joints are listed root first (the last joint is an end marker).",
+      "type": "object",
+      "required": [
+        "chains"
+      ],
+      "properties": {
+        "colliders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/avatarSpringCollider"
+          }
+        },
+        "collider_groups": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "chains": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/avatarSpringChain"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "avatarArtifacts": {
+      "description": "The three artifacts one source scene produces, as bare filenames beside the sidecar. VRM export drops glTF animation clips, so `clips` on the entry describe the `glb`, not the VRMs.",
+      "type": "object",
+      "properties": {
+        "vrm1": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vrm0": {
+          "type": "string",
+          "minLength": 1
+        },
+        "glb": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

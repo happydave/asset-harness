@@ -391,6 +391,38 @@ def check_springs1(report, glb, v, archetype):
     report.guarded(st, "the head collider contains both eye bones (its offset is in the right frame)", frame)
 
 
+def check_sidecar(report, glb, v, sidecar):
+    """The contracts sidecar (WI 1368) against the file it describes: the sidecar's authored set,
+    humanoid map and spring chains must be what the VRM carries. A stub declared authored is only
+    visible here, because the schema cannot see the file."""
+    st = "contract"
+    ex = v.vrm.get("expressions", {})
+    custom = ex.get("custom", {})
+
+    def authored():
+        bound = sorted(n for n, e in custom.items() if e.get("morphTargetBinds"))
+        want = sorted((sidecar.get("expressions") or {}).get("authored") or [])
+        return bound == want, _set_diff(bound, want)
+    report.guarded(st, "sidecar: authored expressions are exactly the file's bound customs", authored)
+
+    def humanoid():
+        bones = v.vrm.get("humanoid", {}).get("humanBones", {})
+        node_names = _names(glb)
+        by_slot = {slot: node_names[e["node"]] for slot, e in bones.items() if isinstance(e.get("node"), int)}
+        want = sidecar.get("humanoid") or {}
+        wrong = {our: slot for our, slot in want.items() if by_slot.get(slot) != our}
+        return not wrong, f"{len(want)} slots" + (f"; not as the file binds them: {wrong}" if wrong else "")
+    report.guarded(st, "sidecar: every humanoid slot names the bone the file binds to it", humanoid)
+
+    def chains():
+        sb = (glb.json.get("extensions") or {}).get("VRMC_springBone") or {}
+        node_names = _names(glb)
+        got = {s.get("name"): [node_names[jt["node"]] for jt in s.get("joints", [])] for s in sb.get("springs", [])}
+        want = {c.get("name"): list(c.get("joints") or []) for c in (sidecar.get("springs") or {}).get("chains") or []}
+        return got == want, f"file {sorted(got)}, sidecar {sorted(want)}"
+    report.guarded(st, "sidecar: spring chains and their joints are the file's", chains)
+
+
 def _dist(a, b):
     return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
 
@@ -579,6 +611,9 @@ def main(argv=None):
     v1 = check_vrm1(report, glb1, archetype, _sibling_json(args.vrm, "_evidence.json")) if glb1 else None
     if glb1 is None:
         report.not_run("contract", "VRM 1.0 contract checks", "the file could not be read")
+    sidecar = _sibling_json(args.vrm, "_sidecar.json")
+    if v1 is not None and sidecar is not None:
+        check_sidecar(report, glb1, v1, sidecar)
     if args.vrm0:
         glb0 = check_container(report, args.vrm0)
         if glb0:

@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # The model lanes differ, and the license record is where that must show up (Asset Studio
 # design: commercial-in-game and standalone-redistributable are independent axes).

@@ -51,7 +51,7 @@
     },
     "scale": 1
   },
-  "schema_version": 2,
+  "schema_version": 3,
   "id": "dwa-ships",
   "class": "sprite-atlas",
   "license_record": {

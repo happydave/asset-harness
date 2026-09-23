@@ -111,7 +111,7 @@
     },
     "scale": 1
   },
-  "schema_version": 2,
+  "schema_version": 3,
   "id": "dwa-station",
   "class": "sprite-atlas",
   "license_record": {

@@ -12,6 +12,8 @@ sidecar manifest or contracts/. It performs two checks and exits nonzero on any 
 2. Schema validation — each known sidecar manifest validates against
    #/definitions/sidecarManifest of the vendored contracts schema. Five classes are covered:
    rigged-avatar, mechanical-part-collection, sprite-atlas, material-set, audio-collection.
+3. Cross-field rules — every rigged-avatar entry also passes the vendored contracts_rules
+   (humanoid/expressions/presets/springs against the rig; WI 1368), which the schema cannot state.
 
 The contracts source of truth lives in the asset-studio repo
 (packages/contracts/); this directory is a pinned vendored copy.
@@ -46,6 +48,8 @@ MANIFESTS = [
     "audio/findings/samples-2026-06-23/audio_manifest.json",
     "audio/findings/samples-2026-06-24/audio_manifest.json",
     "audio/findings/samples-2026-06-24-music/audio_manifest.json",
+    # the VRM avatar sidecar (schema v3, WI 1368) — written by rigged-avatars/prototypes/write_avatar_sidecar.py
+    "rigged-avatars/findings/samples-2026-09-17-spring-bones/v1_face_rig_sidecar.json",
 ]
 
 
@@ -65,9 +69,10 @@ def check_pin():
 
 def check_manifests():
     sys.path.insert(0, str(CONTRACTS))
+    import contracts_rules  # vendored, stdlib-only
     import contracts_validator  # vendored, stdlib-only
 
-    schema = json.loads((CONTRACTS / "contracts-2.schema.json").read_text())
+    schema = json.loads((CONTRACTS / "contracts-3.schema.json").read_text())
     failures = []
     for rel in MANIFESTS:
         path = ROOT / rel
@@ -81,6 +86,8 @@ def check_manifests():
             continue
         errors = contracts_validator.validate_ref(
             schema, "#/definitions/sidecarManifest", doc)
+        if not errors:
+            errors = contracts_rules.check(doc)
         for err in errors:
             failures.append("%s: %s" % (rel, err))
     return failures

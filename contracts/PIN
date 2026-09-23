@@ -1,8 +1,9 @@
 {
-  "contracts_version": "0.2.0",
-  "schema_version": 2,
+  "contracts_version": "0.3.0",
+  "schema_version": 3,
   "files": {
-    "contracts-2.schema.json": "sha256:8437a0b93c1bd9c99fffa9ff91ce205c9cadb3d303a38d2e4877c8213d842a21",
-    "contracts_validator.py": "sha256:d41211cdfa9bcfd98d2be6a8f5ddb4ebad5612aa696f13cb1d125dece923e114"
+    "contracts-3.schema.json": "sha256:710f44b7841ebb45bf766fab4206d4b3221332d414816b2f28cf887a5afd63be",
+    "contracts_validator.py": "sha256:cdbe7b89ac7342a7525720ada998a8691e097a33d39ba3c0bf2dc3f2ff0c7135",
+    "contracts_rules.py": "sha256:889ec5c5a3448d293415cb5aad2fbbd969de8d3dd34f4b3c98d9dde1481d10a6"
   }
 }

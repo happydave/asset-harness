@@ -63,13 +63,15 @@ Legend: ⚪ not started · 🟡 in progress · 🟢 repeatable harness exists
 
 ## Manifest validation (contracts gate)
 
-Sidecar manifests conform to the **Asset Studio contracts schema** (`schema_version 2`).
+Sidecar manifests conform to the **Asset Studio contracts schema** (`schema_version 3`).
 The schema + a dependency-free validator are **vendored** at [`contracts/`](contracts/)
 with a `PIN` recording the pinned contracts version and per-file hashes; the source of
 truth lives in the asset-studio repo (`packages/contracts/`).
 
-Fifteen committed sidecars are gated, across five entry classes: `rigged-avatar` (the three
-avatars), `mechanical-part-collection` (the rover parts kit), `sprite-atlas` (the six committed
+Sixteen committed sidecars are gated, across five entry classes: `rigged-avatar` (the three
+rigid avatars, and the stylized-v1 VRM's sidecar under `rigged-avatars/findings/`, whose
+humanoid / expressions / presets / springs blocks are also held to the vendored cross-field rules
+in `contracts/contracts_rules.py` — what the schema alone cannot state), `mechanical-part-collection` (the rover parts kit), `sprite-atlas` (the six committed
 2D atlases — the catalog keys sit *beside* the `frames`/`meta` blocks Phaser loads, which are
 untouched), `material-set` (the two PBR sample sets), and `audio-collection` (the three audio
 sample sets, whose manifests are authored by

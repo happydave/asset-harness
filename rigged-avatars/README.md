@@ -147,6 +147,12 @@ The **failure-transform** is a reusable mechanic: two clean assets (avatar + bur
     validates the table with no Blender.
   - [`vrm_export.py`](prototypes/vrm_export.py) — the shared VRM 1.0 + 0.x exporter (humanoid map, meta,
     spring bones, expression binds, bone gaze, scene purge). Extended by each work item, never forked.
+  - [`write_avatar_sidecar.py`](prototypes/write_avatar_sidecar.py) — writes the contracts
+    `rigged-avatar` sidecar (`<name>_sidecar.json`, schema_version 3) for an exported VRM from its
+    `_evidence.json`, `_manifest.json` and the `arkit52` tables: humanoid map, expressions with the
+    authored/stub split, preset composition, gaze, spring bones, the three artifacts. Refuses without
+    the evidence. `vrm_gate.py` checks a sidecar beside the file against the file; the harness gate
+    (`tools/validate_manifests.py`) validates it and runs the cross-field rules.
   - [`blender_v1_face_rig.py`](prototypes/blender_v1_face_rig.py) — the stylized head archetype's v1 face
     rig (WI 1362): aperture loop topology, 16 authored morphs, bone gaze, 64 checks, preview renders.
   - [`blender_robot.py`](prototypes/blender_robot.py) — Prototype A generator (robot: geometry +
