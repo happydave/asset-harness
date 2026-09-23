@@ -68,6 +68,24 @@ already use (`diffusion_models/`, `vae/`, `clip_vision/`, `background_removal/`,
 - `gpu_sample.sh [OUT]` — `rocm-smi` busy/VRAM sampling, to tell real GPU work from a CPU fallback.
 - `schema_dump.py [BASE]` — dump the node schemas this graph depends on from a running server.
 
+WI 1613 (the NaN root cause) added:
+
+- `run_trellis2_decode.py IMAGE DECODE PREFIX [BASE] [SEED_SS] [SEED_SHAPE]` — the geometry path at a
+  chosen decode resolution (512 = the shape latent decoded directly, else an upsample target ≥ 1024),
+  with the GLB census inline (pure-Python fallback when the host has no numpy).
+- `wi1613_latent_io/` — a throwaway custom node pair, `SaveTrellisLatent` / `LoadTrellisLatent`, that
+  saves a TRELLIS latent dict whole (`coords`, `coord_counts`, `coord_resolution` included — core
+  `SaveLatent` drops them). Copy into `custom_nodes/` of the checkout the container mounts.
+- `trellis2_latent_io.py save|decode` — save the latent the decode consumes, or decode a saved one
+  (decode-only: ~8.5 GiB, no diffusion model resident), so one latent can be decoded on two vendors.
+  `LoadTrellisLatent` keys ComfyUI's cache on the file's mtime: `touch` the file for a real re-decode.
+- `bisect_decode.py LATENT [RUNS] [--cpu]` — the decode under forward hooks on every decoder module,
+  naming the first one whose output is non-finite. Runs inside the container (`podman exec -w
+  /opt/comfyui …`). Must run under `torch.inference_mode` (it does): outside it the autograd graph
+  fills the card.
+- `repro_linear.py LATENT [REPEATS]` — captures the input to `blocks.3.4.to_subdiv` during one real
+  decode, saves it, and re-runs that one matmul in fp16 / bf16 / fp32, by row block and by slice.
+
 ## Gotchas
 
 - **`COMFY_DYNAMICCOMBO_V3` inputs are flattened with dotted keys over the API**, not nested:
