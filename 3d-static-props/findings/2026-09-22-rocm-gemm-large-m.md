@@ -30,8 +30,11 @@ latent was wrong, the NaN-free ones included.** The CUDA and CPU decodes agree w
 
 Apply every decoder `Linear` in chunks of at most 2^20 rows (`workaround_chunked_linear.py`):
 the reference mesh comes back (6,481,922 vertices, 0 NaN, identical on four runs), and the decode
-is faster (2 s against 5.5–9.7 s on the broken path). Carrying it into the lane is a follow-up work
-item; the upstream report is the owner's call (draft in the spike).
+is faster (2 s against 5.5–9.7 s on the broken path). **Carried into the lane by WI 1741** as the
+`prototypes/trellis2-comfyui/rocm_gemm_guard/` custom-node package (install into the mounted
+checkout's `custom_nodes/`; active on HIP builds; `ROCM_GEMM_GUARD=0` off, `=1` forces on); its
+live gate decodes a saved latent twice and requires the reference count. The upstream report is
+WI 1743 (the owner files or approves the filing).
 
 ## Scripts
 

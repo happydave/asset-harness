@@ -13,4 +13,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 COPY check_torch.py /opt/check_torch.py
 RUN python /opt/check_torch.py
 
+# The ROCm GEMM guard (rocm_gemm_guard/) is a custom-node package the mounted checkout carries; the
+# image cannot place it, so install.sh runs against the checkout before launch (see README).
 WORKDIR /opt/comfyui

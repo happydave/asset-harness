@@ -37,6 +37,28 @@ podman run -d --name wi1600 \
 `--disable-mmap` is an `ai2` host requirement (WI 1054) and applies in a container too.
 `ROCR_VISIBLE_DEVICES=0` selects the R9700 over the iGPU.
 
+## The ROCm GEMM guard — required on this card
+
+On this stack (torch `2.10.0+rocm7.2.4`, gfx1201) a matmul of more than 2^20 rows against a weight
+with 16 or fewer outputs returns **wrong, non-deterministic results** (WI 1613; findings
+`../../findings/2026-09-22-rocm-gemm-large-m.md`). The shape decoder's per-voxel heads hit that shape
+above a million voxels, which is every decode at 1024 and up: the mesh comes out wrong, with NaN
+at fp16 and silently different at fp32. `rocm_gemm_guard/` is a custom-node package that applies
+every `SparseLinear` in 2^20-row chunks on HIP builds; with it the decode returns the CPU/CUDA
+reference mesh, deterministically, and faster. **Install it into the mounted checkout before
+launching** — the checkout is a bind mount, so the image cannot carry it:
+
+```
+rocm_gemm_guard/install.sh $PWD/ComfyUI     # copies into ComfyUI/custom_nodes/rocm_gemm_guard/
+```
+
+The server's log then shows `rocm_gemm_guard: active — TRELLIS.2 SparseLinear layers run in
+1048576-row chunks`. `ROCM_GEMM_GUARD=0` in the container's environment switches it off (the
+negative control); `=1` forces it on a CUDA build. Gates: `test_rocm_gemm_guard.py` on any host
+with torch (no GPU), and `test_trellis2_rocm_guard_live.py` inside the container, which decodes a
+saved latent twice and requires the reference vertex count on both runs — the count, not "no NaN",
+because the unguarded decode returns NaN-free wrong meshes most of the time.
+
 ## Models
 
 Four MIT repos, ~16 GiB for the int8 path, into the bind-mounted `models/` at the paths the repos
@@ -58,11 +80,12 @@ already use (`diffusion_models/`, `vae/`, `clip_vision/`, `background_removal/`,
 
 - `run_trellis2.py IMAGE SEED PREFIX [UNET]` — the shipped template's geometry path in API format,
   node ids matching `3d_pixal3d_trellis2_image_to_model.json` so it can be diffed against upstream.
-- `run_trellis2_full.py` — the same plus the stock postprocess tail. **Currently fails** at
-  `RemeshMesh`; kept because that failure is the finding.
+- `run_trellis2_full.py` — the same plus the stock postprocess tail. Failed at `RemeshMesh` on the
+  NaN before the guard (WI 1600); runs with it (WI 1741).
 - `glb_probe.py FILE` — NaN/inf census of a GLB's JSON chunk and vertex buffers.
-- `glb_repair.py IN OUT` — drop non-finite vertices and any face touching one. Needed before Blender
-  will open the raw output at all.
+- `glb_repair.py IN OUT` — drop non-finite vertices and any face touching one. **An inspection tool
+  for a broken decode, not a pipeline step**: with the guard installed the decode carries no
+  non-finite vertex (WI 1741 retired the strip step from the production path).
 - `render_glb.py` (via `blender -b -P`) — four-angle render plus mesh stats, for looking at the
   artifact with something other than the stack that made it.
 - `gpu_sample.sh [OUT]` — `rocm-smi` busy/VRAM sampling, to tell real GPU work from a CPU fallback.
