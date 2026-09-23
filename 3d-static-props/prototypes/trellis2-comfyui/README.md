@@ -125,11 +125,27 @@ WI 1613 (the NaN root cause) added:
 - `repro_linear.py LATENT [REPEATS]` — captures the input to `blocks.3.4.to_subdiv` during one real
   decode, saves it, and re-runs that one matmul in fp16 / bf16 / fp32, by row block and by slice.
 
+WI 1615 added:
+
+- `template_to_api.py TEMPLATE OBJECT_INFO OUT.json --image NAME --prefix P [--set ID=V] [--diff REF]`:
+  converts the shipped UI template to an API graph from the server's `/object_info` (dump it with
+  `curl …/object_info`). Primitives and switches resolve statically. `--set 316=true` picks the
+  TRELLIS.2 arm, and the default is Pixal3D. Previews become `SaveImage`. It stops, naming the node,
+  on anything it would otherwise guess.
+- `run_api_graph.py GRAPH.json [BASE] [TIMEOUT]`: queue and wait. Exit 0 success, 1 execution error
+  (the failing node printed), 2 validation refusal, 3 timeout.
+- `side_by_side.py OUT.png "LABEL=img.png" …`: a labelled row of renders.
+
+**The texture tail does not run on gfx1151 yet:** `UnwrapMesh` fails on a hipBLAS fp64
+batched-LU limit (`../../findings/2026-09-23-trellis2-texture-and-pixal3d.md`, WI 1761).
+
 ## Gotchas
 
 - **`COMFY_DYNAMICCOMBO_V3` inputs are flattened with dotted keys over the API**, not nested:
   `"sign_mode": "udf"` *plus* `"sign_mode.qef": false`. The validator names them `sign_mode.qef`.
 - **ComfyUI caches the whole graph**, so resubmitting identical inputs returns the first run's result
   in seconds with every node listed in `execution_cached`. Restart the container for a cold run.
+- **This frontend's preview nodes pass their input through.** A consumer wired from a
+  `PreviewImage`/`MaskPreview` gets the preview's input; a converter must follow the link.
 - **`--cpu-vae` does not work with these nodes** — the sparse conv3d gets weights on CPU and
   activations on CUDA and raises.
