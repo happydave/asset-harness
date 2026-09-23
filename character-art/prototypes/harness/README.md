@@ -20,6 +20,17 @@ features named there are what a preservation check is run against. **A row witho
 deliverable** and the harness says so rather than generating it, because there would be nothing to
 check the result against.
 
+The regeneration key is `tags` (the whole positive prompt), `negative` and `seed`. An empty
+`negative` means the harness default, `chain.NEG`. The master is made with the row's negative, and
+reusing an existing master compares all three. The detail and house-style passes do not take the
+row's negative: they always use `chain.NEG`, the finishing negative, whatever the row says.
+
+The four cast rows reproduce WI 1599's frozen candidates exactly (WI 1642).
+`../../roster/recorded_recipes.json` holds the recipe each candidate carries in its own embedded
+graph. It is written by `../../roster/extract_recipes.py` from the images and never edited by hand.
+`test_cast_recipes.py` builds each row's master graph and compares it with that recipe field by
+field. It also fails when a row names WI 1599 in `notes` without a recorded recipe.
+
 ## The master rule is enforced, not remembered
 
 A master PNG carries its own ComfyUI workflow in its `tEXt` chunks, so destroying one destroys the
@@ -49,18 +60,20 @@ picture never have the same bytes. Face and hand stages both go through this.
 
 ## Re-runs
 
-Running again into an existing `--root` reuses each master (after checking the seed and prompt it
-carries against the roster row — a mismatch fails that character) and writes every new derivative,
+Running again into an existing `--root` reuses each master (after checking the seed, prompt and
+negative it carries against the roster row — a mismatch fails that character) and writes every new derivative,
 token and the records file to `<name>.2.<ext>` beside the first run's. Masters are never
 regenerated or overwritten.
 
 ## Tests and tools
 
-Plain `python3`, no pytest, non-zero exit on failure — the track's convention.
+Plain `python3`, no pytest, non-zero exit on failure — the track's convention. A failed check prints
+`  FAIL ` with the trailing space; the driver's own `FAILED:` lines are expected output.
 
 ```
 python3 test_provenance.py   # the master guard
 python3 test_roster.py       # loading, validation, the not-deliverable rule
+python3 test_cast_recipes.py # the cast rows against WI 1599's recorded recipes
 python3 test_tokens.py       # sizes, formats, the no-baked-border rule, alpha polarity
 python3 test_chain.py        # pixel comparison, mask reading, the four-cell verdict, graph shape, matte polarity
 python3 test_run_batch.py    # the driver against a fake ComfyUI: verdicts, re-run, failure paths

@@ -49,14 +49,14 @@ def _clip_skip_2(g, node_id, src):
     return [node_id, 0]
 
 
-def generate(prompt: str, seed: int, prefix: str, width=768, height=1344) -> dict:
+def generate(prompt: str, seed: int, prefix: str, width=768, height=1344, negative=NEG) -> dict:
     """Stage 0 — the master. SDXL on the generation checkpoint, clip skip 2 (mandatory, fails
-    silently when omitted)."""
+    silently when omitted). The negative is the roster row's; the finishing passes keep `NEG`."""
     g = {}
     g.update(_ckpt("1", GEN_CKPT))
     clip = _clip_skip_2(g, "2", ["1", 1])
     g["3"] = {"class_type": "CLIPTextEncode", "inputs": {"clip": clip, "text": prompt}}
-    g["4"] = {"class_type": "CLIPTextEncode", "inputs": {"clip": clip, "text": NEG}}
+    g["4"] = {"class_type": "CLIPTextEncode", "inputs": {"clip": clip, "text": negative}}
     g["5"] = {"class_type": "EmptyLatentImage",
               "inputs": {"width": width, "height": height, "batch_size": 1}}
     g["6"] = {"class_type": "KSampler",
@@ -231,11 +231,12 @@ def detail_verdict(detected: bool, pixels_changed: bool) -> Verdict:
 
 
 def embedded_recipe(data: bytes) -> dict | None:
-    """The seed and positive prompt a ComfyUI PNG says it was made with, from its `prompt` chunk.
+    """The seed, positive and negative prompt a ComfyUI PNG says it was made with, from its
+    `prompt` chunk.
 
     Returns None when the chunk is absent (a ComfyUI started with `--disable-metadata`) or carries
-    no KSampler; a caller treats that as "provenance absent", not as a mismatch. The positive
-    prompt is the text of the CLIPTextEncode the KSampler's `positive` input points at.
+    no KSampler; a caller treats that as "provenance absent", not as a mismatch. Each prompt is the
+    text of the CLIPTextEncode the KSampler's `positive` or `negative` input points at, or None.
     """
     chunk = _png_text(data, "prompt")
     if chunk is None:
@@ -248,11 +249,13 @@ def embedded_recipe(data: bytes) -> dict | None:
         if not isinstance(node, dict) or node.get("class_type") != "KSampler":
             continue
         inputs = node.get("inputs", {})
-        pos = inputs.get("positive")
-        text = None
-        if isinstance(pos, list) and pos and str(pos[0]) in graph:
-            text = graph[str(pos[0])].get("inputs", {}).get("text")
-        return {"seed": inputs.get("seed"), "prompt": text}
+
+        def text_of(link):
+            if isinstance(link, list) and link and str(link[0]) in graph:
+                return graph[str(link[0])].get("inputs", {}).get("text")
+            return None
+        return {"seed": inputs.get("seed"), "prompt": text_of(inputs.get("positive")),
+                "negative": text_of(inputs.get("negative"))}
     return None
 
 

@@ -104,6 +104,9 @@ paired with a shorter negative. Restoring WI 1617's exact prompt and negative, F
 So the incumbent's recorded weakness is **partly a prompt-length artifact**: on the shorter roster
 prompt that the live pipeline actually uses, IlustMix's tusks come out large and clear. Filed as
 WI 1642 (`tickets/docs/pending/1642-ah-roster-does-not-reproduce-the-wi1599-cast/workitem.md`).
+*2026-09-22, WI 1642:* the roster now carries WI 1599's prompts and negatives, so the live
+pipeline's masters are made from the long prompt. This run's sweep arms were built from the short
+one (`sweep.py` reads the roster); only its FC1 reproduction control used the long one.
 
 **FC3's failure strengthens the dragonborn result** rather than weakening it: the Pony merges'
 failure cannot be blamed on a mis-chosen prefix, because on the one tested the prefix does almost

@@ -53,7 +53,9 @@ def load_cast(roster: Path) -> list[dict]:
         rows = [r for r in csv.DictReader(f) if r["identity_features"].strip()]
     out = []
     for r in rows:
-        # Strip the roster's own Illustrious prefix; the family prefix is applied per arm.
+        # Strip the roster's own Illustrious prefix; the family prefix is applied per arm. The
+        # prefix is the pre-WI 1642 roster's: the corrected rows put the quality block after the
+        # subject, so it no longer matches and a sweep of them carries both quality blocks.
         tags = r["tags"]
         for p in ("masterpiece, best quality, very aesthetic, absurdres, ", ):
             tags = tags.replace(p, "")

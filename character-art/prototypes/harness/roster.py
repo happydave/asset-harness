@@ -34,6 +34,9 @@ class Character:
     seed: int = 0
     tier: str = DEFAULT_TIER
     targets: list[str] = field(default_factory=list)
+    #: The master's negative prompt. Empty means the harness default (`chain.NEG`); either way the
+    #: negative is part of the regeneration key, compared on reuse like the seed and the tags.
+    negative: str = ""
     extra: dict = field(default_factory=dict)
 
     @property
@@ -90,7 +93,7 @@ def load(path) -> RosterLoad:
                 rejected.append((lineno, cid, f"seed is not an integer: {row.get('seed')!r}"))
                 continue
 
-            known = set(REQUIRED) | {"seed", "tier", "targets"}
+            known = set(REQUIRED) | {"seed", "tier", "targets", "negative"}
             characters.append(Character(
                 id=cid,
                 display_name=(row.get("display_name") or cid).strip(),
@@ -99,6 +102,7 @@ def load(path) -> RosterLoad:
                 seed=seed,
                 tier=tier,
                 targets=_split(row.get("targets", "")),
+                negative=(row.get("negative") or "").strip(),
                 extra={k: v for k, v in row.items() if k not in known and k is not None},
             ))
 

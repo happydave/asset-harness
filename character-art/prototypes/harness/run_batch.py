@@ -93,16 +93,22 @@ def _split_detail_outputs(outputs: list[Path], label: str, prefix: str) -> tuple
     return images[0], masks[0]
 
 
+def master_negative(ch: R.Character) -> str:
+    """The negative a master is made with: the row's, or the harness default when the row has none."""
+    return ch.negative or chain.NEG
+
+
 def reuse_or_make_master(ch: R.Character, *, server, root: Path, work: Path, record: dict,
                          run) -> bytes:
     """The master's bytes: read from an existing master, or generated and written once.
 
     An existing master is never regenerated (I1 makes it unwritable anyway). Before it is reused,
-    the seed and prompt it carries are compared with the roster row's; a master made from a
-    different prompt must not front this run. A master with no embedded graph is reused with the
+    the seed, prompt and negative it carries are compared with the roster row's; a master made from
+    a different recipe must not front this run. A master with no embedded graph is reused with the
     absence recorded.
     """
     master = P.master_path(root, ch.id)
+    negative = master_negative(ch)
     record["master"] = str(master)
     if master.exists():
         data = master.read_bytes()
@@ -117,13 +123,16 @@ def reuse_or_make_master(ch: R.Character, *, server, root: Path, work: Path, rec
                 mismatch.append(f"seed: master {recipe.get('seed')!r}, roster {ch.seed!r}")
             if recipe.get("prompt") != ch.tags:
                 mismatch.append(f"prompt: master {recipe.get('prompt')!r}, roster {ch.tags!r}")
+            if recipe.get("negative") != negative:
+                mismatch.append(f"negative: master {recipe.get('negative')!r}, roster {negative!r}")
             if mismatch:
                 raise SystemExit(f"{ch.id}: existing master was not made from this roster row -- "
                                  + "; ".join(mismatch)
                                  + ". Move it aside or run into a fresh root.")
         return data
 
-    produced = _one(run(server, chain.generate(ch.tags, ch.seed, f"wi1611/{ch.id}_master"),
+    produced = _one(run(server, chain.generate(ch.tags, ch.seed, f"wi1611/{ch.id}_master",
+                                               negative=negative),
                         f"{ch.id}:generate", work / "master"), f"{ch.id}:generate")
     data = produced.read_bytes()
     P.write_guarded(master, P.ROLE_MASTER, data)

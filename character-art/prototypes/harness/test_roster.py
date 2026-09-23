@@ -9,13 +9,13 @@ def check(name, cond, detail=""):
     print(f"  {'ok  ' if cond else 'FAIL'} {name}" + (f" {detail}" if not cond else ""))
     if not cond: FAILS.append(name)
 
-CSV = """id,display_name,identity_features,tags,seed,tier,targets,notes
-tiefling,Sera,horn pair;tail;red skin,1girl tiefling,303,repose,roll20;foundry_rings,from WI 1599
-dragonborn,Vex,snout;scales;no human nose,1other dragonborn,404,repose,roll20,
-halforc,Grum,tusk pair;jaw mass;green skin,1boy half-orc,202,lora,foundry,
-nameless,Nobody,,1boy human,1,repose,roll20,deliberately missing features
-badtier,Bad,horns,1boy,1,wizard,roll20,
-badseed,Seedless,horns,1boy,notanumber,repose,roll20,
+CSV = """id,display_name,identity_features,tags,negative,seed,tier,targets,notes
+tiefling,Sera,horn pair;tail;red skin,1girl tiefling, cape ,303,repose,roll20;foundry_rings,from WI 1599
+dragonborn,Vex,snout;scales;no human nose,1other dragonborn,,404,repose,roll20,
+halforc,Grum,tusk pair;jaw mass;green skin,1boy half-orc,,202,lora,foundry,
+nameless,Nobody,,1boy human,,1,repose,roll20,deliberately missing features
+badtier,Bad,horns,1boy,,1,wizard,roll20,
+badseed,Seedless,horns,1boy,,notanumber,repose,roll20,
 """
 
 def main():
@@ -42,6 +42,16 @@ def main():
         check("preserves unknown columns rather than dropping them",
               t.extra.get("notes") == "from WI 1599", t.extra)
         check("defaults tier when absent", R.DEFAULT_TIER == "repose")
+        check("reads the negative column, stripped", t.negative == "cape", repr(t.negative))
+        check("a blank negative reads as empty (the harness default applies)",
+              load.characters[1].negative == "", repr(load.characters[1].negative))
+        check("the negative is a known column, not carried in extra", "negative" not in t.extra, t.extra)
+
+        old = Path(td)/"old.csv"
+        old.write_text("id,display_name,identity_features,tags,seed\nx,X,horns,1boy,1\n", encoding="utf-8")
+        oc = R.load(old).characters
+        check("a roster without a negative column loads with empty negatives",
+              len(oc) == 1 and oc[0].negative == "", [c.negative for c in oc])
 
         rep = R.report(load)
         check("report names the non-deliverable row", "NOT DELIVERABLE" in rep and "nameless" in rep)

@@ -2,9 +2,10 @@
 """The one scene every route is measured on.
 
 Held fixed across all four routes so a difference in the output is a difference in the route.
-Cast, tags and identity features come from `../../roster/cast.csv` unchanged -- they are WI 1599's
-frozen subjects, carried through WI 1611, so an identity judgement here is comparable to the ones
-already recorded rather than being about a fresh set of characters.
+Cast and identity features are WI 1599's frozen subjects, carried through WI 1611, so an identity
+judgement here is comparable to the ones already recorded rather than being about a fresh set of
+characters. The tags are the identity part of the roster as it stood before WI 1642, a subset of WI
+1599's prompts (no `large jaw` on the half-orc); the corrected roster carries the full prompts.
 
 The target order is deliberately **not** the roster order (spike.md FC2). A route that reproduces
 the order the characters are listed in has not been controlled; it has echoed an enumeration.

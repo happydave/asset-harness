@@ -77,8 +77,28 @@ def main():
                                                        "negative": ["4", 0]}}}
     import json as _json
     rec = chain.embedded_recipe(enc(pic, _json.dumps(graph)))
-    check("embedded recipe reads the KSampler seed and the positive prompt",
-          rec == {"seed": 202, "prompt": "1boy, tusks"}, rec)
+    check("embedded recipe reads the KSampler seed, the positive and the negative prompt",
+          rec == {"seed": 202, "prompt": "1boy, tusks", "negative": "bad"}, rec)
+    one_sided = {k: v for k, v in graph.items() if k != "4"}
+    one_sided["6"] = {"class_type": "KSampler", "inputs": {"seed": 202, "positive": ["3", 0]}}
+    rec = chain.embedded_recipe(enc(pic, _json.dumps(one_sided)))
+    check("a KSampler with no negative link reads negative None, not a guess",
+          rec == {"seed": 202, "prompt": "1boy, tusks", "negative": None}, rec)
+
+    def neg_of(g):
+        ks = next(n for n in g.values() if n["class_type"] == "KSampler")["inputs"]
+        return g[str(ks["negative"][0])]["inputs"]["text"]
+    check("generate uses the negative it is given",
+          neg_of(chain.generate("p", 1, "x", negative="no hats")) == "no hats")
+    check("generate defaults the negative to NEG", neg_of(chain.generate("p", 1, "x")) == chain.NEG)
+    # The roster's negative keys the master only; the finishing passes always use NEG (README).
+    def neg_into(g, cls):
+        node = next(n for n in g.values() if n["class_type"] == cls)["inputs"]
+        return g[str(node["negative"][0])]["inputs"]["text"]
+    check("the detail pass uses the finishing negative NEG",
+          neg_into(chain.detail("x.png", chain.FACE_DETECTOR, "p", 1, "pre"), "FaceDetailer") == chain.NEG)
+    check("the house-style pass uses the finishing negative NEG",
+          neg_into(chain.house_style("x.png", "p", 1, "pre", 0.3), "KSampler") == chain.NEG)
     check("a PNG with no prompt chunk has no recipe (provenance absent)",
           chain.embedded_recipe(enc(pic)) is None)
     check("a prompt chunk with no KSampler has no recipe",

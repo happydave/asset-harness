@@ -43,9 +43,12 @@ class FakeComfy:
     """Writes what each stage's graph would have saved. `face` and `hand` take
     ("changed"|"inert", detected: bool); `master_seed` overrides the seed the master claims."""
 
-    def __init__(self, *, face=("changed", True), hand=("changed", True), master_seed=None):
+    def __init__(self, *, face=("changed", True), hand=("changed", True), master_seed=None,
+                 master_negative=None):
         self.face, self.hand, self.master_seed = face, hand, master_seed
+        self.master_negative = master_negative
         self.calls: list[str] = []
+        self.generated_negative = None
 
     def __call__(self, server, graph, label, work: Path) -> list[Path]:
         work.mkdir(parents=True, exist_ok=True)
@@ -64,9 +67,15 @@ class FakeComfy:
             ks = next(n for n in graph.values() if n["class_type"] == "KSampler")
             seed = self.master_seed if self.master_seed is not None else ks["inputs"]["seed"]
             # A graph shaped like ComfyUI's own: the KSampler's positive names the prompt node.
+            neg = graph[str(ks["inputs"]["negative"][0])]["inputs"]["text"]
+            self.generated_negative = neg
+            if self.master_negative is not None:
+                neg = self.master_negative
             emb = {"3": {"class_type": "CLIPTextEncode",
                          "inputs": {"text": graph[str(ks["inputs"]["positive"][0])]["inputs"]["text"]}},
-                   "6": {"class_type": "KSampler", "inputs": {"seed": seed, "positive": ["3", 0]}}}
+                   "4": {"class_type": "CLIPTextEncode", "inputs": {"text": neg}},
+                   "6": {"class_type": "KSampler", "inputs": {"seed": seed, "positive": ["3", 0],
+                                                             "negative": ["4", 0]}}}
             save(f"{prefix}_00001_.png", png(base, json.dumps(emb)))
         elif "UpscaleModelLoader" in kinds:
             self.calls.append("upscale")
@@ -241,6 +250,36 @@ def main():
         check("C14: the master is untouched", master.read_bytes() == before)
         check("C14: records still written", path2.exists())
         check("C14: exit 1", code2 == 1, code2)
+
+    # --- WI 1642: the negative is part of the regeneration key ----------------------------------
+    with tempfile.TemporaryDirectory() as t:
+        td = Path(t); roster_csv(td / "cast.csv")
+        fake = FakeComfy()
+        run(td, fake, only="orc")
+        check("1642: a row with no negative generates with the harness default",
+              fake.generated_negative == chain.NEG, fake.generated_negative)
+    with tempfile.TemporaryDirectory() as t:
+        td = Path(t)
+        (td / "cast.csv").write_text(
+            "id,display_name,identity_features,tags,negative,seed,tier,targets\n"
+            "orc,Grum,tusk pair,\"1boy, half-orc, tusks\",\"cape, cloak\",202,repose,roll20\n",
+            encoding="utf-8")
+        fake = FakeComfy()
+        run(td, fake)
+        check("1642: a row's negative reaches the master graph", fake.generated_negative == "cape, cloak",
+              fake.generated_negative)
+    with tempfile.TemporaryDirectory() as t:
+        td = Path(t); roster_csv(td / "cast.csv")
+        run(td, FakeComfy(master_negative="an older negative"), only="orc")
+        master = P.master_path(root := td / "out", "orc"); before = master.read_bytes()
+        code2, _ = run(td, FakeComfy(), only="orc")
+        path2 = root / "records.2.json"
+        rec2 = json.loads(path2.read_text(encoding="utf-8")) if path2.exists() else {"orc": {}}
+        failed = rec2["orc"].get("failed", "")
+        check("1642: a master made with a different negative is refused, naming both",
+              "negative" in failed and "an older negative" in failed and "worst quality" in failed, failed)
+        check("1642: the refused master is untouched", master.read_bytes() == before)
+        check("1642: exit 1", code2 == 1, code2)
 
     # --- C15: the guard refuses mid-character ---------------------------------------------------
     with tempfile.TemporaryDirectory() as t:
