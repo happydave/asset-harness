@@ -1,5 +1,12 @@
 # Discover: image-to-3D static props (Hunyuan3D on `ai2`)
 
+*2026-09-23, WI 1602:* superseded as a plan.
+- TripoSR is abandoned: the Flowty node has been dead since 2024-06-16 and is GPL-3.0.
+- Hunyuan3D is no longer tracked: its territory excludes the EU, UK and South Korea, the repo has
+  been stale since 2025-10-17, and 3.0/3.1 are closed.
+- The lane is TRELLIS.2 and Pixal3D in ComfyUI core (see the README's status).
+- This document is kept as the record of the June discovery.
+
 **Status:** completed (pipeline mapped + harness ready; **gated on a model install + a ROCm test**)
 
 ## Subject

@@ -1,6 +1,18 @@
 # Track: 3d-static-props
 
-**Status:** 🟡 discovery done; see [discover.md](discover.md). ⚠️ 3D breaks the clean lane —
+**Status (2026-09-23):** the working lane is **TRELLIS.2 and Pixal3D through ComfyUI core**
+(`prototypes/trellis2-comfyui/`). It runs on `ai2` (gfx1201) and `gtr` (gfx1151) with two ROCm
+guards, and produces textured, decimated GLBs. All weights are MIT, with DINOv3 attribution owed
+(WI 1749). The owner judged the textured crates good against MoGe's relief (WI 1602; see
+`findings/samples-2026-09-23/`).
+- **TripoSR: abandoned.** The Flowty node was last pushed 2024-06-16 and is GPL-3.0, and TRELLIS.2
+  outclasses it.
+- **Hunyuan3D: no longer tracked.** Its licence excludes the EU, UK and South Korea, the repo has
+  been stale since 2025-10-17, and 3.0/3.1 are closed. The evidence is WI 1591 round 6
+  (tickets `docs/projects/asset-harness/research/web-research-orbit-frames-for-3d.md`).
+- The text below is the track as it stood on 2026-06-22.
+
+**Former status:** 🟡 discovery done; see [discover.md](discover.md). ⚠️ 3D breaks the clean lane —
 Hunyuan3D 2.0 (native ComfyUI, harness ready) is high-quality but **Tencent Community License**.
 **Clean plan, routed by hardware:** TripoSR (MIT) on `ai2` first (low friction, best ROCm odds);
 TRELLIS.2 (MIT, hero quality) on the NVIDIA workstation (CUDA-heavy, AMD-hostile).
