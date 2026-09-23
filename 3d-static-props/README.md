@@ -1,8 +1,10 @@
 # Track: 3d-static-props
 
 **Status (2026-09-23):** the working lane is **TRELLIS.2 and Pixal3D through ComfyUI core**
-(`prototypes/trellis2-comfyui/`). It runs on `ai2` (gfx1201) and `gtr` (gfx1151) with two ROCm
-guards, and produces textured, decimated GLBs. All weights are MIT, with DINOv3 attribution owed
+(`prototypes/trellis2-comfyui/`).
+- The geometry tail runs on `ai2` (gfx1201, with the GEMM guard; WI 1741).
+- The full textured template runs on `gtr` (gfx1151, with the GEMM and unwrap guards; WI 1761),
+  producing textured, decimated GLBs. All weights are MIT, with DINOv3 attribution owed
 (WI 1749). The owner judged the textured crates good against MoGe's relief (WI 1602; see
 `findings/samples-2026-09-23/`).
 - **TripoSR: abandoned.** The Flowty node was last pushed 2024-06-16 and is GPL-3.0, and TRELLIS.2
