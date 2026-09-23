@@ -75,9 +75,11 @@ takes about 21 min against `ai2`'s 5 and peaks at about 25 GB of the shared pool
 
 ## Models
 
-Four MIT repos, ~16 GiB for the int8 path, into the bind-mounted `models/` at the paths the repos
-already use (`diffusion_models/`, `vae/`, `clip_vision/`, `background_removal/`,
-`geometry_estimation/`):
+About 16 GiB for the int8 path, into the bind-mounted `models/` at the paths the repos already use
+(`diffusion_models/`, `vae/`, `clip_vision/`, `background_removal/`, `geometry_estimation/`). Every
+repo is tagged MIT, but the conditioner is not MIT underneath: it is DINOv3 (Meta's DINOv3 License)
+with NAF (Apache-2.0) bundled. Each file's licence is recorded in `lane_licences.json`, and the reading
+is in [the licence findings](../../findings/2026-09-23-trellis2-lane-licence.md) (WI 1749).
 
 | File | Repo |
 |---|---|
@@ -135,6 +137,17 @@ WI 1615 added:
 - `run_api_graph.py GRAPH.json [BASE] [TIMEOUT]`: queue and wait. Exit 0 success, 1 execution error
   (the failing node printed), 2 validation refusal, 3 timeout.
 - `side_by_side.py OUT.png "LABEL=img.png" …`: a labelled row of renders.
+
+WI 1749 added:
+
+- `lane_sidecar.py GLB GRAPH.json --models DIR --checkout DIR [--custom-nodes a,b]`: writes
+  `GLB.lane.json`, the asset's licence record and provenance. Both blocks validate against the
+  contracts schema's `licenseRecord` and `provenance` definitions (vendored in `contracts/`; pass
+  `--contracts` when the lane directory is copied away from the repo). It refuses a graph that loads a
+  model with no row in `lane_licences.json`. Run it straight after a run; for an older GLB, name the
+  custom nodes that run loaded.
+- `lane_licences.json`: one row per model file, with source repository, revision, size and licence,
+  read 2026-09-23.
 
 ## The unwrap guard: required for the texture tail on gfx1151
 

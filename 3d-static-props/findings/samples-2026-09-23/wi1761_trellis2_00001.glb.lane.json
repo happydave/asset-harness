@@ -1,0 +1,431 @@
+{
+ "asset": {
+  "file": "wi1761_trellis2_00001.glb",
+  "bytes": 66357364,
+  "content_hash": "sha256:bceac3673b7a8c045efb95dd82dd4a7938ec2868e9f86f7435008c2396ec5c0a"
+ },
+ "lane": "trellis2-comfyui",
+ "arm": "trellis2",
+ "license_record": {
+  "status": "conditional",
+  "commercial_in_game": true,
+  "standalone_redistributable": true,
+  "source": {
+   "kind": "local-generation",
+   "note": "ComfyUI TRELLIS.2 lane, trellis2 arm; licence rows read 2026-09-23"
+  },
+  "text": "Generated locally by the ComfyUI TRELLIS.2 lane from models under: Apache License 2.0, DINOv3 License (Meta), MIT License. Generated with GPL-3.0 tooling (ComfyUI); on the common reading the GPL does not reach outputs. Credit line for products that ship this asset: Built with DINOv3. The repository tags a DINOv3 derivative MIT and serves it ungated; the DINOv3 License governs the DINOv3 part regardless (owner decision O1, WI 1749). Conditional: see asset-harness 3d-static-props/findings/2026-09-23-trellis2-lane-licence.md.",
+  "components": [
+   {
+    "file": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+    "role": "image conditioner, both arms",
+    "source": {
+     "repo": "Comfy-Org/Pixal3D",
+     "revision": "f37641be376725d324c56626007cc477f1249a69",
+     "tag": "mit",
+     "gated": false,
+     "size": 1215214176
+    },
+    "parts": [
+     {
+      "name": "DINOv3 ViT-L/16",
+      "upstream": "facebook/dinov3-vitl16-pretrain-lvd1689m (gated)",
+      "licence": "dinov3"
+     },
+     {
+      "name": "NAF upsampler",
+      "upstream": "valeoai/NAF naf_release.pth",
+      "licence": "apache-2.0",
+      "note": "The weights carry no licence of their own; Apache-2.0 is inferred from the repository they are released from."
+     }
+    ]
+   },
+   {
+    "file": "diffusion_models/trellis_2_int8_convrot.safetensors",
+    "role": "flow model, TRELLIS.2 arm",
+    "source": {
+     "repo": "Comfy-Org/TRELLIS.2",
+     "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+     "tag": "mit",
+     "gated": false,
+     "size": 5253048192
+    },
+    "parts": [
+     {
+      "name": "TRELLIS.2 4B",
+      "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+      "licence": "mit"
+     }
+    ]
+   },
+   {
+    "file": "vae/trellis_2_shape_vae_bf16.safetensors",
+    "role": "shape VAE, both arms",
+    "source": {
+     "repo": "Comfy-Org/TRELLIS.2",
+     "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+     "tag": "mit",
+     "gated": false,
+     "size": 1095844024
+    },
+    "parts": [
+     {
+      "name": "TRELLIS.2 shape VAE",
+      "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+      "licence": "mit"
+     }
+    ]
+   },
+   {
+    "file": "vae/trellis_2_texture_vae_bf16.safetensors",
+    "role": "texture VAE, both arms",
+    "source": {
+     "repo": "Comfy-Org/TRELLIS.2",
+     "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+     "tag": "mit",
+     "gated": false,
+     "size": 948461364
+    },
+    "parts": [
+     {
+      "name": "TRELLIS.2 texture VAE",
+      "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+      "licence": "mit"
+     }
+    ]
+   },
+   {
+    "file": "background_removal/birefnet.safetensors",
+    "role": "background removal, both arms",
+    "source": {
+     "repo": "Comfy-Org/BiRefNet",
+     "revision": "25511f8787e51912e1480706b4e47b8f467fbf72",
+     "tag": "mit",
+     "gated": false,
+     "size": 444473596
+    },
+    "parts": [
+     {
+      "name": "BiRefNet",
+      "upstream": "ZhengPeng7/BiRefNet@e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+      "licence": "mit"
+     }
+    ]
+   }
+  ],
+  "size_mismatches": []
+ },
+ "provenance": {
+  "source_of_truth": "provider-nondeterministic",
+  "generator_script": "3d-static-props/prototypes/trellis2-comfyui/run_api_graph.py",
+  "recipe": {
+   "provider": "comfyui-core",
+   "generator": "trellis2",
+   "generator_version": "ComfyUI v0.34.6 (8fed37813848259fbdd2548ae3cd9f14df7fd68b)",
+   "params": {
+    "108": {
+     "class_type": "ModelSamplingSD3",
+     "shift": 5.0
+    },
+    "117": {
+     "class_type": "VAELoader",
+     "vae_name": "trellis_2_shape_vae_bf16.safetensors"
+    },
+    "118": {
+     "class_type": "VAELoader",
+     "vae_name": "trellis_2_texture_vae_bf16.safetensors"
+    },
+    "119": {
+     "class_type": "VaeDecodeStructureTrellis2",
+     "resolution": "32"
+    },
+    "12": {
+     "class_type": "KSampler",
+     "seed": 43,
+     "steps": 12,
+     "cfg": 1.0,
+     "sampler_name": "euler",
+     "scheduler": "normal",
+     "denoise": 1.0
+    },
+    "122": {
+     "class_type": "LoadImage",
+     "image": "prop_crate.png"
+    },
+    "125": {
+     "class_type": "RescaleCFG",
+     "multiplier": 0.7
+    },
+    "126": {
+     "class_type": "RescaleCFG",
+     "multiplier": 0.5
+    },
+    "147": {
+     "class_type": "BakeTextureFromVoxel",
+     "texture_size": 4096
+    },
+    "15": {
+     "class_type": "CLIPVisionLoader",
+     "clip_name": "dino_v3_L_naf_fp32.safetensors"
+    },
+    "164": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_base_color"
+    },
+    "18": {
+     "class_type": "KSampler",
+     "seed": 42,
+     "steps": 20,
+     "cfg": 7.5,
+     "sampler_name": "euler",
+     "scheduler": "normal",
+     "denoise": 1.0
+    },
+    "186": {
+     "class_type": "DecimateMesh",
+     "target_face_count": 700000,
+     "placement_mode": "midpoint"
+    },
+    "192": {
+     "class_type": "RemoveBackground"
+    },
+    "193": {
+     "class_type": "LoadBackgroundRemovalModel",
+     "bg_removal_name": "birefnet.safetensors"
+    },
+    "196": {
+     "class_type": "UnwrapMesh",
+     "segmenter": "pec",
+     "resolution": 4096,
+     "padding": 1,
+     "weld_distance": 0.0002
+    },
+    "199": {
+     "class_type": "CFGOverride",
+     "cfg": 1.0,
+     "start_percent": 0.667,
+     "end_percent": 1.0
+    },
+    "202": {
+     "class_type": "GetMeshInfo"
+    },
+    "207": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_metallic"
+    },
+    "208": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_roughness"
+    },
+    "210": {
+     "class_type": "ApplyTextureToMesh"
+    },
+    "224": {
+     "class_type": "BakeNormalMapFromMesh",
+     "resolution": 2048,
+     "cage_distance": 0.05,
+     "ignore_backfaces": true
+    },
+    "226": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_normal"
+    },
+    "23": {
+     "class_type": "KSampler",
+     "seed": 42,
+     "steps": 12,
+     "cfg": 7.5,
+     "sampler_name": "euler",
+     "scheduler": "simple",
+     "denoise": 1.0
+    },
+    "233": {
+     "class_type": "BakeAmbientOcclusion",
+     "resolution": 1024,
+     "samples": 64,
+     "max_distance": 0.71,
+     "strength": 1.0,
+     "bias": 0.01
+    },
+    "235": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_ambiant_occlusion"
+    },
+    "238": {
+     "class_type": "MeshSmoothNormals",
+     "crease_angle": 180.0
+    },
+    "241": {
+     "class_type": "RemeshMesh",
+     "resolution": 768,
+     "sign_mode": "udf",
+     "sign_mode.qef": false,
+     "sign_mode.drop_inverted_components": false,
+     "sign_mode.drop_enclosed_components": false,
+     "band": 1.0,
+     "project_back": 0.0,
+     "fix_poles": false,
+     "smooth_iters": 20,
+     "drop_small_components": 0.01,
+     "precluster_max_verts": 20000000
+    },
+    "260": {
+     "class_type": "MeshSmoothNormals",
+     "crease_angle": 180.0
+    },
+    "261": {
+     "class_type": "RenderUVAtlas",
+     "resolution": 1024
+    },
+    "262": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_n262"
+    },
+    "279": {
+     "class_type": "CFGOverride",
+     "cfg": 1.0,
+     "start_percent": 0.769,
+     "end_percent": 1.0
+    },
+    "285": {
+     "class_type": "MeshToFile3D"
+    },
+    "299": {
+     "class_type": "Trellis2Conditioning"
+    },
+    "3": {
+     "class_type": "KSampler",
+     "seed": 56,
+     "steps": 12,
+     "cfg": 7.5,
+     "sampler_name": "euler",
+     "scheduler": "normal",
+     "denoise": 1.0
+    },
+    "302": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_n302"
+    },
+    "303": {
+     "class_type": "SaveImage",
+     "filename_prefix": "3d/wi1761_trellis2_n303"
+    },
+    "303m": {
+     "class_type": "MaskToImage"
+    },
+    "312": {
+     "class_type": "ImageCropToMask",
+     "width": 1024,
+     "height": 1024,
+     "pad_factor": 1.1,
+     "grow_mask": 0,
+     "background": "#000000"
+    },
+    "322": {
+     "class_type": "Save3DAdvanced",
+     "filename_prefix": "3d/wi1761_trellis2",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    },
+    "40": {
+     "class_type": "UNETLoader",
+     "unet_name": "trellis_2_int8_convrot.safetensors",
+     "weight_dtype": "default"
+    },
+    "87": {
+     "class_type": "EmptyTrellis2LatentStructure",
+     "batch_size": 1
+    },
+    "91": {
+     "class_type": "Trellis2ShapeStage"
+    },
+    "92": {
+     "class_type": "VaeDecodeShapeTrellis"
+    },
+    "93": {
+     "class_type": "VaeDecodeTextureTrellis"
+    },
+    "94": {
+     "class_type": "Trellis2UpsampleStage",
+     "target_resolution": 1536
+    },
+    "98": {
+     "class_type": "Trellis2TextureStage"
+    }
+   },
+   "seed": 56,
+   "dependencies": [
+    {
+     "name": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+     "content_hash": "sha256:4ad2ec4e0879a5b5b04cd97325cc37da954a7b6edca5170b86510f17f2b2290f",
+     "bytes": 1215214176,
+     "source": {
+      "repo": "Comfy-Org/Pixal3D",
+      "revision": "f37641be376725d324c56626007cc477f1249a69",
+      "tag": "mit",
+      "gated": false,
+      "size": 1215214176
+     }
+    },
+    {
+     "name": "diffusion_models/trellis_2_int8_convrot.safetensors",
+     "content_hash": "sha256:d01952ad137213f6a868f86b6b877026276f84af5eec23069217475a0bad3a31",
+     "bytes": 5253048192,
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 5253048192
+     }
+    },
+    {
+     "name": "vae/trellis_2_shape_vae_bf16.safetensors",
+     "content_hash": "sha256:de0cb4949a76c59ee5c091a995a69bcc8c51d5aeda939f0c641a50d2a72341f4",
+     "bytes": 1095844024,
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 1095844024
+     }
+    },
+    {
+     "name": "vae/trellis_2_texture_vae_bf16.safetensors",
+     "content_hash": "sha256:714e5ebf094a610e12a8e3b5175c18a62f37f6ea4218acb6073644456b73ab0e",
+     "bytes": 948461364,
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 948461364
+     }
+    },
+    {
+     "name": "background_removal/birefnet.safetensors",
+     "content_hash": "sha256:9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
+     "bytes": 444473596,
+     "source": {
+      "repo": "Comfy-Org/BiRefNet",
+      "revision": "25511f8787e51912e1480706b4e47b8f467fbf72",
+      "tag": "mit",
+      "gated": false,
+      "size": 444473596
+     }
+    },
+    {
+     "name": "custom_nodes/rocm_gemm_guard/__init__.py",
+     "content_hash": "sha256:d3da0f88618a9fe27602da9c6cd53e63209774eb2e30f24ad16651f2fecfedda"
+    },
+    {
+     "name": "custom_nodes/rocm_unwrap_guard/__init__.py",
+     "content_hash": "sha256:c075f8625480075633715ef2292bde47aa861c1c37db152c66959609eed8e8dc"
+    }
+   ],
+   "salt": "trellis2-comfyui-lane-sidecar/1"
+  }
+ }
+}

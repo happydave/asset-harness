@@ -68,3 +68,12 @@ the NC deps all live on the **texturing/PBR + preprocessing** edges.
 - DINOv3 & RMBG license terms read from primary pages 2026-07-16; both are gated/versioned and can change.
 - Whether merely *importing* an NC module without calling it creates obligation is a legal question;
   the reimplementation removes it. Not legal advice.
+
+## Correction 2026-09-23 (WI 1749)
+
+The DINOv3 row above calls "Built with DINOv3" attribution required. Only one of Meta's two texts
+has that clause: Meta's web page (dated 2025-08-14). The `LICENSE.md` Meta ships in its GitHub
+repository and inside its gated Hugging Face repositories (2025-08-19) does not. Both texts attach
+their redistribution duties to the DINO Materials and derivative works, and name outputs
+separately. The detail, and the licence record of the ComfyUI lane that replaced this fork, are in
+`3d-static-props/findings/2026-09-23-trellis2-lane-licence.md`.

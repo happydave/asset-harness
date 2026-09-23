@@ -4,9 +4,13 @@
 (`prototypes/trellis2-comfyui/`).
 - The geometry tail runs on `ai2` (gfx1201, with the GEMM guard; WI 1741).
 - The full textured template runs on `gtr` (gfx1151, with the GEMM and unwrap guards; WI 1761),
-  producing textured, decimated GLBs. All weights are MIT, with DINOv3 attribution owed
-(WI 1749). The owner judged the textured crates good against MoGe's relief (WI 1602; see
-`findings/samples-2026-09-23/`).
+  producing textured, decimated GLBs. The owner judged the textured crates good against MoGe's
+  relief (WI 1602; see `findings/samples-2026-09-23/`).
+- **Licence:** every model is MIT by its declared licence except the image conditioner, which is
+  DINOv3 (Meta's licence) with a NAF upsampler (Apache-2.0), served under an MIT tag by a mirror.
+  Each GLB gets a licence sidecar (`lane_sidecar.py`), marked `conditional` until the owner decides
+  the conditioner's provenance and the "Built with DINOv3" credit
+  ([findings](findings/2026-09-23-trellis2-lane-licence.md), WI 1749).
 - **TripoSR: abandoned.** The Flowty node was last pushed 2024-06-16 and is GPL-3.0, and TRELLIS.2
   outclasses it.
 - **Hunyuan3D: no longer tracked.** Its licence excludes the EU, UK and South Korea, the repo has

@@ -1,0 +1,76 @@
+{
+  "about": "Licences of every model file the ComfyUI TRELLIS.2 lane loads, read from their sources on the date given. lane_sidecar.py refuses a graph that loads a file with no row here. Findings: 3d-static-props/findings/2026-09-23-trellis2-lane-licence.md (asset-harness WI 1749). Re-read a source before relying on a row: licence texts change.",
+  "read": "2026-09-23",
+  "licences": {
+    "mit": {
+      "name": "MIT License",
+      "note": "Its notice duty covers copies of the software or weights, not what they generate."
+    },
+    "apache-2.0": {
+      "name": "Apache License 2.0",
+      "url": "https://raw.githubusercontent.com/valeoai/NAF/main/LICENSE",
+      "read": "2026-09-23"
+    },
+    "dinov3": {
+      "name": "DINOv3 License (Meta)",
+      "url": "https://github.com/facebookresearch/dinov3/blob/main/LICENSE.md",
+      "read": "2026-09-23",
+      "note": "Two Meta texts differ. LICENSE.md (Last Updated 2025-08-19, also bundled in Meta's gated HF repositories) asks a redistribution of DINO Materials or derivative works to carry a copy of the Agreement. Meta's web page (https://ai.meta.com/resources/models-and-libraries/dinov3-license/, dated 2025-08-14) adds: prominently display 'Built with DINOv3' on a related website, user interface, blogpost, about page, or product documentation. Both restrict use: trade controls; no ITAR, military, nuclear, espionage or weapons end uses; no reverse engineering. Both name outputs apart from the Materials."
+    }
+  },
+  "components": [
+    {
+      "file": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+      "role": "image conditioner, both arms",
+      "source": {"repo": "Comfy-Org/Pixal3D", "revision": "f37641be376725d324c56626007cc477f1249a69", "tag": "mit", "gated": false, "size": 1215214176},
+      "parts": [
+        {"name": "DINOv3 ViT-L/16", "upstream": "facebook/dinov3-vitl16-pretrain-lvd1689m (gated)", "licence": "dinov3"},
+        {"name": "NAF upsampler", "upstream": "valeoai/NAF naf_release.pth", "licence": "apache-2.0", "note": "The weights carry no licence of their own; Apache-2.0 is inferred from the repository they are released from."}
+      ],
+      "credit": "Built with DINOv3",
+      "conditions": ["The repository tags a DINOv3 derivative MIT and serves it ungated; the DINOv3 License governs the DINOv3 part regardless (owner decision O1, WI 1749)."]
+    },
+    {
+      "file": "diffusion_models/trellis_2_int8_convrot.safetensors",
+      "role": "flow model, TRELLIS.2 arm",
+      "generator": "trellis2",
+      "source": {"repo": "Comfy-Org/TRELLIS.2", "revision": "430a9d09b2416687018c8fe8edced2ad4858a439", "tag": "mit", "gated": false, "size": 5253048192},
+      "parts": [{"name": "TRELLIS.2 4B", "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d", "licence": "mit"}]
+    },
+    {
+      "file": "vae/trellis_2_shape_vae_bf16.safetensors",
+      "role": "shape VAE, both arms",
+      "source": {"repo": "Comfy-Org/TRELLIS.2", "revision": "430a9d09b2416687018c8fe8edced2ad4858a439", "tag": "mit", "gated": false, "size": 1095844024},
+      "parts": [{"name": "TRELLIS.2 shape VAE", "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d", "licence": "mit"}]
+    },
+    {
+      "file": "vae/trellis_2_texture_vae_bf16.safetensors",
+      "role": "texture VAE, both arms",
+      "source": {"repo": "Comfy-Org/TRELLIS.2", "revision": "430a9d09b2416687018c8fe8edced2ad4858a439", "tag": "mit", "gated": false, "size": 948461364},
+      "parts": [{"name": "TRELLIS.2 texture VAE", "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d", "licence": "mit"}]
+    },
+    {
+      "file": "diffusion_models/pixal3d_int8_convrot.safetensors",
+      "role": "flow model, Pixal3D arm",
+      "generator": "pixal3d",
+      "source": {"repo": "Comfy-Org/Pixal3D", "revision": "f37641be376725d324c56626007cc477f1249a69", "tag": "mit", "gated": false, "size": 5584555824},
+      "parts": [{"name": "Pixal3D", "upstream": "TencentARC/Pixal3D@b0cb2e1b794cab9aa0ac38a95d794a4d9337437f (LICENSE: MIT, Copyright (c) 2026 Tencent)", "licence": "mit"}]
+    },
+    {
+      "file": "geometry_estimation/moge_2_vitl_normal_fp16.safetensors",
+      "role": "geometry estimation (field of view), Pixal3D arm",
+      "source": {"repo": "Comfy-Org/MoGe", "revision": "1484985258ba7ef45c314144fcf0e90924ffbf44", "tag": "mit", "gated": false, "size": 661859924},
+      "parts": [{"name": "MoGe-2 ViT-L normal", "upstream": "Ruicheng/moge-2-vitl-normal@cb0e8bbd6b1e243589717c78e750b1ba4c093acf (base facebook/dinov2-large, Apache-2.0)", "licence": "mit"}]
+    },
+    {
+      "file": "background_removal/birefnet.safetensors",
+      "role": "background removal, both arms",
+      "source": {"repo": "Comfy-Org/BiRefNet", "revision": "25511f8787e51912e1480706b4e47b8f467fbf72", "tag": "mit", "gated": false, "size": 444473596},
+      "parts": [{"name": "BiRefNet", "upstream": "ZhengPeng7/BiRefNet@e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4", "licence": "mit"}]
+    }
+  ],
+  "tooling": [
+    {"name": "ComfyUI", "licence": "GPL-3.0", "note": "Runs the generation; on the common reading (WI 1601, not legal advice) the GPL does not reach its outputs, and distributing the tool would bring it in."},
+    {"name": "rocm_gemm_guard, rocm_unwrap_guard, mem_probe", "licence": "asset-harness (the estate's own)"}
+  ]
+}
