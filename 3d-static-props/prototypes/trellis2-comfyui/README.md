@@ -57,7 +57,21 @@ The server's log then shows `rocm_gemm_guard: active — TRELLIS.2 SparseLinear 
 negative control); `=1` forces it on a CUDA build. Gates: `test_rocm_gemm_guard.py` on any host
 with torch (no GPU), and `test_trellis2_rocm_guard_live.py` inside the container, which decodes a
 saved latent twice and requires the reference vertex count on both runs — the count, not "no NaN",
-because the unguarded decode returns NaN-free wrong meshes most of the time.
+because the unguarded decode returns NaN-free wrong meshes most of the time. The count must fall
+within 1e-4 of the reference (±648 for the crate latent). It is deterministic per device but not
+across devices: `ai` and `ai2` give 6,481,922, `gtr`'s GPU 6,481,890 and its CPU 6,482,059. The
+defect moved it by 587k–1.65M (WI 1745).
+
+## On `gtr` (Strix Halo, gfx1151)
+
+The same image builds and runs on `gtr` (WI 1745); the procedure is the tickets runbook
+`docs/projects/asset-harness/runbooks/gtr-trellis2-container.md`. Differences from `ai2`:
+- no `--disable-mmap`, which doubles resident memory on a unified-memory host;
+- no `ROCR_VISIBLE_DEVICES`, because there is one GPU;
+- memory is read from GTT with `gtt_sample.sh`, not from `rocm-smi`.
+
+The gfx1201 GEMM defect is absent there (hipBLASLt serves the calls correctly). The 1536 full tail
+takes about 21 min against `ai2`'s 5 and peaks at about 25 GB of the shared pool.
 
 ## Models
 
@@ -89,6 +103,8 @@ already use (`diffusion_models/`, `vae/`, `clip_vision/`, `background_removal/`,
 - `render_glb.py` (via `blender -b -P`) — four-angle render plus mesh stats, for looking at the
   artifact with something other than the stack that made it.
 - `gpu_sample.sh [OUT]` — `rocm-smi` busy/VRAM sampling, to tell real GPU work from a CPU fallback.
+- `gtt_sample.sh OUT [CONTAINER] [INTERVAL]` — the unified-memory equivalent for `gtr`: GTT used,
+  carve-out used, `MemAvailable`, GPU busy, and one container's RSS, one TSV row per interval.
 - `schema_dump.py [BASE]` — dump the node schemas this graph depends on from a running server.
 
 WI 1613 (the NaN root cause) added:

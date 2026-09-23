@@ -35,6 +35,11 @@ is faster (2 s against 5.5–9.7 s on the broken path). **Carried into the lane 
 checkout's `custom_nodes/`; active on HIP builds; `ROCM_GEMM_GUARD=0` off, `=1` forces on); its
 live gate decodes a saved latent twice and requires the reference count. The upstream report is
 WI 1743 (the owner files or approves the filing).
+*2026-09-23, WI 1745:*
+- The defect is absent on gfx1151 (`gtr`, same image). `repro_synthetic.py` is clean in both BLAS
+  arms, and hipBLASLt serves every call there.
+- The reference count is exact only per device: `gtr`'s GPU gives 6,481,890 and its CPU 6,482,059,
+  against 6,481,922 on `ai` and `ai2`. The live gate now allows 1e-4 of the reference.
 
 ## Scripts
 

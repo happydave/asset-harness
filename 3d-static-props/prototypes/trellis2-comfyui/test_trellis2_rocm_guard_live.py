@@ -1,7 +1,8 @@
 """The live gate for the ROCm GEMM guard (WI 1741): decode a saved TRELLIS.2 latent twice in one
-process and require the reference vertex count and no non-finite vertex on both runs.
+process and require the reference vertex count, within TOL_REL of it (default 1e-4), and no
+non-finite vertex on both runs.
 
-    cd /opt/comfyui && python /opt/comfyui/output/wi1613/test_trellis2_rocm_guard_live.py LATENT.pt [EXPECTED] [RUNS]
+    cd /opt/comfyui && python /opt/comfyui/output/wi1613/test_trellis2_rocm_guard_live.py LATENT.pt [EXPECTED] [RUNS] [TOL_REL]
 
 Runs inside the ComfyUI container (podman exec), where the guard is a custom node the checkout
 carries. EXPECTED defaults to the fp16 reference for the WI 1613 crate latent; pass the fp32
@@ -16,7 +17,11 @@ sys.argv = [sys.argv[0]]
 latent_path = argv[0]
 expected = int(argv[1]) if len(argv) > 1 else 6_481_922
 runs = int(argv[2]) if len(argv) > 2 else 2
-TOLERANCE = 0   # the guard's result is deterministic; the count is exact for a given VAE dtype
+# The count is deterministic per device but not across devices: rounding at the surface threshold
+# moves it by up to ~170 (gtr's CPU and GPU against the ai/ai2 reference, WI 1745). The defect moved
+# it by 587k-1.65M, so 1e-4 of the reference separates the two with wide margins either side.
+tol_rel = float(argv[3]) if len(argv) > 3 else 1e-4
+TOLERANCE = int(expected * tol_rel)
 
 import asyncio  # noqa: E402
 import torch  # noqa: E402
@@ -44,11 +49,11 @@ for r in range(1, runs + 1):
     n = int(verts.shape[0])
     bad = int((~torch.isfinite(verts)).any(dim=1).sum().item())
     ok = abs(n - expected) <= TOLERANCE and bad == 0
-    print(f"run {r}: {time.time()-t0:.1f}s vertices {n} (expected {expected}) nonfinite_vertices {bad} -> {'ok' if ok else 'FAIL'}", flush=True)
+    print(f"run {r}: {time.time()-t0:.1f}s vertices {n} (expected {expected} ± {TOLERANCE}) nonfinite_vertices {bad} -> {'ok' if ok else 'FAIL'}", flush=True)
     if not ok:
         failures.append(r)
     torch.cuda.synchronize(); torch.cuda.empty_cache()
 if failures:
     print(f"FAILED on runs {failures}: the decode is not the reference mesh", flush=True)
     sys.exit(1)
-print("all runs at the reference count with no non-finite vertex", flush=True)
+print("all runs within tolerance of the reference count, with no non-finite vertex", flush=True)
