@@ -6,6 +6,10 @@
 - The full textured template runs on `gtr` (gfx1151, with the GEMM and unwrap guards; WI 1761),
   producing textured, decimated GLBs. The owner judged the textured crates good against MoGe's
   relief (WI 1602; see `findings/samples-2026-09-23/`).
+- **Pixal3D multi-view** runs on `gtr` with ComfyUI v0.37.2 (WI 1751): a four-view turnaround gives a
+  recognisable textured asset
+  ([findings](findings/2026-09-23-comfyui-v0372-and-pixal3d-multiview.md)). The crate has no
+  turnaround yet.
 - **Licence:** every model is MIT by its declared licence except the image conditioner, which is
   DINOv3 (Meta's licence) with a NAF upsampler (Apache-2.0), served under an MIT tag by a mirror.
   Each GLB gets a licence sidecar (`lane_sidecar.py`), marked `conditional` until the owner decides

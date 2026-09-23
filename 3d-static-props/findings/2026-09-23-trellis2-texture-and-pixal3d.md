@@ -28,6 +28,7 @@ ComfyUI v0.34.6, image `localhost/wi1600-comfyui:0.34.6`
     arm.
 - **No multi-view path exists at v0.34.6.** `Pixal3DMultiViewConditioning` first appears in
   v0.36.0. The multi-view weights are published in Comfy-Org/Pixal3D. Upgrading is WI 1751.
+  *Done on `gtr`: see [the v0.37.2 findings](2026-09-23-comfyui-v0372-and-pixal3d-multiview.md).*
 - **The template's texture resolution is 4096.** A `PrimitiveInt` feeds both
   `UnwrapMesh.resolution` and `BakeTextureFromVoxel.texture_size`, overriding the bake's 2048 widget.
 

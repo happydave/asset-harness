@@ -78,6 +78,23 @@ The same image builds and runs on `gtr` (WI 1745); the procedure is the tickets 
 The gfx1201 GEMM defect is absent there (hipBLASLt serves the calls correctly). The 1536 full tail
 takes about 21 min against `ai2`'s 5 and peaks at about 25 GB of the shared pool.
 
+### ComfyUI v0.37.2 and Pixal3D multi-view (`gtr` only, WI 1751)
+
+`gtr` also runs the lane on v0.37.2, the first tag line with `Pixal3DMultiViewConditioning` (from
+v0.36.0). It uses its own checkout `~/wi1745/ComfyUI-0.37.2` and image
+`localhost/wi1600-comfyui:0.37.2`, built from the same `Containerfile` with v0.37.2's
+`requirements.txt`. The v0.34.6 lane stays alongside, and `ai2` stays on v0.34.6 until WI 1767.
+
+- Both guards are still needed and still fit their targets. The decode gate's gtr reference on
+  v0.37.2 is 6,481,978.
+- Converting the shipped templates against v0.37.2 needs `--default MoGeInference.refine_steps`. The
+  node gained that widget, and the template predates it.
+- The multi-view template (`3d_pixal3d_multi_views.json`) takes one turnaround sheet and cuts it with
+  fixed pixel boxes into front, left, back and right views. The node wants square views at one scale,
+  object filling about 1/1.1 of the frame, `fov` 20 for renders and generators. Its weights are
+  `diffusion_models/pixal3d_multiview_int8_convrot` (`fetch_template_models.sh`). Findings:
+  [2026-09-23-comfyui-v0372-and-pixal3d-multiview.md](../../findings/2026-09-23-comfyui-v0372-and-pixal3d-multiview.md).
+
 ## Models
 
 About 16 GiB for the int8 path, into the bind-mounted `models/` at the paths the repos already use
@@ -138,7 +155,9 @@ WI 1615 added:
   converts the shipped UI template to an API graph from the server's `/object_info` (dump it with
   `curl …/object_info`). Primitives and switches resolve statically. `--set 316=true` picks the
   TRELLIS.2 arm, and the default is Pixal3D. Previews become `SaveImage`. It stops, naming the node,
-  on anything it would otherwise guess.
+  on anything it would otherwise guess. `--default Type.input` lets a widget a newer server added
+  take its schema default (WI 1751). `test_template_to_api.py` pins the conversions against
+  `fixtures/template_to_api/`.
 - `run_api_graph.py GRAPH.json [BASE] [TIMEOUT]`: queue and wait. Exit 0 success, 1 execution error
   (the failing node printed), 2 validation refusal, 3 timeout.
 - `side_by_side.py OUT.png "LABEL=img.png" …`: a labelled row of renders.

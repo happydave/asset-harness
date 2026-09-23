@@ -1,9 +1,11 @@
 #!/bin/bash
-# Fetch the three models the shipped TRELLIS.2 template needs beyond the geometry lane, into
-# ~/wi1745/models at the repos' paths; each file is kept only if its size matches the HF tree API.
+# Fetch the models the shipped TRELLIS.2 and Pixal3D templates need beyond the geometry lane, into
+# ~/wi1745/models at the repos' paths; each file is kept only if its size matches the HF tree API, and a
+# file already present at that size is left alone.
 set -u
 W=$HOME/wi1745/models
 get() { local repo=$1 path=$2 size=$3
+  if [ -f "$W/$path" ] && [ "$(stat -c %s "$W/$path")" = "$size" ]; then echo "HAVE $path $size"; return 0; fi
   curl -fsSL --retry 3 -o "$W/$path.part" "https://huggingface.co/$repo/resolve/main/$path" || { echo "FAIL $path"; return 1; }
   got=$(stat -c %s "$W/$path.part")
   if [ "$got" = "$size" ]; then mv "$W/$path.part" "$W/$path"; echo "OK $path $got"; else echo "SIZE MISMATCH $path got $got want $size"; rm -f "$W/$path.part"; fi; }
@@ -16,4 +18,5 @@ for line in sys.stdin.read().splitlines():
 get Comfy-Org/TRELLIS.2 vae/trellis_2_texture_vae_bf16.safetensors $(sz vae/trellis_2_texture_vae_bf16.safetensors)
 get Comfy-Org/MoGe geometry_estimation/moge_2_vitl_normal_fp16.safetensors $(sz geometry_estimation/moge_2_vitl_normal_fp16.safetensors)
 get Comfy-Org/Pixal3D diffusion_models/pixal3d_int8_convrot.safetensors $(sz diffusion_models/pixal3d_int8_convrot.safetensors)
+get Comfy-Org/Pixal3D diffusion_models/pixal3d_multiview_int8_convrot.safetensors $(sz diffusion_models/pixal3d_multiview_int8_convrot.safetensors)
 echo FETCH-DONE

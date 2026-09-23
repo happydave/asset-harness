@@ -57,6 +57,13 @@
       "parts": [{"name": "Pixal3D", "upstream": "TencentARC/Pixal3D@b0cb2e1b794cab9aa0ac38a95d794a4d9337437f (LICENSE: MIT, Copyright (c) 2026 Tencent)", "licence": "mit"}]
     },
     {
+      "file": "diffusion_models/pixal3d_multiview_int8_convrot.safetensors",
+      "role": "flow model, Pixal3D multi-view template",
+      "generator": "pixal3d-multiview",
+      "source": {"repo": "Comfy-Org/Pixal3D", "revision": "f37641be376725d324c56626007cc477f1249a69", "tag": "mit", "gated": false, "size": 5584555824},
+      "parts": [{"name": "Pixal3D multi-view", "upstream": "TencentARC/Pixal3D@b0cb2e1b794cab9aa0ac38a95d794a4d9337437f ckpts/*_mv (LICENSE: MIT, Copyright (c) 2026 Tencent)", "licence": "mit"}]
+    },
+    {
       "file": "geometry_estimation/moge_2_vitl_normal_fp16.safetensors",
       "role": "geometry estimation (field of view), Pixal3D arm",
       "source": {"repo": "Comfy-Org/MoGe", "revision": "1484985258ba7ef45c314144fcf0e90924ffbf44", "tag": "mit", "gated": false, "size": 661859924},

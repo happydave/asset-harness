@@ -16,11 +16,15 @@ SaveImage (or are dropped for 3D previews), and everything not upstream of an ou
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import re
 import sys
 
-WIDGET_TYPES = {"INT", "FLOAT", "STRING", "BOOLEAN", "COMBO", "COLOR", "COMFY_DYNAMICCOMBO_V3", "LOAD_3D"}
+WIDGET_TYPES = {"INT", "FLOAT", "STRING", "BOOLEAN", "COMBO", "COLOR", "COMFY_DYNAMICCOMBO_V3", "LOAD_3D",
+                "BOUNDING_BOX"}
+CROP_COMPONENT_VALUES = 4   # the ImageCrop component stores x, y, width, height after its region dict
+DEFAULT_PREFIXES = {"ComfyUI", "3d/ComfyUI"}
 PRIMITIVES = {"PrimitiveInt", "PrimitiveFloat", "PrimitiveBoolean", "PrimitiveString", "PrimitiveStringMultiline"}
 DROP = {"Note", "MarkdownNote", "Preview3DAdvanced", "Preview3D"}
 IMAGE_PREVIEWS = {"PreviewImage", "MaskPreview"}
@@ -61,8 +65,11 @@ def _cast(value, typ):
     return value
 
 
-def map_widgets(node, schema):
-    """{input name: value} for a node's widgets, or raise naming the node."""
+def map_widgets(node, schema, defaults=frozenset(), filled=None):
+    """{input name: value} for a node's widgets, or raise naming the node. A widget missing from the
+    end of the template's values (one a newer server added) takes the schema's default only when
+    `defaults` names it as "Type.input"; otherwise the conversion stops, because values shifted by a
+    widget inserted mid-list would look the same. Each fill is appended to `filled`."""
     values = list(node.get("widgets_values") or [])
     if isinstance(node.get("widgets_values"), dict):
         raise ConversionError(f"node {node['id']} {node['type']}: dict widgets_values not supported")
@@ -72,7 +79,13 @@ def map_widgets(node, schema):
         if typ not in WIDGET_TYPES:
             continue
         if i >= len(values):
-            raise ConversionError(f"node {node['id']} {node['type']}: no widget value for {name!r}")
+            if f"{node['type']}.{name}" not in defaults or "default" not in opts:
+                raise ConversionError(f"node {node['id']} {node['type']}: no widget value for {name!r}"
+                                      f" (pass --default {node['type']}.{name} to take the schema default)")
+            out[name] = opts["default"]
+            if filled is not None:
+                filled.append(f"node {node['id']} {node['type']}: {name} = {opts['default']!r} (schema default)")
+            continue
         value = values[i]; i += 1
         if typ == "COMFY_DYNAMICCOMBO_V3":
             out[name] = value
@@ -89,13 +102,22 @@ def map_widgets(node, schema):
             i += 1
         if typ == "COMBO" and opts.get("image_upload"):
             i += 1
+        if typ == "BOUNDING_BOX":
+            if not isinstance(value, dict):
+                raise ConversionError(f"node {node['id']} {node['type']}: {name}={value!r} is not a region dict")
+            if opts.get("component") == "ImageCrop":
+                extra = values[i:i + CROP_COMPONENT_VALUES]
+                if len(extra) != CROP_COMPONENT_VALUES or not all(isinstance(v, int) for v in extra):
+                    raise ConversionError(f"node {node['id']} {node['type']}: unexpected crop component values {extra!r}")
+                i += CROP_COMPONENT_VALUES
     if i != len(values):
         raise ConversionError(f"node {node['id']} {node['type']}: {len(values)} widget values, schema "
                               f"accounts for {i}: {values!r}")
     return out
 
 
-def convert(template, object_info, image, prefix, overrides):
+def convert(template, object_info, image, prefix, overrides, defaults=frozenset(), filled=None):
+    template = copy.deepcopy(template)  # overrides are written into the nodes; the caller's copy stays intact
     nodes = {n["id"]: n for n in template["nodes"]}
     links = {l[0]: l for l in template["links"]}  # id -> [id, from, from_slot, to, to_slot, type]
 
@@ -141,7 +163,7 @@ def convert(template, object_info, image, prefix, overrides):
         if t in DROP or t in PRIMITIVES or t == "ComfySwitchNode" or t == "GetNode" or t == "SetNode":
             continue
         schema = object_info[t]
-        inputs = map_widgets(n, schema)
+        inputs = map_widgets(n, schema, defaults, filled)
         for inp in n.get("inputs", []):
             if inp.get("link") is None:
                 continue
@@ -157,7 +179,8 @@ def convert(template, object_info, image, prefix, overrides):
         if t == "LoadImage":
             inputs["image"] = image
         if "filename_prefix" in inputs and t not in IMAGE_PREVIEWS:
-            inputs["filename_prefix"] = prefix
+            own = inputs["filename_prefix"]
+            inputs["filename_prefix"] = prefix if own in DEFAULT_PREFIXES else f"{prefix}_{own.rsplit('/', 1)[-1]}"
         graph[str(n["id"])] = {"class_type": cls, "inputs": inputs}
 
     # Keep only what an output needs.
@@ -197,10 +220,16 @@ def main(argv=None):
     ap.add_argument("template"); ap.add_argument("object_info"); ap.add_argument("out")
     ap.add_argument("--image", required=True); ap.add_argument("--prefix", required=True)
     ap.add_argument("--set", action="append", default=[])
+    ap.add_argument("--default", action="append", default=[], metavar="TYPE.INPUT",
+                    help="a trailing widget the template lacks takes the schema default")
     ap.add_argument("--diff")
     a = ap.parse_args(argv)
     overrides = {int(k): v for k, v in (s.split("=", 1) for s in a.set)}
-    graph = convert(json.load(open(a.template)), json.load(open(a.object_info)), a.image, a.prefix, overrides)
+    filled = []
+    graph = convert(json.load(open(a.template)), json.load(open(a.object_info)), a.image, a.prefix, overrides,
+                    frozenset(a.default), filled)
+    for line in filled:
+        print("default: " + line)
     json.dump(graph, open(a.out, "w"), indent=1)
     print(f"{len(graph)} nodes -> {a.out}")
     if a.diff:
