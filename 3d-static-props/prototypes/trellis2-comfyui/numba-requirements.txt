@@ -1,0 +1,5 @@
+# UnwrapMesh's atlas packer (comfy_extras/mesh3d/uv_unwrap/pack.py) runs on the CPU when numba imports.
+# Without it the packer's torch path demands about 29 GiB of GPU memory on a 700k-face mesh (WI 1766).
+# Installed with --no-deps --require-hashes: numpy is the image's own and must not move.
+numba==0.67.0 --hash=sha256:f63d43db06b4756424d6d2484737c902e0ae944a0eec3e8b0b4de2c695b15caa
+llvmlite==0.49.0 --hash=sha256:6acba646d88abbc87d5c113a3d62c1fbf8b8fee11c6493f516803e30f21ae870

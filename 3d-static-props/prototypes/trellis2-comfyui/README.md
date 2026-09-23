@@ -18,6 +18,11 @@ ComfyUI's source, models, input and output are **runtime bind mounts** — the i
 lists `torch`/`torchvision`/`torchaudio` unpinned, so the build fails loudly if pip ever replaces the
 base's ROCm wheels with CUDA ones instead of silently producing a CPU-bound box.
 
+The image also carries numba (`numba-requirements.txt`: hash-pinned, installed with `--no-deps` so
+numpy stays the base image's own). ComfyUI's UV packer (`comfy_extras/mesh3d/uv_unwrap/pack.py`) runs
+on the CPU when numba imports. Without it, the packer's torch path demands about 29 GiB of GPU memory
+for a 700k-face mesh, and torch keeps that reserved until the next model load (WI 1766).
+
 Build and run, as `notdave` on `ai2`:
 
 ```
@@ -138,6 +143,23 @@ WI 1615 added:
   (the failing node printed), 2 validation refusal, 3 timeout.
 - `side_by_side.py OUT.png "LABEL=img.png" …`: a labelled row of renders.
 
+WI 1766 added:
+
+- `mem_probe/`: a custom-node package, inert unless `MEM_PROBE_DIR` is set in the server's
+  environment. It wraps the mesh tail's stages (remesh, decimate, `_uv_unwrap`, the LSCM batch, pack,
+  apply) and appends one JSON record per call to `$MEM_PROBE_DIR/stages.jsonl`: torch's allocated and
+  reserved bytes at entry and exit, the stage's *demand* (peak allocated over entry) and *cache
+  growth* (peak reserved over entry), and sysfs GTT. With `MEM_PROBE_CAPTURE=1` it saves the first
+  `_uv_unwrap` call's arguments. ComfyUI loads its built-in node files under their path as the module
+  name, so the probe wraps every loaded copy of a target's file. Install with
+  `mem_probe/install.sh $PWD/ComfyUI`.
+- `replay_uv_unwrap.py CAPTURE.pt OUT_DIR --arm T|N [--layout]`: one `_uv_unwrap` call on a captured
+  input, in the image, with GTT sampled every 0.1 s in-process. It refuses unless the guard, the probe
+  and the packer's numba state match the arm.
+- `gtt_hog.py MIB`: holds MIB of GPU memory until killed, a stand-in for another tenant's resident
+  models. Name its container `wi1745-…` so the watchdog stops it too.
+- `gtt_sample.sh` now stamps milliseconds and adds an `epoch_s` column, for 0.1 s sampling.
+
 WI 1749 added:
 
 - `lane_sidecar.py GLB GRAPH.json --models DIR --checkout DIR [--custom-nodes a,b]`: writes
@@ -164,9 +186,14 @@ With both guards, both arms of the shipped template produce a textured GLB on `g
 - TRELLIS.2: 1,890 s, 699,494 triangles;
 - Pixal3D: 1,090 s, 698,297 triangles.
 
-Each GLB carries base colour, metallic-roughness and occlusion textures at 4096. With the guard
-active, `RemeshMesh` has peaked about 35 GB higher than without it, and the cause is not found (WI
-1766). Give a guarded run the headroom.
+Each GLB carries base colour, metallic-roughness and occlusion textures at 4096.
+
+The extra ~35 GB that guarded runs once needed was `UnwrapMesh`'s atlas packer, not `RemeshMesh` (WI
+1766). The guard only lets the node get that far. Without numba the packer ran on the GPU and
+demanded about 29 GiB; the image now carries numba, and the packer demands nothing on the device.
+On the rebuilt image the TRELLIS.2 arm peaks at 25.9 GB of GTT from an empty pool, and the Pixal3D
+arm at 22.8 GB. Beside a 50,540 MiB stand-in for the owner's resident ComfyUI, the TRELLIS.2 arm
+finished at a 76.1 GB peak, with at least 32.6 GiB still available.
 
 ## Gotchas
 

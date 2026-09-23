@@ -47,7 +47,8 @@ own CPU branch. With it, both arms finish on `gtr`. The fallback fired once in e
   frame; TRELLIS.2's is axis-aligned.
 - Neither reproduces the input's small orange label on the front face.
 - With the guard active, `RemeshMesh` peaked about 35 GB higher than without it in 4 of 4 runs.
-  The mechanism is not found (WI 1766).
+  The mechanism is not found (WI 1766). *Corrected by the WI 1766 update below: the peak was
+  `UnwrapMesh`'s atlas packer, not `RemeshMesh`.*
 
 ## The comparison for WI 1602
 
@@ -62,3 +63,28 @@ In `prototypes/trellis2-comfyui/`:
   otherwise guess.
 - `run_api_graph.py`: queue a graph and wait; the exit code says success, error, refusal or timeout.
 - `side_by_side.py`: a labelled row of renders.
+
+## Update 2026-09-23 (WI 1766): the extra memory was the atlas packer, and numba removes it
+
+- **Where it went.** Guarded runs peaked about 35 GB higher than unguarded ones. That was not
+  `RemeshMesh`: a per-stage probe put it in `UnwrapMesh`'s atlas packer (`pack_bitmap_concat`). The
+  packer demanded 28.4 GiB, and torch kept it reserved until the next model load. Unguarded runs
+  never reach the packer, because they fail at the solve before it. The first reading came from a
+  progress bar's flush timestamp.
+- **Why.** ComfyUI's packer uses numba when it imports, and otherwise a torch path on the GPU that
+  pads every chart's tensors to the largest chart. The lane image had no numba. On one captured input,
+  three replays without numba each demanded 29,104 MiB in the packer; three with numba demanded 0.
+  Both gave the same 3,734 charts and valid UVs; numba's atlas is about 3% larger in area.
+- **The fix.** The image carries hash-pinned numba 0.67.0 and llvmlite 0.49.0, installed without
+  dependencies; the freeze diff is exactly those two. Upstream reworked the same padded tensors in
+  v0.35.0 (`0eb098b5`).
+
+| Run on the rebuilt image | Pool | Peak GTT | Lowest available | Result |
+|---|---|---|---|---|
+| TRELLIS.2 arm | empty | 25,944 MiB | 80.4 GiB | textured, 1,920 s |
+| Pixal3D arm | empty | 22,773 MiB | 81.7 GiB | textured, 1,090 s |
+| TRELLIS.2 arm, beside a 50,540 MiB stand-in | 50.7 GB held | 76,064 MiB | 32.6 GiB | textured, 1,861 s; watchdog silent |
+
+One run each, descriptive. The raw decode still varies between runs (14.86M and 12.88M vertices
+here), and the packer's old demand varied with it.
+

@@ -10,6 +10,9 @@ RUN python -c "import torch,json;open('/opt/torch-base.json','w').write(json.dum
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+COPY numba-requirements.txt /tmp/numba-requirements.txt
+RUN pip install --no-cache-dir --no-deps --require-hashes -r /tmp/numba-requirements.txt
+
 COPY check_torch.py /opt/check_torch.py
 RUN python /opt/check_torch.py
 
