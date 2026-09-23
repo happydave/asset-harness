@@ -1,6 +1,13 @@
 # Track: trellis2-clean
 
-**Status:** 🟡 **Active — fork created, audit done, hardware spike open** (2026-08-27). Goal: make
+**Status:** **Retired 2026-09-22 (owner).** ComfyUI core's TRELLIS.2 path carries no NVIDIA-licensed
+code and bakes textures in pure torch, so the fork is superseded by adopting it (WI 1601). The lane
+now lives in `../3d-static-props/prototypes/trellis2-comfyui/`. WI 950's remaining obligations, the
+DINOv3 attribution and the output licence lane, are WI 1749. Reopen only if the estate must
+distribute a TRELLIS.2 generator under non-GPL terms; ComfyUI is GPL-3.0. The text below is the
+track as it stood.
+
+**Former status:** 🟡 Active — fork created, audit done, hardware spike open (2026-08-27). Goal: make
 Microsoft's **TRELLIS.2** (4B image→3D; MIT weights + code) usable for **commercial** game-asset
 generation by removing its non-commercial NVIDIA dependencies. Fork:
 `github.com/happydave/TRELLIS.2`. Tracked as **WI 950**.
