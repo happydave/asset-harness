@@ -1,0 +1,69 @@
+{
+ "lod0": "out/book_stack/book_stack_300.glb",
+ "lods": [
+  {
+   "file": "out/book_stack/final/book_stack_lod1.glb",
+   "tris": 150,
+   "simplifier": "attributes",
+   "relative_error": 0.0191
+  },
+  {
+   "file": "out/book_stack/final/book_stack_lod2.glb",
+   "tris": 98,
+   "simplifier": "attributes (stopped at 98)",
+   "relative_error": 0.1131
+  }
+ ],
+ "lod0_vertices": 527,
+ "welded_vertices": 359,
+ "hull_tris": 104,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.3396,
+  0.3981,
+  0.4479
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "300 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    150,
+    98
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.398 vs 0.4"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "104 triangles, watertight True"
+  },
+  "gltf_validator book_stack_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator book_stack_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator book_stack_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

@@ -1,0 +1,69 @@
+{
+ "lod0": "out/chair/chair_300.glb",
+ "lods": [
+  {
+   "file": "out/chair/final/chair_lod1.glb",
+   "tris": 192,
+   "simplifier": "attributes (stopped at 192)",
+   "relative_error": 0.049
+  },
+  {
+   "file": "out/chair/final/chair_lod2.glb",
+   "tris": 52,
+   "simplifier": "sloppy (attributes stopped at 190)",
+   "relative_error": 0.0542
+  }
+ ],
+ "lod0_vertices": 459,
+ "welded_vertices": 398,
+ "hull_tris": 48,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.5263,
+  0.5997,
+  1.0096
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "300 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    192,
+    52
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.600 vs 0.6"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "48 triangles, watertight True"
+  },
+  "gltf_validator chair_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator chair_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator chair_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

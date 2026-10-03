@@ -1,0 +1,69 @@
+{
+ "lod0": "out/iron_gate/iron_gate_300.glb",
+ "lods": [
+  {
+   "file": "out/iron_gate/final/iron_gate_lod1.glb",
+   "tris": 223,
+   "simplifier": "sloppy (attributes stopped at 260)",
+   "relative_error": 0.0113
+  },
+  {
+   "file": "out/iron_gate/final/iron_gate_lod2.glb",
+   "tris": 70,
+   "simplifier": "sloppy (attributes stopped at 256)",
+   "relative_error": 0.0419
+  }
+ ],
+ "lod0_vertices": 619,
+ "welded_vertices": 514,
+ "hull_tris": 24,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.4834,
+  2.4845,
+  2.5
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "293 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    223,
+    70
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 2.485 vs 2.5"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "24 triangles, watertight True"
+  },
+  "gltf_validator iron_gate_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator iron_gate_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator iron_gate_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

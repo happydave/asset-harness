@@ -1,0 +1,69 @@
+{
+ "lod0": "out/cliff_rock/cliff_rock_300.glb",
+ "lods": [
+  {
+   "file": "out/cliff_rock/final/cliff_rock_lod1.glb",
+   "tris": 1544,
+   "simplifier": "sloppy (attributes stopped at 2028)",
+   "relative_error": 0.0223
+  },
+  {
+   "file": "out/cliff_rock/final/cliff_rock_lod2.glb",
+   "tris": 494,
+   "simplifier": "sloppy (attributes stopped at 2028)",
+   "relative_error": 0.0887
+  }
+ ],
+ "lod0_vertices": 4668,
+ "welded_vertices": 3917,
+ "hull_tris": 166,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  3.8679,
+  3.8775,
+  3.4834
+ ],
+ "gate": {
+  "triangles": {
+   "pass": false,
+   "detail": "2292 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    1544,
+    494
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 3.877 vs 4.0"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "166 triangles, watertight True"
+  },
+  "gltf_validator cliff_rock_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator cliff_rock_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator cliff_rock_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": false
+}

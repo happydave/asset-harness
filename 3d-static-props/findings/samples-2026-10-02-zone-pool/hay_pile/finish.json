@@ -1,0 +1,69 @@
+{
+ "lod0": "out/hay_pile/hay_pile_300.glb",
+ "lods": [
+  {
+   "file": "out/hay_pile/final/hay_pile_lod1.glb",
+   "tris": 114,
+   "simplifier": "attributes",
+   "relative_error": 0.0178
+  },
+  {
+   "file": "out/hay_pile/final/hay_pile_lod2.glb",
+   "tris": 56,
+   "simplifier": "attributes",
+   "relative_error": 0.0497
+  }
+ ],
+ "lod0_vertices": 419,
+ "welded_vertices": 398,
+ "hull_tris": 132,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  1.3957,
+  1.3162,
+  0.4524
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "228 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    114,
+    56
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 1.396 vs 1.5"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "132 triangles, watertight True"
+  },
+  "gltf_validator hay_pile_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator hay_pile_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator hay_pile_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

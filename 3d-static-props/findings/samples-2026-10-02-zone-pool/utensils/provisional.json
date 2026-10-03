@@ -1,0 +1,11 @@
+{
+  "work_item": 2120,
+  "name": "utensils",
+  "group": "clutter",
+  "class": "cluster",
+  "provisional": {
+    "style": "unanchored: no style guide, anchor set or style LoRA exists until asset-harness WI 2093; the prompts here are re-run once it lands",
+    "licence": "conditional: the 3D lane is conditional until WI 1749's O1 (the DINOv3 conditioner's source) and O2 (the credit line); nothing from this batch ships before both are decided"
+  },
+  "ships": false
+}

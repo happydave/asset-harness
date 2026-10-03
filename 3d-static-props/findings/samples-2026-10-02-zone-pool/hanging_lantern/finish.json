@@ -1,0 +1,69 @@
+{
+ "lod0": "out/hanging_lantern/hanging_lantern_300.glb",
+ "lods": [
+  {
+   "file": "out/hanging_lantern/final/hanging_lantern_lod1.glb",
+   "tris": 192,
+   "simplifier": "attributes (stopped at 192)",
+   "relative_error": 0.0484
+  },
+  {
+   "file": "out/hanging_lantern/final/hanging_lantern_lod2.glb",
+   "tris": 68,
+   "simplifier": "sloppy (attributes stopped at 178)",
+   "relative_error": 0.0562
+  }
+ ],
+ "lod0_vertices": 600,
+ "welded_vertices": 473,
+ "hull_tris": 64,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.2716,
+  0.39,
+  0.6767
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "272 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    192,
+    68
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.390 vs 0.4"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "64 triangles, watertight True"
+  },
+  "gltf_validator hanging_lantern_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator hanging_lantern_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator hanging_lantern_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

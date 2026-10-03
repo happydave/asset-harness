@@ -1,0 +1,69 @@
+{
+ "lod0": "out/post_light/post_light_300.glb",
+ "lods": [
+  {
+   "file": "out/post_light/final/post_light_lod1.glb",
+   "tris": 148,
+   "simplifier": "attributes",
+   "relative_error": 0.0175
+  },
+  {
+   "file": "out/post_light/final/post_light_lod2.glb",
+   "tris": 74,
+   "simplifier": "sloppy (attributes stopped at 100)",
+   "relative_error": 0.02
+  }
+ ],
+ "lod0_vertices": 525,
+ "welded_vertices": 359,
+ "hull_tris": 82,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.3523,
+  0.5834,
+  1.9877
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "299 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    148,
+    74
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.583 vs 0.6"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "82 triangles, watertight True"
+  },
+  "gltf_validator post_light_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator post_light_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator post_light_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

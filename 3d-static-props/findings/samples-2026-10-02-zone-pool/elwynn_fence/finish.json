@@ -1,0 +1,69 @@
+{
+ "lod0": "out/elwynn_fence/elwynn_fence_300.glb",
+ "lods": [
+  {
+   "file": "out/elwynn_fence/final/elwynn_fence_lod1.glb",
+   "tris": 162,
+   "simplifier": "attributes",
+   "relative_error": 0.0317
+  },
+  {
+   "file": "out/elwynn_fence/final/elwynn_fence_lod2.glb",
+   "tris": 54,
+   "simplifier": "sloppy (attributes stopped at 162)",
+   "relative_error": 0.0542
+  }
+ ],
+ "lod0_vertices": 469,
+ "welded_vertices": 392,
+ "hull_tris": 96,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.4917,
+  2.9935,
+  1.6486
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "300 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    162,
+    54
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 2.994 vs 3.0"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "96 triangles, watertight True"
+  },
+  "gltf_validator elwynn_fence_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator elwynn_fence_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator elwynn_fence_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

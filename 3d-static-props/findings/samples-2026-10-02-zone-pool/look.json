@@ -1,0 +1,110 @@
+{
+ "barrel": [
+  "hold",
+  "hoops and staves kept; matches WI 2112's barrel"
+ ],
+ "jar": [
+  "fail",
+  "rim faceted to an octagon, the lug handles become spikes, dark blotches"
+ ],
+ "bottle": [
+  "hold",
+  "cork and neck kept"
+ ],
+ "chest": [
+  "hold",
+  "bands, lock plate and studs kept"
+ ],
+ "crate": [
+  "fail",
+  "generated open-topped; the thin side walls' lower half is lost, the floor hangs in the frame"
+ ],
+ "keg": [
+  "fail",
+  "the body goes octagonal (15 pieces, as the source's 14)"
+ ],
+ "elwynn_fence": [
+  "hold",
+  "posts and rails kept"
+ ],
+ "westfall_fence": [
+  "hold",
+  "reads right at this size, but the planks come apart (24 pieces)"
+ ],
+ "iron_gate": [
+  "fail",
+  "the bars fuse into a dark sheet with fins; finial gone"
+ ],
+ "post_light": [
+  "hold",
+  "post, arm and lamp kept (3 pieces: the lamp hangs free)"
+ ],
+ "candelabra": [
+  "fail",
+  "candles become spikes, arms thin out (19 pieces)"
+ ],
+ "lantern": [
+  "fail",
+  "the ring floats free, the roof goes flat (50 pieces; WI 2112's prompt, 48 there)"
+ ],
+ "hanging_lantern": [
+  "fail",
+  "the bail is lost, the lantern floats under the bracket (30 pieces)"
+ ],
+ "table": [
+  "hold",
+  "top, legs and stretchers kept"
+ ],
+ "chair": [
+  "hold",
+  "slat back, seat and stretchers kept; upright with the source's up"
+ ],
+ "bookshelf": [
+  "hold",
+  "faithful, but generated as a closed cabinet with its shelves to one side, and 3.5 yd tall by the horizontal scale"
+ ],
+ "rug": [
+  "hold",
+  "border and fringe kept in the bake"
+ ],
+ "planter_box": [
+  "hold",
+  "the box holds; the plants thin to a few leaves (4 pieces)"
+ ],
+ "utensils": [
+  "fail",
+  "the pot and bowls go hexagonal; the spoon holds"
+ ],
+ "book_stack": [
+  "hold",
+  "covers and page edges kept"
+ ],
+ "weapon_rack": [
+  "hold",
+  "rack, blades and axe head kept; 3.4 yd tall by the horizontal scale"
+ ],
+ "mug": [
+  "fail",
+  "the body goes octagonal, the handle shears, the foam faceted (5 pieces)"
+ ],
+ "tools": [
+  "fail",
+  "the rake's tines fuse into a blade; fork and spade kept"
+ ],
+ "hay_pile": [
+  "fail",
+  "the straw fringe is lost: a smooth dome (73 pieces)"
+ ],
+ "rock": [
+  "hold",
+  "faithful"
+ ],
+ "cliff_rock": [
+  "fail",
+  "torn into slivers with black gaps (99 pieces); 2,292 faces, the only gate failure"
+ ],
+ "tombstone": [
+  "hold",
+  "stone, base and ground kept; the cross faint"
+ ]
+}

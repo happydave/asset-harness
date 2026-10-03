@@ -1,0 +1,69 @@
+{
+ "lod0": "out/chest/chest_300.glb",
+ "lods": [
+  {
+   "file": "out/chest/final/chest_lod1.glb",
+   "tris": 150,
+   "simplifier": "attributes",
+   "relative_error": 0.0232
+  },
+  {
+   "file": "out/chest/final/chest_lod2.glb",
+   "tris": 74,
+   "simplifier": "attributes",
+   "relative_error": 0.0864
+  }
+ ],
+ "lod0_vertices": 422,
+ "welded_vertices": 296,
+ "hull_tris": 108,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.739,
+  1.0098,
+  0.6604
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "300 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    150,
+    74
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 1.010 vs 1.0"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "108 triangles, watertight True"
+  },
+  "gltf_validator chest_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator chest_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator chest_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

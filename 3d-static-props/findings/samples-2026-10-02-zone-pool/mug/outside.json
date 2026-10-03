@@ -1,0 +1,6 @@
+{
+ "buried_share": 0.0,
+ "rule": "source points inside a closed rebuild and deeper than 2 % of the size are dropped as internal surfaces",
+ "p95": 0.03456597222680475,
+ "max": 0.05698895973619581
+}

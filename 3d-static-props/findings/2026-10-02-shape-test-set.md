@@ -16,7 +16,8 @@ reports, the measurements), the concepts with their recipes, and labelled sheets
 (source against rebuild in three even-light views and a low sun; the three LODs). The dense sources
 (about 60 MB each) are not committed: they are on `gtr` at `~/wi1745/output/3d/wi2112_<name>_00001.glb`,
 each named by its content hash in its `.lane.json`. The scripts are [prototypes/shape_set/](../prototypes/shape_set/)
-and the lane's run script [prototypes/trellis2-comfyui/gpu_pool.sh](../prototypes/trellis2-comfyui/gpu_pool.sh).
+and the lane's run script [prototypes/trellis2-comfyui/gpu_2112.sh](../prototypes/trellis2-comfyui/gpu_2112.sh)
+(`gpu_pool.sh` is its resumable form, written for WI 2120).
 
 ## Verdicts
 

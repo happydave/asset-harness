@@ -1,0 +1,69 @@
+{
+ "lod0": "out/planter_box/planter_box_300.glb",
+ "lods": [
+  {
+   "file": "out/planter_box/final/planter_box_lod1.glb",
+   "tris": 194,
+   "simplifier": "attributes (stopped at 194)",
+   "relative_error": 0.0365
+  },
+  {
+   "file": "out/planter_box/final/planter_box_lod2.glb",
+   "tris": 49,
+   "simplifier": "sloppy (attributes stopped at 192)",
+   "relative_error": 0.0385
+  }
+ ],
+ "lod0_vertices": 543,
+ "welded_vertices": 469,
+ "hull_tris": 24,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.4598,
+  1.1977,
+  0.4655
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "297 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    194,
+    49
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 1.198 vs 1.2"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "24 triangles, watertight True"
+  },
+  "gltf_validator planter_box_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator planter_box_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator planter_box_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

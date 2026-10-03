@@ -1,0 +1,69 @@
+{
+ "lod0": "out/utensils/utensils_300.glb",
+ "lods": [
+  {
+   "file": "out/utensils/final/utensils_lod1.glb",
+   "tris": 240,
+   "simplifier": "attributes (stopped at 240)",
+   "relative_error": 0.0498
+  },
+  {
+   "file": "out/utensils/final/utensils_lod2.glb",
+   "tris": 100,
+   "simplifier": "sloppy (attributes stopped at 216)",
+   "relative_error": 0.0662
+  }
+ ],
+ "lod0_vertices": 642,
+ "welded_vertices": 506,
+ "hull_tris": 68,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.3971,
+  0.5058,
+  0.259
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "300 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    240,
+    100
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.506 vs 0.5"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "68 triangles, watertight True"
+  },
+  "gltf_validator utensils_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator utensils_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator utensils_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}
