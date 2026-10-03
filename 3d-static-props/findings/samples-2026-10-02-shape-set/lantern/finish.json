@@ -1,0 +1,69 @@
+{
+ "lod0": "out_up/lantern/lantern_300.glb",
+ "lods": [
+  {
+   "file": "out_up/lantern/final/lantern_lod1.glb",
+   "tris": 158,
+   "simplifier": "sloppy (attributes stopped at 182)",
+   "relative_error": 0.0179
+  },
+  {
+   "file": "out_up/lantern/final/lantern_lod2.glb",
+   "tris": 31,
+   "simplifier": "sloppy (attributes stopped at 182)",
+   "relative_error": 0.053
+  }
+ ],
+ "lod0_vertices": 579,
+ "welded_vertices": 502,
+ "hull_tris": 26,
+ "hull_volume_over_mesh": 1.0,
+ "box_tris_alternative": 12,
+ "size_world": [
+  0.3472,
+  0.3519,
+  0.9641
+ ],
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "detail": "257 <= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "detail": [
+    158,
+    31
+   ]
+  },
+  "texture": {
+   "pass": true,
+   "detail": "(512, 512) <= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "detail": "min z 0.0000"
+  },
+  "category_size": {
+   "pass": true,
+   "detail": "longest side 0.352 vs 0.35"
+  },
+  "collision": {
+   "pass": true,
+   "detail": "26 triangles, watertight True"
+  },
+  "gltf_validator lantern_lod0.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator lantern_lod1.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  },
+  "gltf_validator lantern_lod2.glb": {
+   "pass": true,
+   "detail": "errors 0 warnings 0 infos 0"
+  }
+ },
+ "gate_pass": true
+}

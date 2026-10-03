@@ -1,0 +1,134 @@
+{
+ "work_item": 2112,
+ "shape": "lantern",
+ "prompt": "A single iron lantern standing on its base: a square frame with four glass panes, a candle inside, a peaked top and a ring handle. Three-quarter view from slightly above, the whole object in frame and centred, on a plain light grey background, soft even studio light, a stylised hand-painted fantasy game prop, clean readable shapes.",
+ "seed": 11,
+ "model": {
+  "unet": "z_image_turbo_bf16.safetensors",
+  "clip": "qwen_3_4b.safetensors",
+  "clip_type": "lumina2",
+  "vae": "ae.safetensors"
+ },
+ "settings": {
+  "steps": 8,
+  "cfg": 1.0,
+  "sampler": "res_multistep",
+  "scheduler": "simple",
+  "shift": 3.0,
+  "size": 1024,
+  "negative": "zeroed (Turbo)"
+ },
+ "server": "http://gtr:8188",
+ "outputs": [
+  "findings/samples-2026-10-02-shape-set/concepts/lantern_s11.png"
+ ],
+ "graph": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "2": {
+   "class_type": "CLIPLoader",
+   "inputs": {
+    "clip_name": "qwen_3_4b.safetensors",
+    "type": "lumina2"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "ae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "ModelSamplingAuraFlow",
+   "inputs": {
+    "model": [
+     "1",
+     0
+    ],
+    "shift": 3.0
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "A single iron lantern standing on its base: a square frame with four glass panes, a candle inside, a peaked top and a ring handle. Three-quarter view from slightly above, the whole object in frame and centred, on a plain light grey background, soft even studio light, a stylised hand-painted fantasy game prop, clean readable shapes."
+   }
+  },
+  "6": {
+   "class_type": "ConditioningZeroOut",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ]
+   }
+  },
+  "7": {
+   "class_type": "EmptySD3LatentImage",
+   "inputs": {
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 1
+   }
+  },
+  "8": {
+   "class_type": "KSampler",
+   "inputs": {
+    "model": [
+     "4",
+     0
+    ],
+    "positive": [
+     "5",
+     0
+    ],
+    "negative": [
+     "6",
+     0
+    ],
+    "latent_image": [
+     "7",
+     0
+    ],
+    "seed": 11,
+    "steps": 8,
+    "cfg": 1.0,
+    "sampler_name": "res_multistep",
+    "scheduler": "simple",
+    "denoise": 1.0
+   }
+  },
+  "9": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "8",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "10": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "images": [
+     "9",
+     0
+    ],
+    "filename_prefix": "wi2112/lantern_s11"
+   }
+  }
+ }
+}

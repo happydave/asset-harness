@@ -1,0 +1,25 @@
+{
+ "size": 1.0146,
+ "source_to_rebuild_share_of_size": {
+  "median": 0.002,
+  "p95": 0.0212,
+  "p99": 0.03,
+  "max": 0.0452,
+  "over_2pct": 0.056,
+  "over_5pct": 0.0
+ },
+ "source_pieces_over_50_faces": 14,
+ "rebuild_pieces": 1,
+ "rebuild_watertight": true,
+ "rebuild_winding_consistent": true,
+ "rebuild_faces": 300,
+ "hull_volume_over_rebuild": 5.176,
+ "hull_volume_over_box": 0.701,
+ "lods": [
+  202,
+  44
+ ],
+ "hull_tris": 50,
+ "gate_pass": true,
+ "gate_failures": {}
+}
