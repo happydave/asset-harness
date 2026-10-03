@@ -1,5 +1,11 @@
 # Track: 3d-static-props
 
+**Status (2026-10-03):** the **game-asset stage** ([stage/](stage/README.md), WI 2092) takes a
+TRELLIS.2 prop to a validated glb at its category's budget, choosing the rebuild by shape class, with
+LODs, collision, a fixed up axis and scale, and a sidecar, or refuses it. Scored on WI 2120's 27: 13
+hits against the prototype chain's 9, and the gate agreeing with the eye on 21
+([findings](findings/2026-10-03-game-asset-stage.md)).
+
 **Status (2026-09-23):** the working lane is **TRELLIS.2 and Pixal3D through ComfyUI core**
 (`prototypes/trellis2-comfyui/`).
 - The geometry tail runs on `ai2` (gfx1201, with the GEMM guard; WI 1741).

@@ -1,0 +1,925 @@
+{
+ "stage_sidecar": 1,
+ "result": "accepted",
+ "source": {
+  "file": "post_light.glb",
+  "content_hash": "sha256:f1558f658306b64b7f239db27e8ec5a455f9adeb560108740b2c8a11996a2983"
+ },
+ "control": false,
+ "lane_record": {
+  "asset": {
+   "file": "wi2120_post_light_00001.glb",
+   "bytes": 43631628,
+   "content_hash": "sha256:f1558f658306b64b7f239db27e8ec5a455f9adeb560108740b2c8a11996a2983"
+  },
+  "lane": "trellis2-comfyui",
+  "arm": "trellis2",
+  "license_record": {
+   "status": "conditional",
+   "commercial_in_game": true,
+   "standalone_redistributable": true,
+   "source": {
+    "kind": "local-generation",
+    "note": "ComfyUI TRELLIS.2 lane, trellis2 arm; licence rows read 2026-09-23"
+   },
+   "text": "Generated locally by the ComfyUI TRELLIS.2 lane from models under: Apache License 2.0, DINOv3 License (Meta), MIT License. Generated with GPL-3.0 tooling (ComfyUI); on the common reading the GPL does not reach outputs. Credit line for products that ship this asset: Built with DINOv3. The repository tags a DINOv3 derivative MIT and serves it ungated; the DINOv3 License governs the DINOv3 part regardless (owner decision O1, WI 1749). Conditional: see asset-harness 3d-static-props/findings/2026-09-23-trellis2-lane-licence.md.",
+   "components": [
+    {
+     "file": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+     "role": "image conditioner, both arms",
+     "source": {
+      "repo": "Comfy-Org/Pixal3D",
+      "revision": "f37641be376725d324c56626007cc477f1249a69",
+      "tag": "mit",
+      "gated": false,
+      "size": 1215214176
+     },
+     "parts": [
+      {
+       "name": "DINOv3 ViT-L/16",
+       "upstream": "facebook/dinov3-vitl16-pretrain-lvd1689m (gated)",
+       "licence": "dinov3"
+      },
+      {
+       "name": "NAF upsampler",
+       "upstream": "valeoai/NAF naf_release.pth",
+       "licence": "apache-2.0",
+       "note": "The weights carry no licence of their own; Apache-2.0 is inferred from the repository they are released from."
+      }
+     ]
+    },
+    {
+     "file": "diffusion_models/trellis_2_int8_convrot.safetensors",
+     "role": "flow model, TRELLIS.2 arm",
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 5253048192
+     },
+     "parts": [
+      {
+       "name": "TRELLIS.2 4B",
+       "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+       "licence": "mit"
+      }
+     ]
+    },
+    {
+     "file": "vae/trellis_2_shape_vae_bf16.safetensors",
+     "role": "shape VAE, both arms",
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 1095844024
+     },
+     "parts": [
+      {
+       "name": "TRELLIS.2 shape VAE",
+       "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+       "licence": "mit"
+      }
+     ]
+    },
+    {
+     "file": "vae/trellis_2_texture_vae_bf16.safetensors",
+     "role": "texture VAE, both arms",
+     "source": {
+      "repo": "Comfy-Org/TRELLIS.2",
+      "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+      "tag": "mit",
+      "gated": false,
+      "size": 948461364
+     },
+     "parts": [
+      {
+       "name": "TRELLIS.2 texture VAE",
+       "upstream": "microsoft/TRELLIS.2-4B@af44b45f2e35a493886929c6d786e563ec68364d",
+       "licence": "mit"
+      }
+     ]
+    },
+    {
+     "file": "background_removal/birefnet.safetensors",
+     "role": "background removal, both arms",
+     "source": {
+      "repo": "Comfy-Org/BiRefNet",
+      "revision": "25511f8787e51912e1480706b4e47b8f467fbf72",
+      "tag": "mit",
+      "gated": false,
+      "size": 444473596
+     },
+     "parts": [
+      {
+       "name": "BiRefNet",
+       "upstream": "ZhengPeng7/BiRefNet@e2bf8e4460fc8fa32bba5ea4d94b3233d367b0e4",
+       "licence": "mit"
+      }
+     ]
+    }
+   ],
+   "size_mismatches": []
+  },
+  "provenance": {
+   "source_of_truth": "provider-nondeterministic",
+   "generator_script": "3d-static-props/prototypes/trellis2-comfyui/run_api_graph.py",
+   "recipe": {
+    "provider": "comfyui-core",
+    "generator": "trellis2",
+    "generator_version": "ComfyUI v0.37.2 (830232b856045ca2892833212d7771078a13edd5)",
+    "params": {
+     "108": {
+      "class_type": "ModelSamplingSD3",
+      "shift": 5.0
+     },
+     "117": {
+      "class_type": "VAELoader",
+      "vae_name": "trellis_2_shape_vae_bf16.safetensors"
+     },
+     "118": {
+      "class_type": "VAELoader",
+      "vae_name": "trellis_2_texture_vae_bf16.safetensors"
+     },
+     "119": {
+      "class_type": "VaeDecodeStructureTrellis2",
+      "resolution": "32"
+     },
+     "12": {
+      "class_type": "KSampler",
+      "seed": 43,
+      "steps": 12,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+     },
+     "122": {
+      "class_type": "LoadImage",
+      "image": "wi2120_post_light.png"
+     },
+     "125": {
+      "class_type": "RescaleCFG",
+      "multiplier": 0.7
+     },
+     "126": {
+      "class_type": "RescaleCFG",
+      "multiplier": 0.5
+     },
+     "147": {
+      "class_type": "BakeTextureFromVoxel",
+      "texture_size": 4096
+     },
+     "15": {
+      "class_type": "CLIPVisionLoader",
+      "clip_name": "dino_v3_L_naf_fp32.safetensors"
+     },
+     "164": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_base_color"
+     },
+     "18": {
+      "class_type": "KSampler",
+      "seed": 42,
+      "steps": 20,
+      "cfg": 7.5,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+     },
+     "186": {
+      "class_type": "DecimateMesh",
+      "target_face_count": 700000,
+      "placement_mode": "midpoint"
+     },
+     "192": {
+      "class_type": "RemoveBackground"
+     },
+     "193": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "bg_removal_name": "birefnet.safetensors"
+     },
+     "196": {
+      "class_type": "UnwrapMesh",
+      "segmenter": "pec",
+      "resolution": 4096,
+      "padding": 1,
+      "weld_distance": 0.0002
+     },
+     "199": {
+      "class_type": "CFGOverride",
+      "cfg": 1.0,
+      "start_percent": 0.667,
+      "end_percent": 1.0
+     },
+     "202": {
+      "class_type": "GetMeshInfo"
+     },
+     "207": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_metallic"
+     },
+     "208": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_roughness"
+     },
+     "210": {
+      "class_type": "ApplyTextureToMesh"
+     },
+     "224": {
+      "class_type": "BakeNormalMapFromMesh",
+      "resolution": 2048,
+      "cage_distance": 0.05,
+      "ignore_backfaces": true
+     },
+     "226": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_normal"
+     },
+     "23": {
+      "class_type": "KSampler",
+      "seed": 42,
+      "steps": 12,
+      "cfg": 7.5,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+     },
+     "233": {
+      "class_type": "BakeAmbientOcclusion",
+      "resolution": 1024,
+      "samples": 64,
+      "max_distance": 0.71,
+      "strength": 1.0,
+      "bias": 0.01
+     },
+     "235": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_ambiant_occlusion"
+     },
+     "238": {
+      "class_type": "MeshSmoothNormals",
+      "crease_angle": 180.0
+     },
+     "241": {
+      "class_type": "RemeshMesh",
+      "resolution": 768,
+      "sign_mode": "udf",
+      "sign_mode.qef": false,
+      "sign_mode.drop_inverted_components": false,
+      "sign_mode.drop_enclosed_components": false,
+      "band": 1.0,
+      "project_back": 0.0,
+      "fix_poles": false,
+      "smooth_iters": 20,
+      "drop_small_components": 0.01,
+      "precluster_max_verts": 20000000
+     },
+     "260": {
+      "class_type": "MeshSmoothNormals",
+      "crease_angle": 180.0
+     },
+     "261": {
+      "class_type": "RenderUVAtlas",
+      "resolution": 1024
+     },
+     "262": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_n262"
+     },
+     "279": {
+      "class_type": "CFGOverride",
+      "cfg": 1.0,
+      "start_percent": 0.769,
+      "end_percent": 1.0
+     },
+     "285": {
+      "class_type": "MeshToFile3D"
+     },
+     "299": {
+      "class_type": "Trellis2Conditioning"
+     },
+     "3": {
+      "class_type": "KSampler",
+      "seed": 56,
+      "steps": 12,
+      "cfg": 7.5,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
+     },
+     "302": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_n302"
+     },
+     "303": {
+      "class_type": "SaveImage",
+      "filename_prefix": "3d/wi2120_post_light_n303"
+     },
+     "303m": {
+      "class_type": "MaskToImage"
+     },
+     "312": {
+      "class_type": "ImageCropToMask",
+      "width": 1024,
+      "height": 1024,
+      "pad_factor": 1.1,
+      "grow_mask": 0,
+      "background": "#000000"
+     },
+     "322": {
+      "class_type": "Save3DAdvanced",
+      "filename_prefix": "3d/wi2120_post_light",
+      "viewport_state": "",
+      "width": 1024,
+      "height": 1024
+     },
+     "40": {
+      "class_type": "UNETLoader",
+      "unet_name": "trellis_2_int8_convrot.safetensors",
+      "weight_dtype": "default"
+     },
+     "87": {
+      "class_type": "EmptyTrellis2LatentStructure",
+      "batch_size": 1
+     },
+     "91": {
+      "class_type": "Trellis2ShapeStage"
+     },
+     "92": {
+      "class_type": "VaeDecodeShapeTrellis"
+     },
+     "93": {
+      "class_type": "VaeDecodeTextureTrellis"
+     },
+     "94": {
+      "class_type": "Trellis2UpsampleStage",
+      "target_resolution": 1024
+     },
+     "98": {
+      "class_type": "Trellis2TextureStage"
+     }
+    },
+    "seed": 56,
+    "dependencies": [
+     {
+      "name": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+      "content_hash": "sha256:4ad2ec4e0879a5b5b04cd97325cc37da954a7b6edca5170b86510f17f2b2290f",
+      "bytes": 1215214176,
+      "source": {
+       "repo": "Comfy-Org/Pixal3D",
+       "revision": "f37641be376725d324c56626007cc477f1249a69",
+       "tag": "mit",
+       "gated": false,
+       "size": 1215214176
+      }
+     },
+     {
+      "name": "diffusion_models/trellis_2_int8_convrot.safetensors",
+      "content_hash": "sha256:d01952ad137213f6a868f86b6b877026276f84af5eec23069217475a0bad3a31",
+      "bytes": 5253048192,
+      "source": {
+       "repo": "Comfy-Org/TRELLIS.2",
+       "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+       "tag": "mit",
+       "gated": false,
+       "size": 5253048192
+      }
+     },
+     {
+      "name": "vae/trellis_2_shape_vae_bf16.safetensors",
+      "content_hash": "sha256:de0cb4949a76c59ee5c091a995a69bcc8c51d5aeda939f0c641a50d2a72341f4",
+      "bytes": 1095844024,
+      "source": {
+       "repo": "Comfy-Org/TRELLIS.2",
+       "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+       "tag": "mit",
+       "gated": false,
+       "size": 1095844024
+      }
+     },
+     {
+      "name": "vae/trellis_2_texture_vae_bf16.safetensors",
+      "content_hash": "sha256:714e5ebf094a610e12a8e3b5175c18a62f37f6ea4218acb6073644456b73ab0e",
+      "bytes": 948461364,
+      "source": {
+       "repo": "Comfy-Org/TRELLIS.2",
+       "revision": "430a9d09b2416687018c8fe8edced2ad4858a439",
+       "tag": "mit",
+       "gated": false,
+       "size": 948461364
+      }
+     },
+     {
+      "name": "background_removal/birefnet.safetensors",
+      "content_hash": "sha256:9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154",
+      "bytes": 444473596,
+      "source": {
+       "repo": "Comfy-Org/BiRefNet",
+       "revision": "25511f8787e51912e1480706b4e47b8f467fbf72",
+       "tag": "mit",
+       "gated": false,
+       "size": 444473596
+      }
+     },
+     {
+      "name": "custom_nodes/rocm_gemm_guard/__init__.py",
+      "content_hash": "sha256:d3da0f88618a9fe27602da9c6cd53e63209774eb2e30f24ad16651f2fecfedda"
+     },
+     {
+      "name": "custom_nodes/rocm_unwrap_guard/__init__.py",
+      "content_hash": "sha256:c075f8625480075633715ef2292bde47aa861c1c37db152c66959609eed8e8dc"
+     },
+     {
+      "name": "custom_nodes/mem_probe/__init__.py",
+      "content_hash": "sha256:317ed30a814b83860f1e14b2ee2753ddcb9ed52f1f50dc5843417fa121ac2a96"
+     }
+    ],
+    "salt": "trellis2-comfyui-lane-sidecar/1"
+   }
+  }
+ },
+ "provisional": {
+  "work_item": 2120,
+  "name": "post_light",
+  "group": "lights",
+  "class": "open frame",
+  "provisional": {
+   "style": "unanchored: no style guide, anchor set or style LoRA exists until asset-harness WI 2093; the prompts here are re-run once it lands",
+   "licence": "conditional: the 3D lane is conditional until WI 1749's O1 (the DINOv3 conditioner's source) and O2 (the credit line); nothing from this batch ships before both are decided"
+  },
+  "ships": false
+ },
+ "category": {
+  "name": "post_light",
+  "class": "open frame",
+  "budget": 300,
+  "texture": 512,
+  "governing": "height",
+  "size": 4.1,
+  "size_source": "lamppost.m2, 70 placements"
+ },
+ "normalisation": {
+  "generator": "trellis2",
+  "up_rule": "source",
+  "matrix": [
+   [
+    -3.9867138119743646,
+    0.9159859422262254,
+    0.0,
+    -0.009083465040292742
+   ],
+   [
+    -0.9159859422262254,
+    -3.9867138119743646,
+    0.0,
+    -0.05727321174160576
+   ],
+   [
+    0.0,
+    0.0,
+    4.090588865303287,
+    2.050743279466383
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "stable_pose_tilt_deg": 93.84,
+  "yaw_deg": 167.06,
+  "governing_axis": "height",
+  "scale": 4.090589,
+  "extents_after": [
+   1.2333,
+   0.7534,
+   4.1
+  ]
+ },
+ "source_parts": {
+  "fragments": 9,
+  "merged": 1,
+  "parts": 1,
+  "dropped_small": 0,
+  "contact": 0.01,
+  "area_floor": 0.01
+ },
+ "class": "open frame",
+ "arms_tried": [
+  {
+   "arm": "generic",
+   "t_blender": 8.0,
+   "blender": {
+    "mode": "generic",
+    "budget": 300,
+    "texture": 512,
+    "high_tris": 699856,
+    "voxel_ladder": [
+     {
+      "divisor": 96,
+      "pieces": 3,
+      "tris": 7400
+     },
+     {
+      "divisor": 72,
+      "pieces": 8,
+      "tris": 3976
+     },
+     {
+      "divisor": 56,
+      "pieces": 5,
+      "tris": 2460
+     },
+     {
+      "divisor": 48,
+      "pieces": 4,
+      "tris": 1792
+     }
+    ],
+    "debris_islands_dropped": 2,
+    "low_tris": 296,
+    "foot_lifted": -0.00136,
+    "t_rebuild": 1.0,
+    "t_bake": 0.5,
+    "lod0": "score/2120_post_light/arms/generic/post_light_lod0.glb",
+    "t_render": 5.7,
+    "size": 4.1,
+    "t_total": 7.7
+   },
+   "lods": [
+    {
+     "file": "score/2120_post_light/arms/generic/post_light_lod1.glb",
+     "tris": 148,
+     "simplifier": "attributes",
+     "relative_error": 0.016
+    },
+    {
+     "file": "score/2120_post_light/arms/generic/post_light_lod2.glb",
+     "tris": 78,
+     "simplifier": "attributes",
+     "relative_error": 0.0711
+    }
+   ],
+   "collision": {
+    "kind": "part_boxes",
+    "triangles": 12
+   },
+   "measurements": {
+    "pieces": 2,
+    "floating": [
+     {
+      "piece": 1,
+      "faces": 78,
+      "ground_gap": 0.6425,
+      "nearest_piece": 0.081
+     }
+    ],
+    "shape_p95": 0.0147,
+    "shape_source_to_rebuild": 0.0147,
+    "shape_rebuild_to_source": 0.0058,
+    "buried_share": 0.0037,
+    "colour": {
+     "front": 4.31,
+     "side": 5.95,
+     "back": 3.79,
+     "above": 7.9
+    },
+    "hull_over_volume": 6.047,
+    "extents": [
+     1.1967,
+     0.6971,
+     4.0507
+    ]
+   },
+   "gate": {
+    "triangles": {
+     "pass": true,
+     "value": 296,
+     "limit": "<= 300"
+    },
+    "lods_decrease": {
+     "pass": true,
+     "value": [
+      296,
+      148,
+      78
+     ],
+     "limit": "each below the last"
+    },
+    "texture": {
+     "pass": true,
+     "value": 512,
+     "limit": "<= 512"
+    },
+    "foot_on_ground": {
+     "pass": true,
+     "value": 0.0,
+     "limit": "|z| <= 0.001"
+    },
+    "size": {
+     "pass": true,
+     "value": 4.0507,
+     "limit": "4.1 +/- 5% (height)"
+    },
+    "collision": {
+     "pass": true,
+     "value": "12 triangles, watertight True",
+     "limit": "present, watertight"
+    },
+    "pieces": {
+     "pass": false,
+     "value": 2,
+     "limit": "<= 1 (the source's parts)"
+    },
+    "floating": {
+     "pass": false,
+     "value": [
+      {
+       "piece": 1,
+       "faces": 78,
+       "ground_gap": 0.6425,
+       "nearest_piece": 0.081
+      }
+     ],
+     "limit": "no piece apart from the others and the ground"
+    },
+    "shape": {
+     "pass": true,
+     "value": 0.0147,
+     "limit": "<= 0.04"
+    },
+    "colour": {
+     "pass": false,
+     "value": {
+      "front": 4.31,
+      "side": 5.95,
+      "back": 3.79,
+      "above": 7.9
+     },
+     "limit": "each view <= 5.0 %"
+    },
+    "gltf_validator post_light_lod0.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator post_light_lod1.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator post_light_lod2.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    }
+   },
+   "passed": false
+  },
+  {
+   "arm": "parts",
+   "geometry": {
+    "parts": [
+     {
+      "part": 0,
+      "share": 300,
+      "fit": "simplified (topology)",
+      "triangles": 298
+     }
+    ]
+   },
+   "t_blender": 7.2,
+   "blender": {
+    "mode": "given",
+    "budget": 300,
+    "texture": 512,
+    "high_tris": 699856,
+    "low_tris": 282,
+    "foot_lifted": -0.00748,
+    "t_rebuild": 0.0,
+    "t_bake": 0.6,
+    "lod0": "score/2120_post_light/arms/parts/post_light_lod0.glb",
+    "t_render": 5.9,
+    "size": 4.1,
+    "t_total": 6.9
+   },
+   "lods": [
+    {
+     "file": "score/2120_post_light/arms/parts/post_light_lod1.glb",
+     "tris": 170,
+     "simplifier": "sloppy (attributes (stopped at 179))",
+     "relative_error": 0.0214
+    },
+    {
+     "file": "score/2120_post_light/arms/parts/post_light_lod2.glb",
+     "tris": 52,
+     "simplifier": "sloppy (attributes (stopped at 179))",
+     "relative_error": 0.0307
+    }
+   ],
+   "collision": {
+    "kind": "part_boxes",
+    "triangles": 12
+   },
+   "measurements": {
+    "pieces": 1,
+    "floating": [],
+    "shape_p95": 0.0092,
+    "shape_source_to_rebuild": 0.0091,
+    "shape_rebuild_to_source": 0.0092,
+    "buried_share": 0.0,
+    "colour": {
+     "front": 0.66,
+     "side": 1.18,
+     "back": 1.76,
+     "above": 1.79
+    },
+    "hull_over_volume": null,
+    "extents": [
+     1.2234,
+     0.752,
+     4.0906
+    ]
+   },
+   "gate": {
+    "triangles": {
+     "pass": true,
+     "value": 282,
+     "limit": "<= 300"
+    },
+    "lods_decrease": {
+     "pass": true,
+     "value": [
+      282,
+      170,
+      52
+     ],
+     "limit": "each below the last"
+    },
+    "texture": {
+     "pass": true,
+     "value": 512,
+     "limit": "<= 512"
+    },
+    "foot_on_ground": {
+     "pass": true,
+     "value": 0.0,
+     "limit": "|z| <= 0.001"
+    },
+    "size": {
+     "pass": true,
+     "value": 4.0906,
+     "limit": "4.1 +/- 5% (height)"
+    },
+    "collision": {
+     "pass": true,
+     "value": "12 triangles, watertight True",
+     "limit": "present, watertight"
+    },
+    "pieces": {
+     "pass": true,
+     "value": 1,
+     "limit": "<= 1 (the source's parts)"
+    },
+    "floating": {
+     "pass": true,
+     "value": [],
+     "limit": "no piece apart from the others and the ground"
+    },
+    "shape": {
+     "pass": true,
+     "value": 0.0092,
+     "limit": "<= 0.04"
+    },
+    "colour": {
+     "pass": true,
+     "value": {
+      "front": 0.66,
+      "side": 1.18,
+      "back": 1.76,
+      "above": 1.79
+     },
+     "limit": "each view <= 5.0 %"
+    },
+    "gltf_validator post_light_lod0.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator post_light_lod1.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator post_light_lod2.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    }
+   },
+   "passed": true
+  }
+ ],
+ "accepted_arm": "parts",
+ "lod_triangles": [
+  282,
+  170,
+  52
+ ],
+ "texture": 512,
+ "collision": {
+  "kind": "part_boxes",
+  "triangles": 12
+ },
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "value": 282,
+   "limit": "<= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "value": [
+    282,
+    170,
+    52
+   ],
+   "limit": "each below the last"
+  },
+  "texture": {
+   "pass": true,
+   "value": 512,
+   "limit": "<= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "value": 0.0,
+   "limit": "|z| <= 0.001"
+  },
+  "size": {
+   "pass": true,
+   "value": 4.0906,
+   "limit": "4.1 +/- 5% (height)"
+  },
+  "collision": {
+   "pass": true,
+   "value": "12 triangles, watertight True",
+   "limit": "present, watertight"
+  },
+  "pieces": {
+   "pass": true,
+   "value": 1,
+   "limit": "<= 1 (the source's parts)"
+  },
+  "floating": {
+   "pass": true,
+   "value": [],
+   "limit": "no piece apart from the others and the ground"
+  },
+  "shape": {
+   "pass": true,
+   "value": 0.0092,
+   "limit": "<= 0.04"
+  },
+  "colour": {
+   "pass": true,
+   "value": {
+    "front": 0.66,
+    "side": 1.18,
+    "back": 1.76,
+    "above": 1.79
+   },
+   "limit": "each view <= 5.0 %"
+  },
+  "gltf_validator post_light_lod0.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  },
+  "gltf_validator post_light_lod1.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  },
+  "gltf_validator post_light_lod2.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  }
+ },
+ "files": {
+  "lod0": "post_light_lod0.glb",
+  "lod1": "post_light_lod1.glb",
+  "lod2": "post_light_lod2.glb",
+  "collision": "post_light.collision.json"
+ },
+ "sheets": [
+  "post_light_sheet_even.png",
+  "post_light_sheet_consumer_light.png"
+ ],
+ "t_total": 29.1
+}

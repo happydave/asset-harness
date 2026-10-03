@@ -1,0 +1,48 @@
+{
+ "rig": "sandbox-classic-pack, Elwynn Forest",
+ "sources": {
+  "colours": "the Elwynn pack (schema 15, ai2 tmp/elwynn-store-15), light_set 1 (map 0's default volume): the `sun` and `ambient` columns, decoded as the client does (0x00RRGGBB sRGB, client/client/src/adapter.rs decode), here in linear RGB",
+  "noon key": "time_s 43200: sun #FFF7DE, ambient #68829A",
+  "low key": "time_s 64800 (18:00): sun #FFE9BA, ambient #666882",
+  "sun elevation at noon": "about 73 degrees: the client's sky settings, latitude 40, axial tilt 23.44, day 172 (client/sky/src/settings.rs defaults)",
+  "low sun elevation": "15 degrees, under the 20 at which the client's sun reaches full light (full_light_deg) and the angle that showed WI 2091's facets",
+  "strengths": "Blender sun strength and world strength set by the calibration against WI 2091's in-game captures (WI 2092 code.md)",
+  "sun azimuth": "60 degrees, on the cameras' side (front camera at 35, side at 125), as the in-game capture of WI 2091's crate was lit; set by the calibration (WI 2092 code.md)"
+ },
+ "lightings": {
+  "noon": {
+   "sun_elevation_deg": 73,
+   "sun_azimuth_deg": 60,
+   "sun_colour": [
+    1.0,
+    0.9301,
+    0.7305
+   ],
+   "sun_strength": 4.0,
+   "ambient_colour": [
+    0.1384,
+    0.2232,
+    0.3231
+   ],
+   "ambient_strength": 0.6,
+   "exposure": 0.0
+  },
+  "low": {
+   "sun_elevation_deg": 15,
+   "sun_azimuth_deg": 60,
+   "sun_colour": [
+    1.0,
+    0.8148,
+    0.491
+   ],
+   "sun_strength": 4.0,
+   "ambient_colour": [
+    0.1329,
+    0.1384,
+    0.2232
+   ],
+   "ambient_strength": 0.45,
+   "exposure": 0.0
+  }
+ }
+}

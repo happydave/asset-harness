@@ -1,0 +1,442 @@
+{
+ "stage_sidecar": 1,
+ "result": "accepted",
+ "source": {
+  "file": "crate.glb",
+  "content_hash": "sha256:bceac3673b7a8c045efb95dd82dd4a7938ec2868e9f86f7435008c2396ec5c0a"
+ },
+ "control": true,
+ "lane_record": null,
+ "provisional": null,
+ "category": {
+  "name": "crate",
+  "class": "box",
+  "budget": 300,
+  "texture": 512,
+  "governing": "horizontal",
+  "size": 1.3,
+  "size_source": "WI 2120's manifest (longest horizontal side, a guess from the classic pack's models of the same kind)"
+ },
+ "normalisation": {
+  "generator": "trellis2",
+  "up_rule": "source",
+  "matrix": [
+   [
+    -1.2974915929859707,
+    -1.701622005495504e-05,
+    0.0,
+    6.1034594353807414e-05
+   ],
+   [
+    1.701622005495504e-05,
+    -1.2974915929859707,
+    0.0,
+    -0.0001699219823047038
+   ],
+   [
+    0.0,
+    0.0,
+    1.2974915930975521,
+    0.444248534307449
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "stable_pose_tilt_deg": 0.0,
+  "yaw_deg": 180.0,
+  "governing_axis": "horizontal",
+  "scale": 1.297492,
+  "extents_after": [
+   1.3,
+   1.1718,
+   0.8899
+  ]
+ },
+ "source_parts": {
+  "fragments": 57,
+  "merged": 1,
+  "parts": 1,
+  "dropped_small": 0,
+  "contact": 0.01,
+  "area_floor": 0.01
+ },
+ "class": "box",
+ "arms_tried": [
+  {
+   "arm": "box",
+   "t_blender": 10.1,
+   "blender": {
+    "mode": "box",
+    "budget": 300,
+    "texture": 512,
+    "high_tris": 699494,
+    "low_tris": 108,
+    "foot_lifted": -0.0,
+    "t_rebuild": 0.3,
+    "t_bake": 0.7,
+    "lod0": "score/2112_crate/arms/box/crate_lod0.glb",
+    "t_render": 8.3,
+    "size": 1.3,
+    "t_total": 9.8
+   },
+   "lods": [
+    {
+     "file": "score/2112_crate/arms/box/crate_lod1.glb",
+     "tris": 54,
+     "simplifier": "attributes",
+     "relative_error": 0.0107
+    },
+    {
+     "file": "score/2112_crate/arms/box/crate_lod2.glb",
+     "tris": 26,
+     "simplifier": "attributes",
+     "relative_error": 0.0124
+    }
+   ],
+   "collision": {
+    "kind": "box",
+    "triangles": 12
+   },
+   "measurements": {
+    "pieces": 1,
+    "floating": [],
+    "shape_p95": 0.0576,
+    "shape_source_to_rebuild": 0.019,
+    "shape_rebuild_to_source": 0.0576,
+    "buried_share": 0.9045,
+    "colour": {
+     "front": 4.6,
+     "side": 5.03,
+     "back": 5.21,
+     "above": 4.29
+    },
+    "hull_over_volume": 1.0,
+    "extents": [
+     1.3,
+     1.1718,
+     0.8899
+    ]
+   },
+   "gate": {
+    "triangles": {
+     "pass": true,
+     "value": 108,
+     "limit": "<= 300"
+    },
+    "lods_decrease": {
+     "pass": true,
+     "value": [
+      108,
+      54,
+      26
+     ],
+     "limit": "each below the last"
+    },
+    "texture": {
+     "pass": true,
+     "value": 512,
+     "limit": "<= 512"
+    },
+    "foot_on_ground": {
+     "pass": true,
+     "value": 0.0,
+     "limit": "|z| <= 0.001"
+    },
+    "size": {
+     "pass": true,
+     "value": 1.3,
+     "limit": "1.3 +/- 5% (horizontal)"
+    },
+    "collision": {
+     "pass": true,
+     "value": "12 triangles, watertight True",
+     "limit": "present, watertight"
+    },
+    "pieces": {
+     "pass": true,
+     "value": 1,
+     "limit": "<= 1 (the source's parts)"
+    },
+    "floating": {
+     "pass": true,
+     "value": [],
+     "limit": "no piece apart from the others and the ground"
+    },
+    "shape": {
+     "pass": false,
+     "value": 0.0576,
+     "limit": "<= 0.04"
+    },
+    "colour": {
+     "pass": false,
+     "value": {
+      "front": 4.6,
+      "side": 5.03,
+      "back": 5.21,
+      "above": 4.29
+     },
+     "limit": "each view <= 5.0 %"
+    },
+    "gltf_validator crate_lod0.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator crate_lod1.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator crate_lod2.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    }
+   },
+   "passed": false
+  },
+  {
+   "arm": "generic",
+   "t_blender": 10.6,
+   "blender": {
+    "mode": "generic",
+    "budget": 300,
+    "texture": 512,
+    "high_tris": 699494,
+    "voxel_ladder": [
+     {
+      "divisor": 96,
+      "pieces": 1,
+      "tris": 83140
+     }
+    ],
+    "debris_islands_dropped": 0,
+    "low_tris": 300,
+    "foot_lifted": 0.00982,
+    "t_rebuild": 0.7,
+    "t_bake": 0.7,
+    "lod0": "score/2112_crate/arms/generic/crate_lod0.glb",
+    "t_render": 8.3,
+    "size": 1.3,
+    "t_total": 10.3
+   },
+   "lods": [
+    {
+     "file": "score/2112_crate/arms/generic/crate_lod1.glb",
+     "tris": 150,
+     "simplifier": "attributes",
+     "relative_error": 0.0358
+    },
+    {
+     "file": "score/2112_crate/arms/generic/crate_lod2.glb",
+     "tris": 112,
+     "simplifier": "attributes (stopped at 112)",
+     "relative_error": 0.0556
+    }
+   ],
+   "collision": {
+    "kind": "hull",
+    "triangles": 120
+   },
+   "measurements": {
+    "pieces": 1,
+    "floating": [],
+    "shape_p95": 0.0155,
+    "shape_source_to_rebuild": 0.0155,
+    "shape_rebuild_to_source": 0.0114,
+    "buried_share": 0.0488,
+    "colour": {
+     "front": 2.6,
+     "side": 2.55,
+     "back": 2.74,
+     "above": 1.97
+    },
+    "hull_over_volume": 1.186,
+    "extents": [
+     1.3014,
+     1.1729,
+     0.8966
+    ]
+   },
+   "gate": {
+    "triangles": {
+     "pass": true,
+     "value": 300,
+     "limit": "<= 300"
+    },
+    "lods_decrease": {
+     "pass": true,
+     "value": [
+      300,
+      150,
+      112
+     ],
+     "limit": "each below the last"
+    },
+    "texture": {
+     "pass": true,
+     "value": 512,
+     "limit": "<= 512"
+    },
+    "foot_on_ground": {
+     "pass": true,
+     "value": 0.0,
+     "limit": "|z| <= 0.001"
+    },
+    "size": {
+     "pass": true,
+     "value": 1.3014,
+     "limit": "1.3 +/- 5% (horizontal)"
+    },
+    "collision": {
+     "pass": true,
+     "value": "120 triangles, watertight True",
+     "limit": "present, watertight"
+    },
+    "pieces": {
+     "pass": true,
+     "value": 1,
+     "limit": "<= 1 (the source's parts)"
+    },
+    "floating": {
+     "pass": true,
+     "value": [],
+     "limit": "no piece apart from the others and the ground"
+    },
+    "shape": {
+     "pass": true,
+     "value": 0.0155,
+     "limit": "<= 0.04"
+    },
+    "colour": {
+     "pass": true,
+     "value": {
+      "front": 2.6,
+      "side": 2.55,
+      "back": 2.74,
+      "above": 1.97
+     },
+     "limit": "each view <= 5.0 %"
+    },
+    "gltf_validator crate_lod0.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator crate_lod1.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    },
+    "gltf_validator crate_lod2.glb": {
+     "pass": true,
+     "value": "errors 0 warnings 0",
+     "limit": "0 errors"
+    }
+   },
+   "passed": true
+  }
+ ],
+ "accepted_arm": "generic",
+ "lod_triangles": [
+  300,
+  150,
+  112
+ ],
+ "texture": 512,
+ "collision": {
+  "kind": "hull",
+  "triangles": 120
+ },
+ "gate": {
+  "triangles": {
+   "pass": true,
+   "value": 300,
+   "limit": "<= 300"
+  },
+  "lods_decrease": {
+   "pass": true,
+   "value": [
+    300,
+    150,
+    112
+   ],
+   "limit": "each below the last"
+  },
+  "texture": {
+   "pass": true,
+   "value": 512,
+   "limit": "<= 512"
+  },
+  "foot_on_ground": {
+   "pass": true,
+   "value": 0.0,
+   "limit": "|z| <= 0.001"
+  },
+  "size": {
+   "pass": true,
+   "value": 1.3014,
+   "limit": "1.3 +/- 5% (horizontal)"
+  },
+  "collision": {
+   "pass": true,
+   "value": "120 triangles, watertight True",
+   "limit": "present, watertight"
+  },
+  "pieces": {
+   "pass": true,
+   "value": 1,
+   "limit": "<= 1 (the source's parts)"
+  },
+  "floating": {
+   "pass": true,
+   "value": [],
+   "limit": "no piece apart from the others and the ground"
+  },
+  "shape": {
+   "pass": true,
+   "value": 0.0155,
+   "limit": "<= 0.04"
+  },
+  "colour": {
+   "pass": true,
+   "value": {
+    "front": 2.6,
+    "side": 2.55,
+    "back": 2.74,
+    "above": 1.97
+   },
+   "limit": "each view <= 5.0 %"
+  },
+  "gltf_validator crate_lod0.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  },
+  "gltf_validator crate_lod1.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  },
+  "gltf_validator crate_lod2.glb": {
+   "pass": true,
+   "value": "errors 0 warnings 0",
+   "limit": "0 errors"
+  }
+ },
+ "files": {
+  "lod0": "crate_lod0.glb",
+  "lod1": "crate_lod1.glb",
+  "lod2": "crate_lod2.glb",
+  "collision": "crate.collision.json"
+ },
+ "sheets": [
+  "crate_sheet_even.png",
+  "crate_sheet_consumer_light.png"
+ ],
+ "t_total": 28.2
+}

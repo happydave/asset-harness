@@ -1,0 +1,134 @@
+{
+ "2112_barrel": [
+  "hold",
+  "lathe, 16 sides; hoops and staves kept; a dark streak near the foot in the bake"
+ ],
+ "2112_stump": [
+  "hold",
+  "roots kept as blades, as in WI 2112"
+ ],
+ "2112_chair": [
+  "hold",
+  "slat back, seat and stretchers kept"
+ ],
+ "2112_bench": [
+  "hold",
+  "trestles kept"
+ ],
+ "2112_lantern": [
+  "fail",
+  "the parts arm loses the top ring (0.52 tall against 0.6)"
+ ],
+ "2112_crate": [
+  "hold",
+  "the control: latches and bands kept, a few facets"
+ ],
+ "2120_barrel": [
+  "hold",
+  "lathe; hoops round, no octagon; small dark patches at the foot"
+ ],
+ "2120_jar": [
+  "fail",
+  "generic: the rim faceted and the lug handles spiky, as in WI 2120 (the lathe missed by 22 % from rebuild to source)"
+ ],
+ "2120_bottle": [
+  "hold",
+  "lathe; cork and neck kept"
+ ],
+ "2120_chest": [
+  "hold",
+  "generic (the box arm misses the domed lid); bands and lock kept"
+ ],
+ "2120_crate": [
+  "fail",
+  "generated open-topped; the box arm closes it black and the generic loses the walls, both refused"
+ ],
+ "2120_keg": [
+  "fail",
+  "generic: the end goes polygonal (the lathe found no clean axis with the cradle)"
+ ],
+ "2120_elwynn_fence": [
+  "hold",
+  "posts and rails kept"
+ ],
+ "2120_westfall_fence": [
+  "hold",
+  "planks kept, one piece now"
+ ],
+ "2120_iron_gate": [
+  "fail",
+  "the bars fuse into a sheet; refused"
+ ],
+ "2120_post_light": [
+  "hold",
+  "parts: post, arm and lamp kept"
+ ],
+ "2120_candelabra": [
+  "fail",
+  "candles become spikes; refused"
+ ],
+ "2120_lantern": [
+  "hold",
+  "parts: frame, roof and the ring kept in one piece (WI 2120: 50 pieces)"
+ ],
+ "2120_hanging_lantern": [
+  "fail",
+  "the lantern comes apart from its bracket; refused"
+ ],
+ "2120_table": [
+  "hold",
+  "top, legs and stretchers kept"
+ ],
+ "2120_chair": [
+  "hold",
+  "slats and stretchers kept"
+ ],
+ "2120_bookshelf": [
+  "hold",
+  "generic: faithful; refused on the colour row's view from above (7.4 %), a false refusal"
+ ],
+ "2120_rug": [
+  "hold",
+  "border and fringe kept"
+ ],
+ "2120_planter_box": [
+  "hold",
+  "the box holds; plants thinned"
+ ],
+ "2120_utensils": [
+  "fail",
+  "the pot and bowls faceted; refused"
+ ],
+ "2120_book_stack": [
+  "hold",
+  "generic: faithful; refused on the colour row's view from above (6.1 %), a false refusal"
+ ],
+ "2120_weapon_rack": [
+  "hold",
+  "blades and axe kept"
+ ],
+ "2120_mug": [
+  "fail",
+  "generic: the base and foam faceted"
+ ],
+ "2120_tools": [
+  "fail",
+  "the rake's tines fuse into a blade; refused"
+ ],
+ "2120_hay_pile": [
+  "fail",
+  "the straw fringe lost; refused"
+ ],
+ "2120_rock": [
+  "hold",
+  "faithful"
+ ],
+ "2120_cliff_rock": [
+  "fail",
+  "torn into slivers; refused"
+ ],
+ "2120_tombstone": [
+  "hold",
+  "generic: faithful; refused on size, the debris rule dropping slivers of its ground patch (0.69 against 0.8), a false refusal"
+ ]
+}
