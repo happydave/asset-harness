@@ -42,8 +42,10 @@ def floating(lod0, size, contact=CONTACT):
 
 def shape_p95(source_w, lod0, size, n=20000):
     """The shape's distance at p95 as a share of the size, the larger of two directions:
-    - source to rebuild, leaving out source points inside a closed rebuild and deeper than BURIED:
-      TRELLIS.2 leaves surfaces where parts meet, which a closed rebuild rightly drops;
+    - source to rebuild, leaving out source points inside a closed piece of the rebuild and deeper than
+      BURIED: TRELLIS.2 leaves surfaces where parts meet and inside bodies, which a closed piece rightly
+      drops. A piece counts on its own, so an open part joined to a closed body (a lathe's residual band)
+      does not stop the body from burying (WI 2120's mug: 54 % of its source inside the lathe body);
     - rebuild to source: a rebuild that encloses its source buries every source point, so only this
       direction sees a box around a sphere.
     Returns (p95, the source-to-rebuild p95, the rebuild-to-source p95, the buried share)."""
@@ -51,8 +53,14 @@ def shape_p95(source_w, lod0, size, n=20000):
     w = welded(lod0)
     _, d, _ = trimesh.proximity.closest_point(w, pts)
     d = d / size
-    buried = (w.contains(pts) & (d > BURIED)) if w.is_watertight else np.zeros(len(pts), bool)
-    forward = float(np.percentile(d[~buried], 95))
+    inside = np.zeros(len(pts), bool)
+    # split without repair: trimesh's default fills a piece's holes, which would close an open part
+    for piece in w.split(only_watertight=False, repair=False):
+        if piece.is_watertight:
+            inside |= piece.contains(pts)
+    buried = inside & (d > BURIED)
+    # a rebuild enclosing all its source buries every point: then only the other direction speaks
+    forward = float(np.percentile(d[~buried], 95)) if (~buried).any() else 0.0
     back_pts, _ = trimesh.sample.sample_surface(w, n // 4, seed=9)
     _, e, _ = trimesh.proximity.closest_point(source_w, back_pts)
     backward = float(np.percentile(e / size, 95))

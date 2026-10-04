@@ -58,10 +58,20 @@ r = gate.rows(base_measurements(validator={"gltf_validator x.glb": (False, "erro
 check("a validator error refuses", not gate.passed(r) and not r["gltf_validator x.glb"]["pass"])
 r = gate.rows(base_measurements(shape_p95=0.041))
 check("a shape p95 over 4 % refuses", not r["shape"]["pass"])
-r = gate.rows(base_measurements(colour={"front": 1.0, "above": 5.2}))
-check("one view's colour over 5 % refuses", not r["colour"]["pass"])
+r = gate.rows(base_measurements(colour={"front": 1.0, "side": 1.0, "back": 1.0, "above": 7.4}))
+check("7.4 % from above passes (WI 2120's bookshelf, faithful)", r["colour"]["pass"], str(r["colour"]))
+r = gate.rows(base_measurements(colour={"front": 1.0, "side": 1.0, "back": 1.0, "above": 8.5}))
+check("8.5 % from above refuses", not r["colour"]["pass"], str(r["colour"]))
+r = gate.rows(base_measurements(colour={"front": 1.0, "side": 5.5, "back": 1.0, "above": 1.0}))
+check("5.5 % from the side refuses", not r["colour"]["pass"], str(r["colour"]))
 r = gate.rows(base_measurements(governing=1.06))
 check("a size 6 % off refuses", not r["size"]["pass"])
+r = gate.rows(base_measurements(arm="box", shape_p95=0.058))
+check("the box arm's shape passes at 5.8 % (WI 2091's crate reads 5.73 %)", r["shape"]["pass"], str(r["shape"]))
+r = gate.rows(base_measurements(arm="generic", shape_p95=0.058))
+check("another arm's shape refuses at 5.8 %", not r["shape"]["pass"], str(r["shape"]))
+r = gate.rows(base_measurements(arm="box", shape_p95=0.065))
+check("the box arm's shape refuses at 6.5 %", not r["shape"]["pass"], str(r["shape"]))
 
 print("pieces against the source's parts")
 src = cube()
@@ -138,6 +148,39 @@ if body is not None:
 slab = trimesh.creation.box(extents=[1.0, 0.3, 0.1])
 body, linfo, _ = P.lathe(slab, 1.0, 300)
 check("a flat slab has no lathe axis", body is None, str(linfo))
+# an open jar: its inner wall bulges out under a narrow mouth, which no cap seen from above reaches
+z_up = np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]], float)
+jar = P._revolve(np.array([(0, 0), (0, 0.5), (0.5, 0.6), (1.0, 0.35), (1.0, 0.3), (0.5, 0.52), (0.1, 0.4),
+                           (0.1, 0)], float), 96, z_up, np.zeros(3))
+jar_size = float(max(jar.extents))
+body, linfo, _ = P.lathe(jar, jar_size, 300)
+check("an open jar's lathe follows its inner wall", body is not None and "open_top" in linfo, str(linfo))
+if body is not None:
+    check("and fits it within 4 % both ways", P.fit_error(jar, body, jar_size) <= P.FIT_P95,
+          f"{P.fit_error(jar, body, jar_size):.4f}")
+# a mug: a handle on one side moves the bounding box's centre off the body's axis
+mug = trimesh.util.concatenate([
+    trimesh.creation.cylinder(radius=0.4, height=1.0, sections=96,
+                              transform=trimesh.transformations.translation_matrix([0, 0, 0.5])),
+    trimesh.creation.box(extents=[0.12, 0.1, 0.6]).apply_translation([0.45, 0, 0.5])])
+mw, mparts, _ = P.source_parts(mug, float(max(mug.extents)))
+geom, ginfo = P.lathe_arm(mw, mparts, float(max(mug.extents)), 300)
+check("a mug's lathe finds the body's axis, not the box's", geom is not None and ginfo.get("axis_shift", 0) > 0.03,
+      str({k: ginfo.get(k) for k in ("axis_shift", "why")}))
+if geom is not None:
+    mp95 = measure.shape_p95(mw, geom, float(max(mug.extents)))[0]
+    check("and the arm, handle and all, is within 4 %", mp95 <= 0.04, f"{mp95:.4f}")
+lidded = P._revolve(np.array([(0, 0), (0, 0.5), (1.0, 0.5), (1.0, 0.45), (0.95, 0.45), (0.95, 0)], float), 96,
+                    z_up, np.zeros(3))
+# a simplified profile can put two points on the axis in a row, or every point there (a lathe tried on a small
+# part by `fit_part`): the first revolves around the gap, the second has no surface
+spool = P._revolve(np.array([(0, 0), (0.4, 0), (0.4, 0.3), (1.0, 0.3), (1.0, 0)], float), 24, z_up, np.zeros(3))
+check("a profile with two axis points in a row revolves to one closed piece",
+      spool is not None and spool.is_watertight, "" if spool is None else str(spool.is_watertight))
+check("a profile wholly on the axis revolves to nothing",
+      P._revolve(np.array([(0, 0), (0.5, 0), (1.0, 0)], float), 24, z_up, np.zeros(3)) is None)
+body, linfo, _ = P.lathe(lidded, float(max(lidded.extents)), 300)
+check("a barrel's lid recessed 5 % is not an open mouth", body is not None and "open_top" not in linfo, str(linfo))
 
 print("fits checked both ways")
 disc = trimesh.creation.cylinder(radius=0.5, height=0.02, sections=96)
@@ -146,6 +189,29 @@ check("a thin disc lies within 1 % of its bounding box one way (disc to box)", P
       f"{P.p95_to(disc, box, 1.0):.4f}")
 check("but its fit error, both ways, refuses the box at 4 %", P.fit_error(disc, box, 1.0) > P.FIT_P95,
       f"{P.fit_error(disc, box, 1.0):.4f}")
+
+print("the box arm's box")
+along = trimesh.util.concatenate([trimesh.creation.box(extents=[1.0, 0.6, 0.5]).apply_translation([0, 0, 0.25])]
+                                 + [cube(0.08, (x, y, 0.3)) for x in (-0.54, 0.54) for y in (-0.15, 0.15)])
+lo, hi, binfo = P.box_bounds(along, float(max(along.extents)), "horizontal")
+check("a trim never shortens the governing axis past 2.5 % (latches on its ends kept)",
+      hi[0] - lo[0] >= 0.975 * along.extents[0], f"{hi[0] - lo[0]:.3f} of {along.extents[0]:.3f} {binfo}")
+
+print("the shape row's buried source points")
+inner = trimesh.creation.box(extents=[0.3] * 3).apply_translation([0, 0, 0.5])  # an internal surface
+src_in = trimesh.util.concatenate([cube(1.0, (0, 0, 0.5)), inner])
+band = trimesh.Trimesh([[0.6, -0.2, 0.2], [0.6, 0.2, 0.2], [0.6, 0.2, 0.8], [0.6, -0.2, 0.8]], [[0, 1, 2], [0, 2, 3]])
+p95, fwd, back, buried = measure.shape_p95(src_in, trimesh.util.concatenate([cube(1.0, (0, 0, 0.5)), band]), 1.0)
+check("a source's internal surface inside a closed piece is left out, though an open piece is joined to it",
+      fwd <= 0.04 and buried > 0, f"fwd {fwd:.4f} buried {buried:.3f}")
+open_box = cube(1.0, (0, 0, 0.5))
+open_box.update_faces(open_box.face_normals[:, 2] < 0.9)  # the top face removed: it encloses nothing
+p95, fwd, back, buried = measure.shape_p95(src_in, open_box, 1.0)
+check("inside an open piece it counts", fwd > 0.04 and buried == 0, f"fwd {fwd:.4f} buried {buried:.3f}")
+ball_src = trimesh.creation.icosphere(subdivisions=3, radius=0.3).apply_translation([0, 0, 0.5])
+p95, fwd, back, buried = measure.shape_p95(ball_src, cube(1.0, (0, 0, 0.5)), 1.0)
+check("a box around a sphere refuses, from the rebuild back to the source", p95 > 0.04 and back > 0.04,
+      f"p95 {p95:.4f} back {back:.4f}")
 
 print("rebuilt pieces counted by the source's rule")
 touching = trimesh.util.concatenate([cube(1.0, (0, 0, 0.5)), cube(0.3, (0.65, 0, 0.5))])
@@ -283,6 +349,35 @@ if not FAST:
     check("a sphere in the box class falls back from box to generic, both recorded",
           rc == 0 and arms == ["box", "generic"] and side.get("accepted_arm") == "generic"
           and not first.get("gate", {}).get("shape", {}).get("pass", True), f"{arms} {txt[-300:]}")
+
+    # a closed box with latches standing 0.08 off two faces: a box on its extremes stands off the body by
+    # them (6.7 % of the size), one fitted to the body does not. A box with a domed lid is no box.
+    json.dump({"categories": {"chest": {"class": "box", "governing": "horizontal", "size": 1.2, "budget": 300, "texture": 256}}},
+              open(os.path.join(TMP, "chest.json"), "w"))
+    latches = [cube(0.08, (x, y, 0.4)) for x in (-0.3, 0.3) for y in (-0.44, 0.44)]
+    for name, mesh in (("latched", trimesh.util.concatenate(
+            [trimesh.creation.box(extents=[1.2, 0.8, 0.7]).apply_translation([0, 0, 0.35])] + latches)),
+            ("domed", trimesh.util.concatenate([
+                trimesh.creation.box(extents=[1.2, 0.8, 0.5]).apply_translation([0, 0, 0.25]),
+                trimesh.creation.cylinder(radius=0.4, height=1.2, sections=48,
+                                          transform=trimesh.transformations.rotation_matrix(np.pi / 2, [0, 1, 0]))
+                .apply_translation([0, 0, 0.5])]))):
+        src = os.path.join(TMP, f"{name}.glb")
+        export_yup(mesh, src)
+        json.dump(lane, open(src + ".lane.json", "w"))
+        out = os.path.join(TMP, f"{name}_out")
+        r = subprocess.run([sys.executable, os.path.join(HERE, "stage.py"), src, "--category", "chest", "--table",
+                            os.path.join(TMP, "chest.json"), "--rig", rig, "--out", out], capture_output=True, text=True)
+        f = os.path.join(out, f"{name}.stage.json")
+        side = json.load(open(f)) if os.path.exists(f) else {}
+        box = (side.get("arms_tried") or [{}])[0]
+        if name == "latched":
+            check("a closed box with latches is accepted by the box arm", side.get("accepted_arm") == "box",
+                  f"{box.get('geometry')} {box.get('measurements', {}).get('shape_p95')} {(r.stdout + r.stderr)[-200:]}")
+        else:
+            check("a box with a domed lid is refused by the box arm on shape",
+                  box.get("arm") == "box" and not box.get("gate", {}).get("shape", {}).get("pass", True),
+                  f"{box.get('measurements', {}).get('shape_p95')} {(r.stdout + r.stderr)[-200:]}")
 
     speck = os.path.join(TMP, "speck.glb")
     export_yup(trimesh.util.concatenate([trimesh.creation.icosphere(subdivisions=3, radius=0.5).apply_translation([0, 0, 0.5]),

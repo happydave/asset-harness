@@ -2,7 +2,7 @@
 
 The config names the source, the normaliser's matrix, the arm (`generic`, `box`, `planar`, or `given`
 with a geometry glb built outside Blender), the budget, the texture size, the output folder and stem, the
-source's part count (the generic arm's voxel choice) and the light rig.
+source's part count (the generic arm's voxel choice), the box arm's fitted bounds, and the light rig.
 
 Imports the dense source, applies the matrix, builds the low prop, unwraps it, bakes the source's base
 colour onto it (Cycles, selected to active), exports it as a glb with the bake as its only texture, and
@@ -86,8 +86,12 @@ log["high_tris"] = tri_count(high)
 
 t1 = time.time()
 if mode == "box":
-    lo_c = mathutils.Vector([min(v.co[i] for v in high.data.vertices) for i in range(3)])
-    hi_c = mathutils.Vector([max(v.co[i] for v in high.data.vertices) for i in range(3)])
+    if cfg.get("box_bounds"):
+        # fitted to the body by the stage (parts.box_bounds), in the same normalised frame
+        lo_c, hi_c = (mathutils.Vector(v) for v in cfg["box_bounds"])
+    else:
+        lo_c = mathutils.Vector([min(v.co[i] for v in high.data.vertices) for i in range(3)])
+        hi_c = mathutils.Vector([max(v.co[i] for v in high.data.vertices) for i in range(3)])
     bpy.ops.mesh.primitive_cube_add(size=1, location=(lo_c + hi_c) / 2)
     low = bpy.context.view_layer.objects.active
     low.scale = hi_c - lo_c

@@ -43,7 +43,7 @@ CLASSES = {
     "slab": (["box", "generic"], "box"),
 }
 FIELDS = ("class", "governing", "size", "budget", "texture")
-VERSION = 1
+VERSION = 2
 
 
 def removable(path, out):
@@ -139,6 +139,9 @@ def attempt(arm, a, ctx, t):
         given = os.path.join(d, "given.glb")
         export_yup(geom, given)
         cfg["given"], mode = given, "given"
+    if arm == "box":
+        lo, hi, rec["geometry"] = P.box_bounds(ctx["w"], ctx["size"], ctx["cat"]["governing"])
+        cfg["box_bounds"] = [lo.tolist(), hi.tolist()]
     cfg["mode"] = mode
     cfg_path = os.path.join(d, "blender_config.json")
     write_json(cfg_path, cfg)
@@ -168,7 +171,7 @@ def attempt(arm, a, ctx, t):
     ext = hi - lo
     gov = ctx["cat"]["governing"]
     m = {
-        "budget": ctx["cat"]["budget"], "lod0_tris": int(len(lod0.faces)),
+        "arm": arm, "budget": ctx["cat"]["budget"], "lod0_tris": int(len(lod0.faces)),
         "lod1_tris": rec["lods"][0]["tris"], "lod2_tris": rec["lods"][1]["tris"],
         "texture": int(max(tex)), "texture_limit": ctx["cat"]["texture"], "foot": float(lo[2]),
         "governing": float(max(ext[0], ext[1]) if gov == "horizontal" else ext[2]), "governing_axis": gov,

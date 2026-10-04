@@ -1,4 +1,5 @@
-"""A source's parts, and the geometry of the arms built outside Blender: the lathe and the parts arm.
+"""A source's parts, the geometry of the arms built outside Blender (the lathe and the parts arm), and the
+box arm's fitted box.
 
 All in the normalised z-up frame, sizes as shares of the prop's size (its largest extent).
 """
@@ -13,6 +14,8 @@ AREA_FLOOR = 0.01   # a part under this share of the source's area is not counte
 LATHE_TOL = 0.04    # source surface further than this outside the lathe is rebuilt as a residual part
 PART_FLOOR = 12     # the fewest triangles a rebuilt part gets
 MIN_SIDES = 12      # the lathe's fewest sides
+OPEN_DEPTH = 0.25   # a top cap dipping this share of the height inside the rim is an open mouth
+WALL = 0.02         # inner-wall points lie at least this share of the size inside the outer profile
 FIT_P95 = 0.04      # a part's fit is taken when its p95 distance is within this share of the size
 
 
@@ -144,6 +147,49 @@ def _outer_profile(pts, centre, frame, slices=48, sectors=24):
     return edges, np.array(prof), (float(np.mean(cvs)) if cvs else np.inf)
 
 
+def _circle(xy):
+    """The least-squares circle through 2-D points: its centre and radius."""
+    a = np.column_stack([2 * xy, np.ones(len(xy))])
+    b = (xy ** 2).sum(axis=1)
+    sol = np.linalg.lstsq(a, b, rcond=None)[0]
+    return sol[:2], float(np.sqrt(max(sol[2] + sol[:2] @ sol[:2], 0.0)))
+
+
+def _axis_centre(pts, centre, frame, slices=48, sectors=24, rounds=3):
+    """The axis line through the body's cross-sections, not its bounding box: a handle or a cradle shifts the
+    box's centre off the body's axis. Per slice, a circle is fitted to the sectors' outermost points and
+    refitted without the points far off it (the attachment); the slices' median centre moves the axis."""
+    c = np.asarray(centre, float).copy()
+    for _ in range(rounds):
+        local = (pts - c) @ frame.T
+        t, p = local[:, 0], local[:, 1:]
+        ang = np.arctan2(p[:, 1], p[:, 0])
+        r = np.hypot(p[:, 0], p[:, 1])
+        edges = np.linspace(t.min(), t.max(), slices + 1)
+        shifts = []
+        for k in range(slices):
+            sel = np.nonzero((t >= edges[k]) & (t <= edges[k + 1]))[0]
+            if len(sel) < 60:
+                continue
+            sec = np.floor((ang[sel] + np.pi) / (2 * np.pi) * sectors).astype(int) % sectors
+            rim = np.array([p[sel[sec == s][np.argmax(r[sel[sec == s]])]] for s in range(sectors) if (sec == s).any()])
+            if len(rim) < sectors * 0.75:
+                continue
+            cen, rad = _circle(rim)
+            off = np.abs(np.hypot(*(rim - cen).T) - rad)
+            keep = off <= max(2 * np.median(off), 1e-9)
+            if keep.sum() >= 8:
+                cen, rad = _circle(rim[keep])
+            shifts.append(cen)
+        if not shifts:
+            break
+        move = np.median(np.array(shifts), axis=0)
+        c = c + move @ frame[1:]
+        if np.linalg.norm(move) < 1e-6:
+            break
+    return c
+
+
 def _caps(pts, centre, frame, rmax, bins=16):
     """The top and bottom surfaces by radius: per radial bin, the highest and lowest point along the axis.
     Returns (r, top_t, bottom_t) for the bins with points."""
@@ -155,6 +201,28 @@ def _caps(pts, centre, frame, rmax, bins=16):
         sel = (r >= edges[k]) & (r < edges[k + 1])
         if sel.sum() >= 5:
             out.append(((edges[k] + edges[k + 1]) / 2, float(t[sel].max()), float(t[sel].min())))
+    return np.array(out)
+
+
+def _inner_wall(pts, centre, frame, edges, outer, wall, sectors=24):
+    """Per slice along the axis: the inner wall's radius, from the points lying more than `wall` inside the
+    outer profile (the sectors' largest such radius, their median), or NaN where too few sectors have one."""
+    local = (pts - centre) @ frame.T
+    t, r = local[:, 0], np.hypot(local[:, 1], local[:, 2])
+    ang = np.arctan2(local[:, 2], local[:, 1])
+    out = []
+    for k in range(len(edges) - 1):
+        sel = (t >= edges[k]) & (t <= edges[k + 1])
+        if np.isnan(outer[k]):
+            out.append(np.nan)
+            continue
+        sel &= r < outer[k] - wall
+        if sel.sum() < 30:
+            out.append(np.nan)
+            continue
+        sec = np.floor((ang[sel] + np.pi) / (2 * np.pi) * sectors).astype(int) % sectors
+        mx = [r[sel][sec == s].max() for s in range(sectors) if (sec == s).any()]
+        out.append(float(np.median(mx)) if len(mx) >= sectors // 2 else np.nan)
     return np.array(out)
 
 
@@ -188,6 +256,8 @@ def _revolve(profile, sides, frame, centre):
             rows.append(list(range(len(verts), len(verts) + sides)))
             verts += [[t, r * np.cos(a), r * np.sin(a)] for a in ang]
     for ra, rb in zip(rows, rows[1:]):
+        if len(ra) == 1 and len(rb) == 1:
+            continue  # two points on the axis in a row bound no surface
         for j in range(sides):
             if len(ra) == 1:
                 faces.append([ra[0], rb[(j + 1) % sides], rb[j]])
@@ -196,6 +266,8 @@ def _revolve(profile, sides, frame, centre):
             else:
                 a0, a1, b0, b1 = ra[j], ra[(j + 1) % sides], rb[j], rb[(j + 1) % sides]
                 faces += [[a0, a1, b0], [a1, b1, b0]]
+    if not faces:
+        return None  # every point on the axis: no surface
     v = np.asarray(verts) @ frame + centre
     m = trimesh.Trimesh(v, np.asarray(faces), process=True)
     trimesh.repair.fix_normals(m)
@@ -212,15 +284,17 @@ def lathe(mesh, size, budget):
     frame, centre and (t, r) profile the residual test reads."""
     pts, _ = trimesh.sample.sample_surface(mesh, 30000, seed=5)
     lo, hi = mesh.bounds
-    centre = (lo + hi) / 2
+    box_centre = (lo + hi) / 2
     best = None
     for axis in range(3):
         frame = _frame(axis)
+        centre = _axis_centre(pts, box_centre, frame)
         edges, prof, cv = _outer_profile(pts, centre, frame)
         if best is None or cv < best[0]:
-            best = (cv, axis, frame, edges, prof)
-    cv, axis, frame, edges, prof = best
-    info = {"axis": "xyz"[axis], "circularity_cv": round(cv, 4)}
+            best = (cv, axis, frame, edges, prof, centre)
+    cv, axis, frame, edges, prof, centre = best
+    info = {"axis": "xyz"[axis], "circularity_cv": round(cv, 4),
+            "axis_shift": round(float(np.linalg.norm((centre - box_centre) @ frame[1:].T)) / size, 4)}
     if not np.isfinite(cv) or cv > 0.15:
         return None, {**info, "why": "no axis has circular cross-sections (cv over 0.15)"}, None
     mids = (edges[:-1] + edges[1:]) / 2
@@ -231,7 +305,23 @@ def lathe(mesh, size, budget):
     inner = caps[caps[:, 0] < side[0, 1]] if len(caps) else caps
     bottom = [(edges[0], 0.0)] + [(b, r) for r, _, b in inner] + [(edges[0], side[0, 1])]
     inner = caps[caps[:, 0] < side[-1, 1]] if len(caps) else caps
-    top = [(edges[-1], side[-1, 1])] + [(tp, r) for r, tp, _ in inner[::-1]] + [(edges[-1], 0.0)]
+    # an open vessel: from above, the highest point near the axis is the inside floor, seen through the
+    # mouth. A cap through it cuts a cone across the hollow (WI 2120's jar: 22 % at p95), so the profile
+    # follows the inner wall from the rim down to the floor instead.
+    height = edges[-1] - edges[0]
+    deep = inner[:, 1] < edges[-1] - OPEN_DEPTH * height if len(inner) else np.zeros(0, bool)
+    mouth = int(np.argmin(deep)) if len(deep) and not deep.all() else len(deep)
+    if mouth > 0:
+        floor_t = float(np.median(inner[:mouth, 1]))
+        wall = _inner_wall(pts, centre, frame, edges, prof, WALL * size)
+        mids = (edges[:-1] + edges[1:]) / 2
+        down = [(m, w) for m, w in zip(mids[::-1], wall[::-1]) if not np.isnan(w) and m > floor_t]
+        rim = inner[mouth:]
+        top = [(edges[-1], side[-1, 1])] + [(tp, r) for r, tp, _ in rim[::-1]] + down
+        top += [(floor_t, down[-1][1] if down else float(inner[mouth - 1, 0])), (floor_t, 0.0)]
+        info["open_top"] = {"floor_t": round(floor_t / size, 4), "wall_slices": len(down)}
+    else:
+        top = [(edges[-1], side[-1, 1])] + [(tp, r) for r, tp, _ in inner[::-1]] + [(edges[-1], 0.0)]
     pts2 = np.array(bottom + [tuple(p) for p in side] + top, float)
     # each side count with the finest profile that fits the budget; the closest fit to the source wins
     fits = []
@@ -244,8 +334,8 @@ def lathe(mesh, size, budget):
             if tris <= budget or tol > 0.1 * size:
                 break
             tol *= 1.4
-        if tris <= budget:
-            body = _revolve(simple, sides, frame, centre)
+        body = _revolve(simple, sides, frame, centre) if tris <= budget else None
+        if body is not None:
             fits.append((fit_error(mesh, body, size, n=3000), sides, simple, body, tol))
     if not fits:
         return None, {**info, "why": f"no profile fits {budget} triangles with {MIN_SIDES} sides"}, None
@@ -356,6 +446,41 @@ def lathe_arm(w, parts, size, budget):
     if res is None:
         return body, info
     return trimesh.util.concatenate([body, res]), info
+
+
+# ---- the box arm's box ----------------------------------------------------------------------------
+
+BOX_TRIMS = (0, 0.5, 1, 2, 3, 4, 5)   # percent of the surface samples each face may move in past
+BOX_KEEP = 0.025                      # a trim may shorten the governing axis by this share at most
+
+
+def box_bounds(w, size, governing):
+    """The box arm's axis-aligned box, fitted to the body: each face but the bottom moved in past a share
+    of the source's surface samples (BOX_TRIMS), the trim whose box fits the source best both ways taken,
+    among those keeping the governing axis within BOX_KEEP of the source's (the best fit alone took 5 % off
+    WI 2091's crate and failed its size row). A box on the extremes stands off the body by whatever sticks
+    out (latches, caps, a cornice). Returns (low corner, high corner, info)."""
+    pts, _ = trimesh.sample.sample_surface(w, 40000, seed=3)
+    floor = float(w.bounds[0][2])
+
+    def extent(lo, hi):
+        return max(hi[0] - lo[0], hi[1] - lo[1]) if governing == "horizontal" else hi[2] - lo[2]
+
+    full = extent(*w.bounds)
+    best = None
+    for s in BOX_TRIMS:
+        lo = np.percentile(pts, s, axis=0)
+        hi = np.percentile(pts, 100 - s, axis=0)
+        lo[2] = floor
+        if s and extent(lo, hi) < (1 - BOX_KEEP) * full:
+            continue
+        box = trimesh.creation.box(extents=np.maximum(hi - lo, 1e-4),
+                                   transform=trimesh.transformations.translation_matrix((lo + hi) / 2))
+        e = fit_error(w, box, size, n=3000)
+        if best is None or e < best[0]:
+            best = (e, s, lo, hi)
+    e, s, lo, hi = best
+    return lo, hi, {"trim_percent": s, "fit_p95": round(e, 4)}
 
 
 def collision_boxes(w, parts):

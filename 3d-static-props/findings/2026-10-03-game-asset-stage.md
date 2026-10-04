@@ -154,6 +154,11 @@ The pieces, floating, shape and colour rows run with no rebuild over WI 2120's g
   The two lanterns' heights (0.6 and 1.0) are guesses, since the pack's lanterns are other objects.
 - **Time:** 14–50 s a prop, 821 s for all 33. The first arm's success is the fast path.
 
+**Correction (WI 2143, 2026-10-03):** the tombstone was not shrunk by the debris rule. The three
+islands it dropped are mid-air crumbs; the voxel remesh lost the thin ground patch, which also explains
+its colour row. The mug's and keg's lathes failed on an axis pulled off-centre by the handle and the
+cradle, not on residual parts. See [the second pass](2026-10-03-game-asset-stage-second-pass.md).
+
 ## For the next step
 
 - **The colour row's view from above** refused two faithful props, and the debris rule shrank one past

@@ -5,7 +5,8 @@ a game asset, or refuses it. The asset is a glb at its category's triangle budge
 collision mesh, a fixed up axis and scale, sheets under even light and the consumer's light, and a
 sidecar. It exits non-zero, with the reasons, when no arm passes the gate. Graduated from the
 prototypes of WIs 2091, 2112 and 2120 (`../prototypes/shape_set/`); the findings are
-[2026-10-03-game-asset-stage.md](../findings/2026-10-03-game-asset-stage.md).
+[2026-10-03-game-asset-stage.md](../findings/2026-10-03-game-asset-stage.md) and, for its second pass
+(WI 2143), [2026-10-03-game-asset-stage-second-pass.md](../findings/2026-10-03-game-asset-stage-second-pass.md).
 
 ```sh
 python3 stage.py SOURCE.glb --category NAME --table consumers/sandbox-classic-pack.json \
@@ -58,11 +59,16 @@ recorded with its failing rows.
 - **generic:** a voxel remesh at the finest of size/96, /72, /56 and /48 whose pieces do not exceed
   the source's parts, then a collapse to the budget. Islands under 0.5 % of the area are dropped as
   debris.
-- **box:** a bevelled box on the source's bounds.
+- **box:** a bevelled box fitted to the body: each face but the bottom moves in past up to 5 % of the
+  source's surface samples, never shortening the governing axis by more than 2.5 %, and the trim with
+  the best two-way fit is taken. A box on the extremes stands off the body by its latches and caps.
 - **planar:** a coarse remesh, a collapse, and near-flat faces merged.
-- **lathe:** a surface of revolution about the most circular axis. Its closed profile runs along the
-  bottom surface, up the outer side and across the top, revolved with 12–16 sides (the closest fit
-  wins). Parts standing out of it by 4 % or more are rebuilt by the parts arm and joined.
+- **lathe:** a surface of revolution about the most circular axis. The axis runs through circles fitted
+  to the body's cross-sections, not the bounding box's centre, which a handle or a cradle pulls aside.
+  Its closed profile runs along the bottom surface, up the outer side and across the top, revolved with
+  12–16 sides (the closest fit wins). For an open vessel, whose top seen from above drops more than a
+  quarter of its height inside the rim, the profile runs over the rim and down the inner wall to the
+  inside floor. Parts standing out of it by 4 % or more are rebuilt by the parts arm and joined.
 - **parts:** each source part rebuilt on its own by a box, a lathe or its own simplification, whichever
   fits within 4 % both ways. Each part gets 12 triangles, and the rest of the budget is shared by area.
 
@@ -90,11 +96,28 @@ Each row is recorded with its value and limit; any failed row refuses the arm.
 | collision | present and closed |
 | pieces | the rebuild's pieces, counted by the source-part rule, no more than the source's parts |
 | floating | no piece further than 1 % of the size from every other piece and the ground |
-| shape | p95 distance within 4 % of the size, the larger of two directions: source to rebuild (source points buried more than 2 % inside a closed rebuild left out, TRELLIS.2's internal surfaces) and rebuild to source |
-| colour | each of four even-light views' mean colour within 5 % of the source's |
+| shape | p95 distance within 4 % of the size (6 % for the box arm), the larger of two directions: source to rebuild (source points buried more than 2 % inside any closed piece of the rebuild left out, TRELLIS.2's internal surfaces) and rebuild to source |
+| colour | the front, side and back even-light views' mean colour each within 5 % of the source's, the view from above within 8 % |
 | gltf_validator | 0 errors on each LOD |
 
 The consumer-light sheet is not a gate row: facets and folds under a low sun are judged by eye.
+
+The box arm's shape limit is its own because a fitted box cannot follow faces sculpted in relief:
+WI 2091's crate, cleanest as a box by eye, reads 5.73 %. The view from above has its own colour limit
+because it sees top faces and shelf interiors at a slant, while in play the camera stands near a prop's
+side.
+
+## Changing a row or arm
+
+- **Each changed row, arm or measure gets a test where it should refuse,** not only one where it should
+  excuse. A measure carried from a prototype into the gate once excused a box around a sphere, since
+  only the direction it was built for was tested.
+- **Diagnose a wrong verdict on the prop before changing a rule for it.** WI 2143 found two of WI 2092's
+  readings wrong this way:
+  - the tombstone's ground patch was lost by the remesh, not the debris rule;
+  - the mug's lathe was off-centre, not short of its handle.
+- **Re-score on the whole set and read every changed verdict by eye.** A limit chosen on a few props is
+  supported on those props only.
 
 ## Outputs
 
