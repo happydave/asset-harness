@@ -34,7 +34,9 @@ from sheets import sheet  # noqa: E402
 # the class's arms in order, and its collision kind (an arm's own kind where the class names one)
 CLASSES = {
     "box": (["box", "generic"], {"box": "box", "generic": "hull"}),
-    "round": (["lathe", "generic"], "hull"),
+    # a round prop the lathe cannot carry is refused, not rebuilt faceted: the generic arm made no round hit
+    # on WIs 2112 and 2120's sets and accepted the jar and the keg faceted (WIs 2092, 2143)
+    "round": (["lathe"], "hull"),
     "open frame": (["generic", "parts"], "part_boxes"),
     "small detailed": (["parts", "generic"], "hull"),
     "cluster": (["parts", "generic"], "part_boxes"),

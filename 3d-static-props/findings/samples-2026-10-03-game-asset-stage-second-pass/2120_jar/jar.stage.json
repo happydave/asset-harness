@@ -1,6 +1,6 @@
 {
  "stage_sidecar": 2,
- "result": "accepted",
+ "result": "refused",
  "source": {
   "file": "jar.glb",
   "content_hash": "sha256:77b4a799d1a36fd06777545209c21d02dce87bde58e0f4114103d0c7f61fe3ba"
@@ -556,8 +556,8 @@
      ]
     }
    },
-   "t_blender": 8.0,
-   "blender_peak_mb": 1221,
+   "t_blender": 8.2,
+   "blender_peak_mb": 1225,
    "blender": {
     "mode": "given",
     "budget": 300,
@@ -567,20 +567,20 @@
     "foot_lifted": -1e-05,
     "t_rebuild": 0.0,
     "t_bake": 0.6,
-    "lod0": "score/2120_jar/arms/lathe/jar_lod0.glb",
-    "t_render": 6.7,
+    "lod0": "score2158/2120_jar/arms/lathe/jar_lod0.glb",
+    "t_render": 6.9,
     "size": 0.5953,
-    "t_total": 7.8
+    "t_total": 7.9
    },
    "lods": [
     {
-     "file": "score/2120_jar/arms/lathe/jar_lod1.glb",
+     "file": "score2158/2120_jar/arms/lathe/jar_lod1.glb",
      "tris": 188,
      "simplifier": "attributes (stopped at 188)",
      "relative_error": 0.0457
     },
     {
-     "file": "score/2120_jar/arms/lathe/jar_lod2.glb",
+     "file": "score2158/2120_jar/arms/lathe/jar_lod2.glb",
      "tris": 84,
      "simplifier": "attributes",
      "relative_error": 0.1982
@@ -687,246 +687,17 @@
     }
    },
    "passed": false
-  },
-  {
-   "arm": "generic",
-   "t_blender": 9.1,
-   "blender_peak_mb": 1335,
-   "blender": {
-    "mode": "generic",
-    "budget": 300,
-    "texture": 512,
-    "high_tris": 699483,
-    "voxel_ladder": [
-     {
-      "divisor": 96,
-      "pieces": 1,
-      "tris": 132940
-     }
-    ],
-    "debris_islands_dropped": 0,
-    "low_tris": 300,
-    "foot_lifted": -0.00019,
-    "t_rebuild": 1.0,
-    "t_bake": 0.6,
-    "lod0": "score/2120_jar/arms/generic/jar_lod0.glb",
-    "t_render": 6.8,
-    "size": 0.5953,
-    "t_total": 8.8
-   },
-   "lods": [
-    {
-     "file": "score/2120_jar/arms/generic/jar_lod1.glb",
-     "tris": 200,
-     "simplifier": "attributes (stopped at 200)",
-     "relative_error": 0.0491
-    },
-    {
-     "file": "score/2120_jar/arms/generic/jar_lod2.glb",
-     "tris": 102,
-     "simplifier": "attributes (stopped at 102)",
-     "relative_error": 0.1975
-    }
-   ],
-   "collision": {
-    "kind": "hull",
-    "triangles": 126
-   },
-   "measurements": {
-    "pieces": 1,
-    "floating": [],
-    "shape_p95": 0.0133,
-    "shape_source_to_rebuild": 0.0133,
-    "shape_rebuild_to_source": 0.0118,
-    "buried_share": 0.0029,
-    "colour": {
-     "front": 1.55,
-     "side": 0.9,
-     "back": 1.37,
-     "above": 0.42
-    },
-    "hull_over_volume": 7.253,
-    "extents": [
-     0.5017,
-     0.5096,
-     0.5939
-    ]
-   },
-   "gate": {
-    "triangles": {
-     "pass": true,
-     "value": 300,
-     "limit": "<= 300"
-    },
-    "lods_decrease": {
-     "pass": true,
-     "value": [
-      300,
-      200,
-      102
-     ],
-     "limit": "each below the last"
-    },
-    "texture": {
-     "pass": true,
-     "value": 512,
-     "limit": "<= 512"
-    },
-    "foot_on_ground": {
-     "pass": true,
-     "value": 0.0,
-     "limit": "|z| <= 0.001"
-    },
-    "size": {
-     "pass": true,
-     "value": 0.5096,
-     "limit": "0.5 +/- 5% (horizontal)"
-    },
-    "collision": {
-     "pass": true,
-     "value": "126 triangles, watertight True",
-     "limit": "present, watertight"
-    },
-    "pieces": {
-     "pass": true,
-     "value": 1,
-     "limit": "<= 1 (the source's parts)"
-    },
-    "floating": {
-     "pass": true,
-     "value": [],
-     "limit": "no piece apart from the others and the ground"
-    },
-    "shape": {
-     "pass": true,
-     "value": 0.0133,
-     "limit": "<= 0.04"
-    },
-    "colour": {
-     "pass": true,
-     "value": {
-      "front": 1.55,
-      "side": 0.9,
-      "back": 1.37,
-      "above": 0.42
-     },
-     "limit": "each view <= 5.0 %, above <= 8.0 %"
-    },
-    "gltf_validator jar_lod0.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    },
-    "gltf_validator jar_lod1.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    },
-    "gltf_validator jar_lod2.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    }
-   },
-   "passed": true
   }
  ],
- "accepted_arm": "generic",
- "lod_triangles": [
-  300,
-  200,
-  102
- ],
- "texture": 512,
- "collision": {
-  "kind": "hull",
-  "triangles": 126
- },
- "gate": {
-  "triangles": {
-   "pass": true,
-   "value": 300,
-   "limit": "<= 300"
-  },
-  "lods_decrease": {
-   "pass": true,
-   "value": [
-    300,
-    200,
-    102
-   ],
-   "limit": "each below the last"
-  },
-  "texture": {
-   "pass": true,
-   "value": 512,
-   "limit": "<= 512"
-  },
-  "foot_on_ground": {
-   "pass": true,
-   "value": 0.0,
-   "limit": "|z| <= 0.001"
-  },
-  "size": {
-   "pass": true,
-   "value": 0.5096,
-   "limit": "0.5 +/- 5% (horizontal)"
-  },
-  "collision": {
-   "pass": true,
-   "value": "126 triangles, watertight True",
-   "limit": "present, watertight"
-  },
-  "pieces": {
-   "pass": true,
-   "value": 1,
-   "limit": "<= 1 (the source's parts)"
-  },
-  "floating": {
-   "pass": true,
-   "value": [],
-   "limit": "no piece apart from the others and the ground"
-  },
-  "shape": {
-   "pass": true,
-   "value": 0.0133,
-   "limit": "<= 0.04"
-  },
-  "colour": {
-   "pass": true,
-   "value": {
-    "front": 1.55,
-    "side": 0.9,
-    "back": 1.37,
-    "above": 0.42
-   },
-   "limit": "each view <= 5.0 %, above <= 8.0 %"
-  },
-  "gltf_validator jar_lod0.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  },
-  "gltf_validator jar_lod1.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  },
-  "gltf_validator jar_lod2.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  }
- },
- "files": {
-  "lod0": "jar_lod0.glb",
-  "lod1": "jar_lod1.glb",
-  "lod2": "jar_lod2.glb",
-  "collision": "jar.collision.json"
- },
+ "accepted_arm": null,
+ "lod_triangles": null,
+ "texture": null,
+ "collision": null,
+ "gate": null,
+ "files": {},
  "sheets": [
   "jar_sheet_even.png",
   "jar_sheet_consumer_light.png"
  ],
- "t_total": 31.1
+ "t_total": 20.7
 }

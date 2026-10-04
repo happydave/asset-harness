@@ -17,6 +17,8 @@ reading of an identical rebuild. The set:
 laid out as WI 2092's, with labelled sheets of each changed arm in `sheets/` and `look.json`. One reader,
 the author.
 
+**Since WI 2158 (2026-10-04): the round class tries the lathe only,** on the owner's answer to the question below. The six round props were re-run on `ai2` cores 12–23. Every lathe value is identical to this run's, and the jar and the keg are now refused. On WI 2120's 27, **the gate agrees with the eye on 26, with 16 hits, no false accepts and one false refusal** (the tombstone). The samples' `jar` and `keg` folders hold the new refusals.
+
 ## The re-score (WI 2120's 27)
 
 | Class | Props | Accepted | Hold by look | Hits | WI 2092's hits |
@@ -168,7 +170,7 @@ Every one of these fails by look as well, except the tombstone.
 ## For the next step
 
 - **The owner's question:** should the round class drop its generic arm? On both runs it made no round
-  hit, and here it makes the only two false accepts.
+  hit, and here it makes the only two false accepts. *Answered yes (owner, 2026-10-04); done in WI 2158.*
 - **The jar's bake.** The lathe now has the right shape, but the bake of its inner wall and belly goes
   wrong. The cause is a hypothesis: rays cast from an inner surface reach the outer one.
 - **Thin ground patches lost by the remesh** (the tombstone): a ladder step finer than size/96 near the

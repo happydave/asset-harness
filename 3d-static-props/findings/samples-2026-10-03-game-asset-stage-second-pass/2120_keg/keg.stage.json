@@ -1,6 +1,6 @@
 {
  "stage_sidecar": 2,
- "result": "accepted",
+ "result": "refused",
  "source": {
   "file": "keg.glb",
   "content_hash": "sha256:47a307f66389dca9dab505e8d1c9c2d742912a1dbf82d49eac7f4aa865ad3f52"
@@ -569,8 +569,8 @@
      ]
     }
    },
-   "t_blender": 10.3,
-   "blender_peak_mb": 1652,
+   "t_blender": 9.7,
+   "blender_peak_mb": 1653,
    "blender": {
     "mode": "given",
     "budget": 300,
@@ -580,20 +580,20 @@
     "foot_lifted": -0.06418,
     "t_rebuild": 0.0,
     "t_bake": 0.7,
-    "lod0": "score/2120_keg/arms/lathe/keg_lod0.glb",
-    "t_render": 8.7,
+    "lod0": "score2158/2120_keg/arms/lathe/keg_lod0.glb",
+    "t_render": 8.1,
     "size": 0.7,
-    "t_total": 9.9
+    "t_total": 9.4
    },
    "lods": [
     {
-     "file": "score/2120_keg/arms/lathe/keg_lod1.glb",
+     "file": "score2158/2120_keg/arms/lathe/keg_lod1.glb",
      "tris": 142,
      "simplifier": "attributes",
      "relative_error": 0.0436
     },
     {
-     "file": "score/2120_keg/arms/lathe/keg_lod2.glb",
+     "file": "score2158/2120_keg/arms/lathe/keg_lod2.glb",
      "tris": 86,
      "simplifier": "attributes",
      "relative_error": 0.139
@@ -714,261 +714,17 @@
     }
    },
    "passed": false
-  },
-  {
-   "arm": "generic",
-   "t_blender": 12.3,
-   "blender_peak_mb": 1822,
-   "blender": {
-    "mode": "generic",
-    "budget": 300,
-    "texture": 512,
-    "high_tris": 697475,
-    "voxel_ladder": [
-     {
-      "divisor": 96,
-      "pieces": 15,
-      "tris": 94400
-     },
-     {
-      "divisor": 72,
-      "pieces": 3,
-      "tris": 52400
-     },
-     {
-      "divisor": 56,
-      "pieces": 4,
-      "tris": 31196
-     },
-     {
-      "divisor": 48,
-      "pieces": 2,
-      "tris": 22168
-     }
-    ],
-    "debris_islands_dropped": 1,
-    "low_tris": 298,
-    "foot_lifted": 0.00319,
-    "t_rebuild": 1.9,
-    "t_bake": 0.7,
-    "lod0": "score/2120_keg/arms/generic/keg_lod0.glb",
-    "t_render": 8.7,
-    "size": 0.7,
-    "t_total": 12.0
-   },
-   "lods": [
-    {
-     "file": "score/2120_keg/arms/generic/keg_lod1.glb",
-     "tris": 176,
-     "simplifier": "attributes",
-     "relative_error": 0.0478
-    },
-    {
-     "file": "score/2120_keg/arms/generic/keg_lod2.glb",
-     "tris": 139,
-     "simplifier": "sloppy (attributes (stopped at 158))",
-     "relative_error": 0.0577
-    }
-   ],
-   "collision": {
-    "kind": "hull",
-    "triangles": 108
-   },
-   "measurements": {
-    "pieces": 1,
-    "floating": [],
-    "shape_p95": 0.0183,
-    "shape_source_to_rebuild": 0.0183,
-    "shape_rebuild_to_source": 0.0126,
-    "buried_share": 0.2975,
-    "colour": {
-     "front": 1.4,
-     "side": 1.34,
-     "back": 1.69,
-     "above": 0.95
-    },
-    "hull_over_volume": 1.378,
-    "extents": [
-     0.6843,
-     0.593,
-     0.664
-    ]
-   },
-   "gate": {
-    "triangles": {
-     "pass": true,
-     "value": 298,
-     "limit": "<= 300"
-    },
-    "lods_decrease": {
-     "pass": true,
-     "value": [
-      298,
-      176,
-      139
-     ],
-     "limit": "each below the last"
-    },
-    "texture": {
-     "pass": true,
-     "value": 512,
-     "limit": "<= 512"
-    },
-    "foot_on_ground": {
-     "pass": true,
-     "value": 0.0,
-     "limit": "|z| <= 0.001"
-    },
-    "size": {
-     "pass": true,
-     "value": 0.6843,
-     "limit": "0.7 +/- 5% (horizontal)"
-    },
-    "collision": {
-     "pass": true,
-     "value": "108 triangles, watertight True",
-     "limit": "present, watertight"
-    },
-    "pieces": {
-     "pass": true,
-     "value": 1,
-     "limit": "<= 1 (the source's parts)"
-    },
-    "floating": {
-     "pass": true,
-     "value": [],
-     "limit": "no piece apart from the others and the ground"
-    },
-    "shape": {
-     "pass": true,
-     "value": 0.0183,
-     "limit": "<= 0.04"
-    },
-    "colour": {
-     "pass": true,
-     "value": {
-      "front": 1.4,
-      "side": 1.34,
-      "back": 1.69,
-      "above": 0.95
-     },
-     "limit": "each view <= 5.0 %, above <= 8.0 %"
-    },
-    "gltf_validator keg_lod0.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    },
-    "gltf_validator keg_lod1.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    },
-    "gltf_validator keg_lod2.glb": {
-     "pass": true,
-     "value": "errors 0 warnings 0",
-     "limit": "0 errors"
-    }
-   },
-   "passed": true
   }
  ],
- "accepted_arm": "generic",
- "lod_triangles": [
-  298,
-  176,
-  139
- ],
- "texture": 512,
- "collision": {
-  "kind": "hull",
-  "triangles": 108
- },
- "gate": {
-  "triangles": {
-   "pass": true,
-   "value": 298,
-   "limit": "<= 300"
-  },
-  "lods_decrease": {
-   "pass": true,
-   "value": [
-    298,
-    176,
-    139
-   ],
-   "limit": "each below the last"
-  },
-  "texture": {
-   "pass": true,
-   "value": 512,
-   "limit": "<= 512"
-  },
-  "foot_on_ground": {
-   "pass": true,
-   "value": 0.0,
-   "limit": "|z| <= 0.001"
-  },
-  "size": {
-   "pass": true,
-   "value": 0.6843,
-   "limit": "0.7 +/- 5% (horizontal)"
-  },
-  "collision": {
-   "pass": true,
-   "value": "108 triangles, watertight True",
-   "limit": "present, watertight"
-  },
-  "pieces": {
-   "pass": true,
-   "value": 1,
-   "limit": "<= 1 (the source's parts)"
-  },
-  "floating": {
-   "pass": true,
-   "value": [],
-   "limit": "no piece apart from the others and the ground"
-  },
-  "shape": {
-   "pass": true,
-   "value": 0.0183,
-   "limit": "<= 0.04"
-  },
-  "colour": {
-   "pass": true,
-   "value": {
-    "front": 1.4,
-    "side": 1.34,
-    "back": 1.69,
-    "above": 0.95
-   },
-   "limit": "each view <= 5.0 %, above <= 8.0 %"
-  },
-  "gltf_validator keg_lod0.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  },
-  "gltf_validator keg_lod1.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  },
-  "gltf_validator keg_lod2.glb": {
-   "pass": true,
-   "value": "errors 0 warnings 0",
-   "limit": "0 errors"
-  }
- },
- "files": {
-  "lod0": "keg_lod0.glb",
-  "lod1": "keg_lod1.glb",
-  "lod2": "keg_lod2.glb",
-  "collision": "keg.collision.json"
- },
+ "accepted_arm": null,
+ "lod_triangles": null,
+ "texture": null,
+ "collision": null,
+ "gate": null,
+ "files": {},
  "sheets": [
   "keg_sheet_even.png",
   "keg_sheet_consumer_light.png"
  ],
- "t_total": 35.9
+ "t_total": 20.9
 }

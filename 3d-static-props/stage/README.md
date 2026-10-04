@@ -48,7 +48,7 @@ recorded with its failing rows.
 | Class | Arms in order | Collision |
 |---|---|---|
 | box | box, generic | the fitted box (box arm), else the convex hull |
-| round | lathe, generic | the convex hull |
+| round | lathe | the convex hull |
 | open frame | generic, parts | one oriented box per source part |
 | small detailed | parts, generic | the convex hull |
 | cluster | parts, generic | one oriented box per source part |

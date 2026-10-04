@@ -324,6 +324,18 @@ if not FAST:
         check("its LODs, collision and sidecar are written", all(os.path.exists(os.path.join(out, f)) for f in
               ("can_lod0.glb", "can_lod1.glb", "can_lod2.glb", "can.collision.json")))
 
+    # a round category's source the lathe cannot carry (no axis with circular cross-sections) is refused,
+    # where the generic arm would have accepted it faceted
+    plank = os.path.join(TMP, "plank.glb")
+    export_yup(trimesh.creation.box(extents=[1.0, 0.3, 0.1]).apply_translation([0, 0, 0.05]), plank)
+    json.dump(lane, open(plank + ".lane.json", "w"))
+    out = os.path.join(TMP, "plank_out")
+    rc, txt = stage(plank, "can", out)
+    f = os.path.join(out, "plank.stage.json")
+    side = json.load(open(f)) if os.path.exists(f) else {}
+    check("a round prop the lathe cannot carry is refused, the lathe its only arm",
+          rc == 1 and [a["arm"] for a in side.get("arms_tried", [])] == ["lathe"], f"exit {rc} {txt[-200:]}")
+
     # a sphere's lathe is 196 triangles at a budget of 200 and 256 at 300: the budget binds
     pot = os.path.join(TMP, "pot.glb")
     export_yup(trimesh.creation.icosphere(subdivisions=4, radius=0.5).apply_translation([0, 0, 0.5]), pot)

@@ -1,9 +1,10 @@
 # Track: 3d-static-props
 
-**Status (2026-10-03):** the **game-asset stage** ([stage/](stage/README.md), WIs 2092 and 2143) takes
-a TRELLIS.2 prop to a validated glb at its category's budget, choosing the rebuild by shape class, with
-LODs, collision, a fixed up axis and scale, and a sidecar, or refuses it. On WI 2120's 27 after its
-second pass: 16 hits (the prototype chain's 9, WI 2092's 13), and the gate agreeing with the eye on 24
+**Status (2026-10-04):** the **game-asset stage** ([stage/](stage/README.md), WIs 2092, 2143 and 2158)
+takes a TRELLIS.2 prop to a validated glb at its category's budget, choosing the rebuild by shape class,
+with LODs, collision, a fixed up axis and scale, and a sidecar, or refuses it. On WI 2120's 27 after its
+second pass and the round class on the lathe only: 16 hits (the prototype chain's 9, WI 2092's 13), and
+the gate agreeing with the eye on 26
 ([findings](findings/2026-10-03-game-asset-stage-second-pass.md); the first pass's
 [findings](findings/2026-10-03-game-asset-stage.md)).
 
